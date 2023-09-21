@@ -1,22 +1,25 @@
 import React, { useEffect } from 'react'
 import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css'
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import {
+  darkTheme,
+  getDefaultWallets,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit'
 import Head from 'next/head'
 import type { AppProps } from 'next/app'
-import {
-  configureChains,
-  createConfig,
-  mainnet,
-  useAccount,
-  WagmiConfig,
-} from 'wagmi'
+import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { identify } from '@web3analytic/funnel-sdk'
+import { mainnet, arbitrum } from '@wagmi/chains'
+import dynamic from 'next/dynamic'
+
+import Header from '../components/header'
+// import Footer from '../components/footer'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
+  [mainnet, arbitrum],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || '' }),
     publicProvider(),
@@ -39,7 +42,9 @@ const wagmiConfig = createConfig({
 const WalletProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
+      <RainbowKitProvider chains={chains} theme={darkTheme()}>
+        {children}
+      </RainbowKitProvider>
     </WagmiConfig>
   )
 }
@@ -57,7 +62,7 @@ const Web3AnalyticWrapper = ({ children }: React.PropsWithChildren) => {
   return <>{children}</>
 }
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
@@ -68,8 +73,18 @@ export default function App({ Component, pageProps }: AppProps) {
         <link href="/favicon.svg" rel="icon" />
       </Head>
       <WalletProvider>
-        <Web3AnalyticWrapper>Hello World!</Web3AnalyticWrapper>
+        <Web3AnalyticWrapper>
+          <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+            <Header />
+            <Component {...pageProps} />
+            {/*<Footer />*/}
+          </div>
+        </Web3AnalyticWrapper>
       </WalletProvider>
     </>
   )
 }
+
+export default dynamic(() => Promise.resolve(App), {
+  ssr: false,
+})
