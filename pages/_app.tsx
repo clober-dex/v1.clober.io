@@ -16,6 +16,7 @@ import { mainnet, arbitrum } from '@wagmi/chains'
 import dynamic from 'next/dynamic'
 
 import Header from '../components/header'
+import Footer from '../components/footer'
 // import Footer from '../components/footer'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -77,7 +78,7 @@ function App({ Component, pageProps }: AppProps) {
           <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
             <Header />
             <Component {...pageProps} />
-            {/*<Footer />*/}
+            <Footer />
           </div>
         </Web3AnalyticWrapper>
       </WalletProvider>
