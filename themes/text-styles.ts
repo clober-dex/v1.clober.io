@@ -1,5 +1,9 @@
 export const textStyles = {
-  body2Bold: 'font-sans not-italic text-base -tracking-tighter',
-  body3Bold: 'font-sans not-italic text-sm -tracking-tighter',
-  body3_5: 'font-sans not-italic text-xs -tracking-tighter',
+  body2Bold:
+    'text-[16px] leading-[22px] font-sans not-italic -tracking-[.005em] ',
+  body3Bold:
+    'text-[14px] leading-[20px] font-sans not-italic -tracking-[.005em] ',
+  body3_5:
+    'text-[13px] leading-[18px] font-sans not-italic -tracking-[.005em] ',
+  body4: 'text-[12px] leading-[16px] font-sans not-italic -tracking-[.005em] ',
 }
