@@ -54,6 +54,30 @@ const bids = [
     price: '1680.766',
     size: '3.7143',
   },
+  {
+    price: '1679.766',
+    size: '31.7143',
+  },
+  {
+    price: '1670.766',
+    size: '16.0043',
+  },
+  {
+    price: '1670.766',
+    size: '6.0043',
+  },
+  {
+    price: '1670.766',
+    size: '6.0043',
+  },
+  {
+    price: '1670.766',
+    size: '36.0043',
+  },
+  {
+    price: '1670.766',
+    size: '6.0043',
+  },
 ]
 
 export default function OrderBook(props: React.HTMLAttributes<HTMLDivElement>) {
@@ -111,7 +135,7 @@ export default function OrderBook(props: React.HTMLAttributes<HTMLDivElement>) {
             <div>Price</div>
             <div>Amount</div>
           </div>
-          {bids.map(({ price, size }) => {
+          {asks.map(({ price, size }) => {
             return (
               <div
                 key={price}

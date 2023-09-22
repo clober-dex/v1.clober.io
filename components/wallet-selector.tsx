@@ -4,7 +4,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 
 import useDropdown from '../hooks/useDropdown'
-import { formatAddress } from '../utils/address'
+import { formatAddress } from '../utils/string'
 import { textStyles } from '../themes/text-styles'
 
 import UserIcon from './common/user-icon'

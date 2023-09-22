@@ -6,6 +6,7 @@ import OrderBook from './trade/order-book'
 import CurrencyAmountInput from './currency-amount-input'
 import NumberInput from './number-input'
 import LimitSetting from './trade/limit-setting'
+import OrderList from './trade/order-list'
 
 export const Limit = () => {
   const [isBid, setIsBid] = useState(true)
@@ -106,13 +107,9 @@ export const Limit = () => {
           )}
         </div>
       </div>
-      {/*{userAddress ? (*/}
-      {/*    <div className="flex w-full justify-center mt-6 sm:w-[1120px]">*/}
-      {/*      <OrderList simplified={true} />*/}
-      {/*    </div>*/}
-      {/*) : (*/}
-      {/*    <></>*/}
-      {/*)}*/}
+      <div className="flex w-full justify-center mt-6">
+        <OrderList />
+      </div>
     </div>
   )
 }
