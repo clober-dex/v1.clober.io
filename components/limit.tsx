@@ -1,11 +1,10 @@
 import { zeroAddress } from 'viem'
 import React, { useState } from 'react'
+import Image from 'next/image'
 
 import OrderBook from './trade/order-book'
 import CurrencyAmountInput from './currency-amount-input'
-import { ArrowDownSvg } from './svg/arrow-down-svg'
 import NumberInput from './number-input'
-import { SettingSvg } from './svg/setting-svg'
 import LimitSetting from './trade/limit-setting'
 
 export const Limit = () => {
@@ -82,7 +81,13 @@ export const Limit = () => {
                     className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
                     onClick={() => setIsBid(!isBid)}
                   >
-                    <ArrowDownSvg className="w-4 h-4 sm:w-6 sm:h-6" />
+                    <div className="w-4 h-4 sm:w-6 sm:h-6 relative">
+                      <Image
+                        src="/assets/arrow-down.svg"
+                        alt="ArrowDown"
+                        fill
+                      />
+                    </div>
                   </button>
                 </div>
               </div>
@@ -91,7 +96,9 @@ export const Limit = () => {
                   className="flex items-center gap-1 text-blue-500 bg-blue-500 hover:bg-opacity-30 bg-opacity-20 rounded px-2 text-xs sm:text-sm h-6 sm:h-7"
                   onClick={() => setSelectMode('settings')}
                 >
-                  <SettingSvg className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 relative">
+                    <Image src="/assets/settings.svg" alt="settings" fill />
+                  </div>
                   Setting
                 </button>
               </div>

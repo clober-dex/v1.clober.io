@@ -9,5 +9,5 @@ export function getLogo(currency?: Currency): string {
   if (!currency) {
     return ''
   }
-  return `/assets/${currency.symbol.toLowerCase()}.svg`
+  return `/assets/currencies/${currency.symbol.toLowerCase()}.svg`
 }

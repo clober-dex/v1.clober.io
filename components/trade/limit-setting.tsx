@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { zeroAddress } from 'viem'
+import Image from 'next/image'
 
-import { ArrowDownSvg } from '../svg/arrow-down-svg'
 import NumberInput from '../number-input'
 import Check from '../common/check'
 
@@ -20,14 +20,26 @@ export default function LimitSetting({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-center">
-        <ArrowDownSvg
-          className="sm:w-6 sm:h-6 cursor-pointer"
+        <div
+          className="sm:w-6 sm:h-6 cursor-pointer relative"
           onClick={onBackClick}
-        />
+        >
+          <Image
+            src="/assets/left-bracket-angle.svg"
+            alt="LeftBracketAngle"
+            fill
+          />
+        </div>
         <div className="flex flex-1 items-center justify-center text-base sm:text-xl font-bold text-white">
           Settings
         </div>
-        <ArrowDownSvg className="sm:w-6 sm:h-6 invisible" />
+        <div className="sm:w-6 sm:h-6 invisible relative">
+          <Image
+            src="/assets/left-bracket-angle.svg"
+            alt="LeftBracketAngle"
+            fill
+          />
+        </div>
       </div>
       <div className="flex flex-col">
         <div className="text-sm sm:text-base text-white mb-3 sm:mb-4">
@@ -62,7 +74,7 @@ export default function LimitSetting({
             href="https://docs.clober.io/concepts/protocol/claim-bounty"
             rel="noreferrer"
           >
-            Learn more -{'>'}
+            Learn more &#x2192;
           </a>
         </p>
       </div>

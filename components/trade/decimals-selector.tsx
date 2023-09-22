@@ -23,8 +23,8 @@ export default function DecimalsSelector({
               <span className="">
                 <Image
                   className="text-gray-400 dark:text-white"
-                  src={`/assets/arrow_down.svg`}
-                  alt={'arrowDown'}
+                  src="/assets/triangle-down.svg"
+                  alt="ArrowDown"
                   width={16}
                   height={16}
                   aria-hidden="true"

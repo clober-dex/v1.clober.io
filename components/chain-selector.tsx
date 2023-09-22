@@ -33,12 +33,12 @@ export default function ChainSelector(
         className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-2 lg:gap-2 rounded bg-gray-800 hover:bg-gray-700 text-white"
       >
         <div className="relative w-4 h-4">
-          <Image src={`/assets/chains/ethereum.svg`} alt="ChainIcon" fill />
+          <Image src="/assets/chains/ethereum.svg" alt="ChainIcon" fill />
         </div>
         <p className={`hidden lg:block ${textStyles.body3Bold}`}>Ethereum</p>
         <Image
           className="hidden lg:block"
-          src={`/assets/arrow_down.svg`}
+          src="/assets/triangle-down.svg"
           alt="ArrowDown"
           width={16}
           height={16}
