@@ -7,6 +7,7 @@ import CurrencyAmountInput from './currency-amount-input'
 import NumberInput from './number-input'
 import LimitSetting from './trade/limit-setting'
 import OrderList from './trade/order-list'
+import { Chart } from './trade/chart'
 
 export const Limit = () => {
   const [isBid, setIsBid] = useState(true)
@@ -24,7 +25,7 @@ export const Limit = () => {
         {showOrderBook ? 'View Chart' : 'View Order Book'}
       </button>
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {showOrderBook ? <OrderBook /> : 'TVChartContainer'}
+        {showOrderBook ? <OrderBook /> : <Chart />}
         <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-full sm:w-[480px]">
           {selectMode === 'settings' ? (
             <LimitSetting onBackClick={() => setSelectMode('none')} />
