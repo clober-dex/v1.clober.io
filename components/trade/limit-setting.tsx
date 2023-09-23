@@ -20,10 +20,7 @@ export default function LimitSetting({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-center">
-        <div
-          className="sm:w-6 sm:h-6 cursor-pointer relative"
-          onClick={onBackClick}
-        >
+        <div className="w-6 h-6 cursor-pointer relative" onClick={onBackClick}>
           <Image
             src="/assets/left-bracket-angle.svg"
             alt="LeftBracketAngle"
@@ -32,13 +29,6 @@ export default function LimitSetting({
         </div>
         <div className="flex flex-1 items-center justify-center text-base sm:text-xl font-bold text-white">
           Settings
-        </div>
-        <div className="sm:w-6 sm:h-6 invisible relative">
-          <Image
-            src="/assets/left-bracket-angle.svg"
-            alt="LeftBracketAngle"
-            fill
-          />
         </div>
       </div>
       <div className="flex flex-col">
