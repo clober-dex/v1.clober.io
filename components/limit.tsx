@@ -49,50 +49,50 @@ export const Limit = () => {
                   Set rate to market
                 </button>
               </div>
-              <div
-                className={`flex ${
-                  isBid ? 'flex-col' : 'flex-col-reverse'
-                } relative gap-2 sm:gap-4 mb-3 sm:mb-4`}
-              >
-                <CurrencyAmountInput
-                  currency={{
-                    address: zeroAddress,
-                    name: 'USDC',
-                    symbol: 'USDC',
-                    decimals: 6,
-                  }}
-                  value={'100'}
-                  onValueChange={() => {}}
-                  price={{ value: 1000000000000000000n, decimals: 18 }}
-                  balance={1000000000n}
-                />
-                <CurrencyAmountInput
-                  currency={{
-                    address: zeroAddress,
-                    name: 'WETH',
-                    symbol: 'WETH',
-                    decimals: 18,
-                  }}
-                  value={'1'}
-                  onValueChange={() => {}}
-                  price={{ value: 1600000000000000000000n, decimals: 18 }}
-                  balance={1000000000000000000n}
-                />
-                <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">
-                  <button
-                    className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
-                    onClick={() => setIsBid(!isBid)}
-                  >
-                    <div className="w-4 h-4 sm:w-6 sm:h-6 relative">
-                      <Image
-                        src="/assets/arrow-down.svg"
-                        alt="ArrowDown"
-                        fill
-                      />
-                    </div>
-                  </button>
-                </div>
-              </div>
+              {/*<div*/}
+              {/*  className={`flex ${*/}
+              {/*    isBid ? 'flex-col' : 'flex-col-reverse'*/}
+              {/*  } relative gap-2 sm:gap-4 mb-3 sm:mb-4`}*/}
+              {/*>*/}
+              {/*  <CurrencyAmountInput*/}
+              {/*    currency={{*/}
+              {/*      address: zeroAddress,*/}
+              {/*      name: 'USDC',*/}
+              {/*      symbol: 'USDC',*/}
+              {/*      decimals: 6,*/}
+              {/*    }}*/}
+              {/*    value={'100'}*/}
+              {/*    onValueChange={() => {}}*/}
+              {/*    price={{ value: 1000000000000000000n, decimals: 18 }}*/}
+              {/*    balance={1000000000n}*/}
+              {/*  />*/}
+              {/*  <CurrencyAmountInput*/}
+              {/*    currency={{*/}
+              {/*      address: zeroAddress,*/}
+              {/*      name: 'WETH',*/}
+              {/*      symbol: 'WETH',*/}
+              {/*      decimals: 18,*/}
+              {/*    }}*/}
+              {/*    value={'1'}*/}
+              {/*    onValueChange={() => {}}*/}
+              {/*    price={{ value: 1600000000000000000000n, decimals: 18 }}*/}
+              {/*    balance={1000000000000000000n}*/}
+              {/*  />*/}
+              {/*  <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">*/}
+              {/*    <button*/}
+              {/*      className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"*/}
+              {/*      onClick={() => setIsBid(!isBid)}*/}
+              {/*    >*/}
+              {/*      <div className="w-4 h-4 sm:w-6 sm:h-6 relative">*/}
+              {/*        <Image*/}
+              {/*          src="/assets/arrow-down.svg"*/}
+              {/*          alt="ArrowDown"*/}
+              {/*          fill*/}
+              {/*        />*/}
+              {/*      </div>*/}
+              {/*    </button>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
               <div className="flex justify-end mb-3 sm:mb-4">
                 <button
                   className="flex items-center gap-1 text-blue-500 bg-blue-500 hover:bg-opacity-30 bg-opacity-20 rounded px-2 text-xs sm:text-sm h-6 sm:h-7"
