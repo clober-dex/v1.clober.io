@@ -104,6 +104,12 @@ export const Limit = () => {
                   Setting
                 </button>
               </div>
+              <button
+                className="flex items-center font-bold justify-center rounded-lg bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 text-base sm:text-xl h-12 sm:h-16"
+                disabled={false}
+              >
+                Connect wallet
+              </button>
             </>
           )}
         </div>
