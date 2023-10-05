@@ -1,41 +1,36 @@
 import React from 'react'
 import Image from 'next/image'
+import { Chain, useSwitchNetwork } from 'wagmi'
 
-import useDropdown from '../hooks/useDropdown'
 import { textStyles } from '../themes/text-styles'
+import useDropdown from '../hooks/useDropdown'
 
-const chains = [
-  {
-    id: 1,
-    name: 'Ethereum',
-    icon: '/assets/chains/ethereum.svg',
-    selected: true,
-  },
-  {
-    id: 42161,
-    name: 'Arbitrum One',
-    icon: '/assets/chains/arbitrum.svg',
-    selected: false,
-  },
-]
+import ChainIcon from './common/chain-icon'
 
-export default function ChainSelector(
-  props: React.HTMLAttributes<HTMLDivElement>,
-) {
+export default function ChainSelector({
+  chain,
+  setChain,
+  chains,
+}: {
+  chain: Chain
+  setChain: (chain: Chain) => void
+  chains: Chain[]
+}) {
+  const { switchNetwork } = useSwitchNetwork()
   const { showDropdown, setShowDropdown } = useDropdown()
 
-  return (
-    <div className="flex relative" {...props}>
+  return chains.find((_chain) => _chain.id === chain.id) ? (
+    <div className="flex relative">
       <button
         onClick={() => {
           setShowDropdown((prev) => !prev)
         }}
         className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-2 lg:gap-2 rounded bg-gray-800 hover:bg-gray-700 text-white"
       >
-        <div className="relative w-4 h-4">
-          <Image src="/assets/chains/ethereum.svg" alt="ChainIcon" fill />
-        </div>
-        <p className={`hidden lg:block ${textStyles.body3Bold}`}>Ethereum</p>
+        <ChainIcon className="relative w-4 h-4" chain={chain} />
+        <p className={`hidden lg:block ${textStyles.body3Bold}`}>
+          {chain.name.split(' ')[0]}
+        </p>
         <Image
           className="hidden lg:block"
           src="/assets/triangle-down.svg"
@@ -45,23 +40,27 @@ export default function ChainSelector(
         />
       </button>
       {showDropdown ? (
-        <div className="absolute right-[-5rem] md:right-0 top-10 md:top-12 z-[1500] flex flex-col w-48 bg-gray-800 border border-solid border-gray-700 rounded-lg">
+        <div className="absolute right-1 md:right-[-5rem] top-10 md:top-12 z-[1500] flex flex-col w-48 bg-gray-800 border border-solid border-gray-700 rounded-lg">
           {chains
             .sort((a, b) => a.id - b.id)
-            .map((chain) => (
+            .map((_chain) => (
               <div
                 className={`flex items-center gap-2 py-2 px-[10px] cursor-pointer text-white ${textStyles.body3Bold} hover:bg-gray-600 first:rounded-t-lg last:rounded-b-lg`}
-                key={chain.name}
-                onClick={() => setShowDropdown(false)}
+                key={_chain.name}
+                onClick={() => {
+                  try {
+                    switchNetwork?.(_chain.id)
+                    setChain(_chain)
+                  } catch (e) {
+                    console.error(e)
+                  } finally {
+                    setShowDropdown(false)
+                  }
+                }}
               >
-                <Image
-                  src={chain.icon}
-                  alt={chain.name}
-                  width={16}
-                  height={16}
-                />
-                <span>{chain.name}</span>
-                {chain.selected ? (
+                <ChainIcon className="relative w-4 h-4" chain={_chain} />
+                <span>{_chain.name}</span>
+                {_chain.id === chain.id ? (
                   <Image
                     className="ml-auto"
                     src="/assets/check.svg"
@@ -79,5 +78,7 @@ export default function ChainSelector(
         <></>
       )}
     </div>
+  ) : (
+    <></>
   )
 }

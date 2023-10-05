@@ -1,10 +1,17 @@
 import React from 'react'
 import Link from 'next/link'
+import { useAccount } from 'wagmi'
+
+import { chainList } from '../pages/_app'
+import { useChainContext } from '../contexts/chain-context'
 
 import ChainSelector from './chain-selector'
 import { WalletSelector } from './wallet-selector'
 
 const Header = () => {
+  const { selectedChain, setSelectedChain } = useChainContext()
+  const { address, status } = useAccount()
+
   return (
     <div className="flex items-center justify-between h-12 md:h-16 py-0 px-4">
       <div className="flex items-center gap-4 md:gap-12">
@@ -18,8 +25,12 @@ const Header = () => {
         </Link>
       </div>
       <div className="flex gap-2 w-auto md:gap-4 ml-auto">
-        <ChainSelector />
-        <WalletSelector />
+        <ChainSelector
+          chain={selectedChain}
+          setChain={setSelectedChain}
+          chains={chainList}
+        />
+        <WalletSelector address={address} status={status} />
       </div>
     </div>
   )

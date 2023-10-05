@@ -17,9 +17,13 @@ import dynamic from 'next/dynamic'
 
 import Header from '../components/header'
 import Footer from '../components/footer'
-// import Footer from '../components/footer'
+import { ChainProvider } from '../contexts/chain-context'
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+export const {
+  chains: chainList,
+  publicClient,
+  webSocketPublicClient,
+} = configureChains(
   [mainnet, arbitrum],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || '' }),
@@ -30,7 +34,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 const { connectors } = getDefaultWallets({
   appName: 'Clober Dex',
   projectId: '14e09398dd595b0d1dccabf414ac4531',
-  chains,
+  chains: chainList,
 })
 
 const wagmiConfig = createConfig({
@@ -43,7 +47,7 @@ const wagmiConfig = createConfig({
 const WalletProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} theme={darkTheme()}>
+      <RainbowKitProvider chains={chainList} theme={darkTheme()}>
         {children}
       </RainbowKitProvider>
     </WagmiConfig>
@@ -74,13 +78,15 @@ function App({ Component, pageProps }: AppProps) {
         <link href="/favicon.svg" rel="icon" />
       </Head>
       <WalletProvider>
-        <Web3AnalyticWrapper>
-          <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-            <Header />
-            <Component {...pageProps} />
-            <Footer />
-          </div>
-        </Web3AnalyticWrapper>
+        <ChainProvider>
+          <Web3AnalyticWrapper>
+            <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+              <Header />
+              <Component {...pageProps} />
+              <Footer />
+            </div>
+          </Web3AnalyticWrapper>
+        </ChainProvider>
       </WalletProvider>
     </>
   )

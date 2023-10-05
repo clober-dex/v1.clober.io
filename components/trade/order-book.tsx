@@ -109,10 +109,10 @@ export default function OrderBook(props: React.HTMLAttributes<HTMLDivElement>) {
             <div>Amount</div>
             <div>Price</div>
           </div>
-          {bids.map(({ price, size }) => {
+          {bids.map(({ price, size }, index) => {
             return (
               <div
-                key={price}
+                key={`bid-${index}`}
                 className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
               >
                 <div className="text-gray-200">{size}</div>
@@ -135,10 +135,10 @@ export default function OrderBook(props: React.HTMLAttributes<HTMLDivElement>) {
             <div>Price</div>
             <div>Amount</div>
           </div>
-          {asks.map(({ price, size }) => {
+          {asks.map(({ price, size }, index) => {
             return (
               <div
-                key={price}
+                key={`ask-${index}`}
                 className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
               >
                 <div className="text-red-500">{price}</div>
