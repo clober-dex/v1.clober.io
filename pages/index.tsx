@@ -24,22 +24,7 @@ export default function Home() {
             Swap
           </button>
         </div>
-        {isLimit ? (
-          <Limit />
-        ) : (
-          <div className="flex flex-col w-fit max-sm:w-full mb-4 sm:mb-6">
-            {/*<div className="flex flex-col w-full lg:flex-row gap-4">*/}
-            {/*  <Swap />*/}
-            {/*  <PathViz />*/}
-            {/*</div>*/}
-            {/*{selectedChain && selectedChain.id === polygonZkEvm.id && (*/}
-            {/*    <div className="flex flex-row-reverse sm:px-6 py-12 w-full">*/}
-            {/*      {swapInput && swapInput.dexResults ? <CompareDex /> : <></>}*/}
-            {/*    </div>*/}
-            {/*)}*/}
-          </div>
-        )}
-        {/*<img className="flex bg-gray-950" src={swapInput?.pathVizImage} />*/}
+        {isLimit ? <Limit /> : <></>}
       </div>
     </div>
   )

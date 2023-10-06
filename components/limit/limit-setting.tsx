@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { zeroAddress } from 'viem'
 import Image from 'next/image'
 
-import NumberInput from '../number-input'
-import Check from '../common/check'
+import NumberInput from '../input/number-input'
+import CheckIcon from '../icon/check-icon'
 
 const nativeCurrency = {
   name: 'ETH',
@@ -72,7 +72,7 @@ export default function LimitSetting({
         <div className="text-sm sm:text-base text-white mb-3 sm:mb-4">
           Execution
         </div>
-        <Check
+        <CheckIcon
           checked={isPostOnly}
           onCheck={() => setIsPostOnly((prevState) => !prevState)}
           text="Post Only"

@@ -2,12 +2,13 @@ import { zeroAddress } from 'viem'
 import React, { useState } from 'react'
 import Image from 'next/image'
 
-import OrderBook from './trade/order-book'
-import CurrencyAmountInput from './currency-amount-input'
-import NumberInput from './number-input'
-import LimitSetting from './trade/limit-setting'
-import OrderList from './trade/order-list'
-import { Chart } from './trade/chart'
+import NumberInput from '../input/number-input'
+import CurrencyAmountInput from '../input/currency-amount-input'
+
+import OrderBook from './order-book'
+import { Chart } from './chart'
+import LimitSetting from './limit-setting'
+import OrderList from './order-list'
 
 export const Limit = () => {
   const [isBid, setIsBid] = useState(true)

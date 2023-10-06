@@ -2,8 +2,8 @@ import React, { useCallback, useMemo } from 'react'
 import { parseUnits } from 'viem'
 import Image from 'next/image'
 
-import { Currency, getLogo } from '../model/currency'
-import { BigDecimal, formatDollarValue, formatUnits } from '../utils/numbers'
+import { Currency, getLogo } from '../../model/currency'
+import { BigDecimal, formatDollarValue, formatUnits } from '../../utils/numbers'
 
 import NumberInput from './number-input'
 

@@ -2,10 +2,9 @@ import React from 'react'
 import Image from 'next/image'
 import { Chain, useSwitchNetwork } from 'wagmi'
 
-import { textStyles } from '../themes/text-styles'
-import useDropdown from '../hooks/useDropdown'
-
-import ChainIcon from './common/chain-icon'
+import { textStyles } from '../../themes/text-styles'
+import useDropdown from '../../hooks/useDropdown'
+import ChainIcon from '../icon/chain-icon'
 
 export default function ChainSelector({
   chain,

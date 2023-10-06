@@ -6,10 +6,9 @@ import {
 } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 
-import { formatAddress } from '../utils/string'
-import { textStyles } from '../themes/text-styles'
-
-import UserIcon from './common/user-icon'
+import { formatAddress } from '../../utils/string'
+import { textStyles } from '../../themes/text-styles'
+import UserIcon from '../icon/user-icon'
 
 export function WalletSelector({
   address,

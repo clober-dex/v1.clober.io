@@ -5,8 +5,8 @@ import { useAccount } from 'wagmi'
 import { chainList } from '../pages/_app'
 import { useChainContext } from '../contexts/chain-context'
 
-import ChainSelector from './chain-selector'
-import { WalletSelector } from './wallet-selector'
+import ChainSelector from './selector/chain-selector'
+import { WalletSelector } from './selector/wallet-selector'
 
 const Header = () => {
   const { selectedChain, setSelectedChain } = useChainContext()

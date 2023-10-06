@@ -1,7 +1,7 @@
 import React from 'react'
 import BigNumber from 'bignumber.js'
 
-import DecimalsSelector from './decimals-selector'
+import DecimalsSelector from '../selector/decimals-selector'
 
 const availableDecimalPlacesGroups = [
   { label: '0.000001', value: 6 },
