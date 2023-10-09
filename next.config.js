@@ -11,6 +11,9 @@ const nextConfig = {
   env: {
     BUILD,
   },
+  images: {
+    domains: ['assets.odos.xyz'],
+  },
 }
 
 module.exports = nextConfig

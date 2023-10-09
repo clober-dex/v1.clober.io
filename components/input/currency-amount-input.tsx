@@ -41,7 +41,7 @@ const CurrencyAmountInput = ({
     <div className="flex flex-col bg-gray-800 rounded-lg p-3 gap-2">
       <div className="flex flex-1 justify-between gap-2">
         <NumberInput
-          className="text-xl w-full sm:text-2xl bg-transparent placeholder-gray-500 text-white outline-none"
+          className="flex-1 text-xl w-full sm:text-2xl bg-transparent placeholder-gray-500 text-white outline-none"
           value={value}
           onValueChange={onValueChange}
           onBlur={onBlur}
@@ -57,11 +57,13 @@ const CurrencyAmountInput = ({
               <div className="w-5 h-5 relative">
                 <Image src={getLogo(currency)} alt={currency.name} fill />
               </div>
-              <div className="text-sm sm:text-base">{currency.symbol}</div>
+              <div className="text-sm sm:text-base text-white">
+                {currency.symbol}
+              </div>
             </button>
           ) : (
             <button
-              className="flex items-center rounded-full bg-green-500 text-white pl-3 pr-2 py-1 gap-2 text-sm sm:text-base"
+              className="flex items-center rounded-full bg-blue-500 text-white pl-3 pr-2 py-1 gap-2 text-sm sm:text-base"
               onClick={onCurrencyClick}
             >
               Select token{' '}

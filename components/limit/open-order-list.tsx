@@ -30,7 +30,7 @@ const orders = [
     claimableAmount: '1.312',
   },
 ]
-export default function OrderList({
+export default function OpenOrderList({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (

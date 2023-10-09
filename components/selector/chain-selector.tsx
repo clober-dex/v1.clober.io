@@ -52,7 +52,7 @@ export default function ChainSelector({
                 key={_chain.name}
                 onClick={() => {
                   try {
-                    switchNetwork?.(_chain.id)
+                    switchNetwork ? switchNetwork(_chain.id) : setChain(_chain)
                   } catch (e) {
                     console.error(e)
                   } finally {
