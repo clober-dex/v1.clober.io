@@ -33,13 +33,18 @@ const CurrencySelect = ({
             <Image src={'/assets/search.svg'} alt={'Search'} fill />
           </div>
         </div>
-        <input
-          type="search"
-          name="search"
-          id="search"
-          className="block w-full rounded-md border-0 py-3 pl-10 text-gray-900 dark:bg-gray-800 placeholder:text-gray-400 text-xs sm:text-sm"
-          placeholder="Search by token name, symbol, or address"
-        />
+        <div className="inline-block">
+          <div className="invisible h-0 mx-10" aria-hidden="true">
+            Search by token name, symbol, or address
+          </div>
+          <input
+            type="search"
+            name="search"
+            id="search"
+            className="inline w-full rounded-md border-0 pl-10 py-3 text-gray-900 dark:bg-gray-800 placeholder:text-gray-400 text-xs sm:text-sm"
+            placeholder="Search by token name, symbol, or address"
+          />
+        </div>
       </div>
       <div className="flex flex-col bg-gray-900 rounded-b-xl sm:rounded-b-3xl">
         {currencies.map((currency) => (
@@ -64,7 +69,7 @@ const CurrencySelect = ({
                 <div className="text-xs text-gray-500">{currency.name}</div>
               </div>
             </div>
-            <div className="text-sm text-end text-white">
+            <div className="flex-1 text-sm text-end text-white">
               <div>
                 {formatUnits(1000000000000000000000n, 18)}
                 {/*{formatUnits(*/}
