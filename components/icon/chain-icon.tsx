@@ -8,7 +8,7 @@ export default function ChainIcon({
 }: React.BaseHTMLAttributes<HTMLDivElement> & {
   chain: Chain
 }) {
-  const iconPath = `/assets/chainIcons/${
+  const iconPath = `/assets/chain-icons/${
     chain.name.toLowerCase().split(' ')[0]
   }.svg`
   return (
