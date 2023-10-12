@@ -2,8 +2,8 @@ import React from 'react'
 import Link from 'next/link'
 import { useAccount } from 'wagmi'
 
-import { chainList } from '../pages/_app'
 import { useChainContext } from '../contexts/chain-context'
+import { supportChains } from '../utils/chain'
 
 import ChainSelector from './selector/chain-selector'
 import { WalletSelector } from './selector/wallet-selector'
@@ -28,7 +28,7 @@ const Header = () => {
         <ChainSelector
           chain={selectedChain}
           setChain={setSelectedChain}
-          chains={chainList}
+          chains={supportChains}
         />
         <WalletSelector address={address} status={status} />
       </div>

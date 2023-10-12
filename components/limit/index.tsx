@@ -55,11 +55,13 @@ export const Limit = () => {
   const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
     undefined,
   )
+  const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
 
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
     undefined,
   )
+  const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
     useState(false)
 
@@ -129,15 +131,15 @@ export const Limit = () => {
               >
                 <CurrencyAmountInput
                   currency={inputCurrency}
-                  value={'100'}
-                  onValueChange={() => {}}
+                  value={inputCurrencyAmount}
+                  onValueChange={setInputCurrencyAmount}
                   balance={0n}
                   onCurrencyClick={() => setShowInputCurrencySelect(true)}
                 />
                 <CurrencyAmountInput
                   currency={outputCurrency}
-                  value={'1'}
-                  onValueChange={() => {}}
+                  value={outputCurrencyAmount}
+                  onValueChange={setOutputCurrencyAmount}
                   balance={0n}
                   onCurrencyClick={() => setShowOutputCurrencySelect(true)}
                 />

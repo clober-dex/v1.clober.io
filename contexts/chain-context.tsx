@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { Chain, useNetwork } from 'wagmi'
-import { mainnet } from '@wagmi/chains'
+import { useNetwork } from 'wagmi'
 
-import { chainList } from '../pages/_app'
+import { Chain } from '../model/chain'
+import { supportChains } from '../utils/chain'
 
 type ChainContext = {
   selectedChain: Chain
@@ -10,13 +10,15 @@ type ChainContext = {
 }
 
 const Context = React.createContext<ChainContext>({
-  selectedChain: mainnet,
+  selectedChain: supportChains[0],
   setSelectedChain: (_) => _,
 })
 
 export const ChainProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { chain } = useNetwork()
-  const [selectedChain, setSelectedChain] = React.useState<Chain>(chainList[0])
+  const [selectedChain, setSelectedChain] = React.useState<Chain>(
+    supportChains[0],
+  )
   console.log('selectedChain', selectedChain.id)
 
   useEffect(() => {

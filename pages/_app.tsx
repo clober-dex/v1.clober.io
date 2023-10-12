@@ -12,19 +12,15 @@ import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { identify } from '@web3analytic/funnel-sdk'
-import { mainnet, arbitrum } from '@wagmi/chains'
 import dynamic from 'next/dynamic'
 
 import Header from '../components/header'
 import Footer from '../components/footer'
 import { ChainProvider } from '../contexts/chain-context'
+import { supportChains, toWagmiChain } from '../utils/chain'
 
-export const {
-  chains: chainList,
-  publicClient,
-  webSocketPublicClient,
-} = configureChains(
-  [mainnet, arbitrum],
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  supportChains.map((chain) => toWagmiChain(chain)),
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || '' }),
     publicProvider(),
@@ -34,7 +30,7 @@ export const {
 const { connectors } = getDefaultWallets({
   appName: 'Clober Dex',
   projectId: '14e09398dd595b0d1dccabf414ac4531',
-  chains: chainList,
+  chains,
 })
 
 const wagmiConfig = createConfig({
@@ -47,7 +43,7 @@ const wagmiConfig = createConfig({
 const WalletProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chainList} theme={darkTheme()}>
+      <RainbowKitProvider chains={supportChains} theme={darkTheme()}>
         {children}
       </RainbowKitProvider>
     </WagmiConfig>

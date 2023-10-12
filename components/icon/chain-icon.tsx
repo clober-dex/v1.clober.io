@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
-import { Chain } from 'wagmi'
+
+import { Chain } from '../../model/chain'
 
 export default function ChainIcon({
   chain,
