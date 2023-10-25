@@ -1,5 +1,7 @@
 import React from 'react'
-import Image from 'next/image'
+
+import { CheckSelectedSvg } from '../svg/check-selected-svg'
+import { CheckDefaultSvg } from '../svg/check-default-svg'
 
 export default function CheckIcon({
   checked,
@@ -23,14 +25,7 @@ export default function CheckIcon({
       onClick={() => onCheck(!checked)}
     >
       <div className="flex items-center gap-2">
-        <Image
-          src={
-            checked ? '/assets/check-selected.svg' : '/assets/check-default.svg'
-          }
-          width={16}
-          height={16}
-          alt="check"
-        />
+        {checked ? <CheckSelectedSvg /> : <CheckDefaultSvg />}
         {label && <p className="text-sm text-white">{label}</p>}
       </div>
     </div>

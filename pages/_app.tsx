@@ -14,7 +14,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { identify } from '@web3analytic/funnel-sdk'
 import dynamic from 'next/dynamic'
 
-import Header from '../components/header'
+import HeaderContainer from '../containers/header-container'
 import Footer from '../components/footer'
 import { ChainProvider } from '../contexts/chain-context'
 import { supportChains, toWagmiChain } from '../utils/chain'
@@ -77,7 +77,7 @@ function App({ Component, pageProps }: AppProps) {
         <ChainProvider>
           <Web3AnalyticWrapper>
             <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-              <Header />
+              <HeaderContainer />
               <Component {...pageProps} />
               <Footer />
             </div>

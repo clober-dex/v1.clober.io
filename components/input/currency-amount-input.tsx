@@ -4,6 +4,7 @@ import Image from 'next/image'
 
 import { Currency, getLogo } from '../../model/currency'
 import { BigDecimal, formatDollarValue, formatUnits } from '../../utils/numbers'
+import { TriangleDownSvg } from '../svg/triangle-down-svg'
 
 import NumberInput from './number-input'
 
@@ -11,7 +12,7 @@ const CurrencyAmountInput = ({
   currency,
   value,
   onValueChange,
-  balance,
+  availableAmount,
   price,
   onCurrencyClick,
   ...props
@@ -19,7 +20,7 @@ const CurrencyAmountInput = ({
   currency?: Currency
   value: string
   onValueChange: (value: string) => void
-  balance: bigint
+  availableAmount: bigint
   price?: BigDecimal
   onCurrencyClick?: () => void
 } & React.DetailedHTMLProps<
@@ -34,8 +35,12 @@ const CurrencyAmountInput = ({
   }, [decimals, onValueChange, value])
 
   const onMaxClick = useCallback(() => {
-    onValueChange(balance ? formatUnits(balance, currency?.decimals ?? 18) : '')
-  }, [balance, currency?.decimals, onValueChange])
+    onValueChange(
+      availableAmount
+        ? formatUnits(availableAmount, currency?.decimals ?? 18)
+        : '',
+    )
+  }, [availableAmount, currency?.decimals, onValueChange])
 
   return (
     <div className="flex flex-col bg-gray-800 rounded-lg p-3 gap-2">
@@ -66,13 +71,7 @@ const CurrencyAmountInput = ({
               className="flex items-center rounded-full bg-blue-500 text-white pl-3 pr-2 py-1 gap-2 text-sm sm:text-base"
               onClick={onCurrencyClick}
             >
-              Select token{' '}
-              <Image
-                alt="down"
-                src="/assets/triangle-down.svg"
-                width={12}
-                height={12}
-              />
+              Select token <TriangleDownSvg />
             </button>
           )
         ) : currency ? (
@@ -96,7 +95,7 @@ const CurrencyAmountInput = ({
           <div className="flex text-xs sm:text-sm gap-1 sm:gap-2">
             <div className="text-gray-500">Available</div>
             <div className="text-white">
-              {formatUnits(balance, currency.decimals, price)}
+              {formatUnits(availableAmount, currency.decimals, price)}
             </div>
             <button className="text-blue-500" onClick={onMaxClick}>
               MAX

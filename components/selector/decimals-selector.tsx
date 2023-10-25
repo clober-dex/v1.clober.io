@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
-import Image from 'next/image'
 
 import { textStyles } from '../../themes/text-styles'
+import { TriangleDownSvg } from '../svg/triangle-down-svg'
 
 export default function DecimalsSelector({
   availableDecimalPlacesGroups,
@@ -21,14 +21,7 @@ export default function DecimalsSelector({
                 {value.label}
               </span>
               <span className="">
-                <Image
-                  className="text-gray-400 dark:text-white"
-                  src="/assets/triangle-down.svg"
-                  alt="ArrowDown"
-                  width={16}
-                  height={16}
-                  aria-hidden="true"
-                />
+                <TriangleDownSvg />
               </span>
             </Listbox.Button>
 

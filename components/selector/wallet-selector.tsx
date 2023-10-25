@@ -4,11 +4,10 @@ import {
   useChainModal,
   useConnectModal,
 } from '@rainbow-me/rainbowkit'
-import Image from 'next/image'
 
-import { formatAddress } from '../../utils/string'
-import { textStyles } from '../../themes/text-styles'
-import UserIcon from '../icon/user-icon'
+import { ConnectButton } from '../button/connect-button'
+import { UserButton } from '../button/user-button'
+import { WrongNetworkButton } from '../button/wrong-network-button'
 
 export function WalletSelector({
   address,
@@ -24,42 +23,11 @@ export function WalletSelector({
   return (
     <div className="flex items-center">
       {status === 'disconnected' ? (
-        <button
-          className="flex items-center py-0 px-3 md:px-4 h-8 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 text-white disabled:text-green-500 text-xs sm:text-sm"
-          onClick={() => openConnectModal && openConnectModal()}
-        >
-          Connect<span className="hidden md:block md:ml-1">Wallet</span>
-        </button>
-      ) : openAccountModal ? (
-        <button
-          className="flex items-center justify-center gap-2 md:justify-start w-8 md:w-full py-0 px-3 md:px-4 cursor-pointer h-8 bg-gray-800 md:bg-gray-950 hover:bg-gray-600 active::bg-gray-600"
-          onClick={() => openAccountModal && openAccountModal()}
-        >
-          <UserIcon
-            className="w-4 h-4 rounded-[100%] aspect-square"
-            address={address}
-          />
-          <span
-            className={`hidden md:block text-white ${textStyles.body3Bold}`}
-          >
-            {formatAddress(address || '')}
-          </span>
-        </button>
+        <ConnectButton openConnectModal={openConnectModal} />
+      ) : openAccountModal && address ? (
+        <UserButton address={address} openAccountModal={openAccountModal} />
       ) : openChainModal ? (
-        <button
-          className="flex items-center justify-center gap-2 md:justify-start w-8 md:w-full p-0 md:py-[6px] md:px-[8px] cursor-pointer h-8 bg-gray-800 md:bg-gray-950 hover:bg-gray-600 active::bg-gray-600"
-          onClick={() => openChainModal && openChainModal()}
-        >
-          <span className={`text-red-500 inline-block ${textStyles.body3Bold}`}>
-            Wrong Network
-          </span>
-          <Image
-            src="/assets/triangle-down-red.svg"
-            alt="ArrowDown"
-            width={16}
-            height={16}
-          />
-        </button>
+        <WrongNetworkButton openChainModal={openChainModal} />
       ) : (
         <button
           disabled={true}

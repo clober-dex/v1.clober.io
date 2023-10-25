@@ -3,6 +3,8 @@ import Image from 'next/image'
 
 import { Currency, getLogo } from '../../model/currency'
 import { formatUnits } from '../../utils/numbers'
+import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
+import { SearchSvg } from '../svg/search-svg'
 
 const CurrencySelect = ({
   currencies,
@@ -17,11 +19,7 @@ const CurrencySelect = ({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-center">
         <div className="w-6 h-6 cursor-pointer relative" onClick={onBack}>
-          <Image
-            src="/assets/left-bracket-angle.svg"
-            alt="LeftBracketAngle"
-            fill
-          />
+          <LeftBracketAngleSvg />
         </div>
         <div className="flex flex-1 items-center justify-center text-base sm:text-xl font-bold text-white">
           Select a token
@@ -30,11 +28,11 @@ const CurrencySelect = ({
       <div className="flex flex-col relative rounded shadow-sm">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <div className="relative h-4 w-4">
-            <Image src={'/assets/search.svg'} alt={'Search'} fill />
+            <SearchSvg />
           </div>
         </div>
         <div className="inline-block">
-          <div className="invisible h-0 mx-10" aria-hidden="true">
+          <div className="invisible h-0 mx-[29px]" aria-hidden="true">
             Search by token name, symbol, or address
           </div>
           <input
@@ -70,21 +68,9 @@ const CurrencySelect = ({
               </div>
             </div>
             <div className="flex-1 text-sm text-end text-white">
-              <div>
-                {formatUnits(1000000000000000000000n, 18)}
-                {/*{formatUnits(*/}
-                {/*  balances[currency.address] ?? 0n,*/}
-                {/*  currency.decimals,*/}
-                {/*  prices[currency.address],*/}
-                {/*)}*/}
-              </div>
+              <div>{formatUnits(1000000000000000000000n, 18)}</div>
               <div className="text-gray-500 text-xs">
                 {formatUnits(1000000000000000000000n, 18)}
-                {/*{formatDollarValue(*/}
-                {/*  balances[currency.address] ?? 0n,*/}
-                {/*  currency.decimals,*/}
-                {/*  prices[currency.address],*/}
-                {/*)}*/}
               </div>
             </div>
           </button>

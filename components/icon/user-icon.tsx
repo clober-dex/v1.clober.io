@@ -3,10 +3,7 @@ import React from 'react'
 export default function UserIcon({
   address,
   ...props
-}: React.BaseHTMLAttributes<HTMLDivElement> & { address?: string }) {
-  if (!address) {
-    return null
-  }
+}: React.BaseHTMLAttributes<HTMLDivElement> & { address: `0x${string}` }) {
   const matches = address.substring(2).match(/.{1,6}/g)
   if (!matches) {
     return <></>

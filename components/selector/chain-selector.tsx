@@ -1,26 +1,24 @@
 import React from 'react'
 import Image from 'next/image'
-import { useSwitchNetwork } from 'wagmi'
 
 import { textStyles } from '../../themes/text-styles'
 import useDropdown from '../../hooks/useDropdown'
 import ChainIcon from '../icon/chain-icon'
 import { Chain } from '../../model/chain'
+import { TriangleDownSvg } from '../svg/triangle-down-svg'
+import { CheckSvg } from '../svg/check-svg'
 
 export default function ChainSelector({
   chain,
   setChain,
   chains,
+  switchNetwork,
 }: {
   chain: Chain
   setChain: (chain: Chain) => void
   chains: Chain[]
+  switchNetwork: ((chainId?: number | undefined) => void) | undefined
 }) {
-  const { switchNetwork } = useSwitchNetwork({
-    onSuccess(data) {
-      setChain(data)
-    },
-  })
   const { showDropdown, setShowDropdown } = useDropdown()
 
   return chains.find((_chain) => _chain.id === chain.id) ? (
@@ -35,13 +33,7 @@ export default function ChainSelector({
         <p className={`hidden lg:block ${textStyles.body3Bold}`}>
           {chain.name.split(' ')[0]}
         </p>
-        <Image
-          className="hidden lg:block"
-          src="/assets/triangle-down.svg"
-          alt="ArrowDown"
-          width={16}
-          height={16}
-        />
+        <TriangleDownSvg className="hidden lg:block" />
       </button>
       {showDropdown ? (
         <div className="absolute right-1 md:right-[-5rem] top-10 md:top-12 z-[1500] flex flex-col w-48 bg-gray-800 border border-solid border-gray-700 rounded-lg">
@@ -64,13 +56,7 @@ export default function ChainSelector({
                 <ChainIcon className="relative w-4 h-4" chain={_chain} />
                 <span>{_chain.name}</span>
                 {_chain.id === chain.id ? (
-                  <Image
-                    className="ml-auto"
-                    src="/assets/check.svg"
-                    alt="selected"
-                    width={16}
-                    height={16}
-                  />
+                  <CheckSvg className="ml-auto" />
                 ) : (
                   <></>
                 )}
