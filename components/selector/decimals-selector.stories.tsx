@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import '../../styles/globals.css'
-import { arbitrum, base, fantom, mainnet, polygon } from '@wagmi/chains'
 
 import DecimalsSelector from './decimals-selector'
 
