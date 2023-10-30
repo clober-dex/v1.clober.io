@@ -1,4 +1,5 @@
 import { polygonZkEvm } from 'wagmi/chains'
+import { arbitrum } from '@wagmi/chains'
 
 import { Chain } from '../model/chain'
 
@@ -17,7 +18,16 @@ export const supportChains: Chain[] =
           defaultGasPrice: 1000000n,
         },
       ]
-    : []
+    : [
+        {
+          ...arbitrum,
+          defaultGasPrice: 1000000n,
+        },
+        {
+          ...polygonZkEvm,
+          defaultGasPrice: 1000000n,
+        },
+      ]
 
 export enum CHAIN_IDS {
   ARBITRUM = 42161,
