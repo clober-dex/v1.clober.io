@@ -13,7 +13,7 @@ export default function ChainIcon({
   return (
     <div {...props}>
       <Image
-        src={`https://assets.odos.xyz/chains/${name}.png`}
+        src={chain.icon || `https://assets.odos.xyz/chains/${name}.png`}
         alt="ChainIcon"
         fill
       />

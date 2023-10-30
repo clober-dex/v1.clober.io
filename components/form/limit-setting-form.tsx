@@ -1,24 +1,24 @@
 import React, { useState } from 'react'
-import { zeroAddress } from 'viem'
 
 import NumberInput from '../input/number-input'
 import CheckIcon from '../icon/check-icon'
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
-
-const nativeCurrency = {
-  name: 'ETH',
-  symbol: 'ETH',
-  address: zeroAddress,
-}
+import { Currency } from '../../model/currency'
 
 export default function LimitSettingForm({
+  claimBounty,
+  setClaimBounty,
+  nativeCurrency,
   onBackClick,
 }: {
+  claimBounty: string
+  setClaimBounty: (claimBounty: string) => void
+  nativeCurrency: Currency
   onBackClick: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
   const [isPostOnly, setIsPostOnly] = useState(false)
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 cursor-pointer">
       <div className="flex items-center justify-center">
         <div className="w-6 h-6 cursor-pointer relative" onClick={onBackClick}>
           <LeftBracketAngleSvg />
@@ -37,14 +37,16 @@ export default function LimitSettingForm({
               Set amount ({nativeCurrency.symbol || ''})
             </div>
             <NumberInput
-              value={'11'}
-              onValueChange={() => {}}
+              value={claimBounty}
+              onValueChange={setClaimBounty}
               className="text-xl w-full sm:text-2xl bg-transparent placeholder-gray-500 text-white outline-none"
             />
           </div>
           <button
             className="text-xs sm:text-sm h-fit p-0 m-0 rounded-sm text-blue-500 bg-transparent"
-            onClick={() => {}}
+            onClick={() => {
+              setClaimBounty('0')
+            }}
           >
             Set bounty to 0 {nativeCurrency.symbol || ''}
           </button>

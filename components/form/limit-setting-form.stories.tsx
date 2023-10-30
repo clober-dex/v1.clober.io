@@ -2,6 +2,8 @@ import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import '../../styles/globals.css'
 
+import { zeroAddress } from 'viem'
+
 import LimitSettingForm from './limit-setting-form'
 
 export default {
@@ -21,6 +23,14 @@ type Story = StoryObj<typeof LimitSettingForm>
 
 export const Default: Story = {
   args: {
+    claimBounty: '0.00001',
+    setClaimBounty: () => {},
+    nativeCurrency: {
+      address: zeroAddress,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
     onBackClick: () => {},
   },
 }

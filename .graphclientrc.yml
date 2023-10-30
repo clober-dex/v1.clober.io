@@ -1,0 +1,13 @@
+sources:
+  - name: clober-v1
+    handler:
+      graphql:
+        endpoint: '{context.url:https://dev-subgraph.coupon.finance/subgraphs/name/coupon-subgraph}'
+
+documents:
+  - ./apis/**/*.graphql
+  - ./__tests__/**/*.graphql
+
+
+codegen:
+  contextType: 'MeshContext & { url: string }'

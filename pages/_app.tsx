@@ -17,7 +17,10 @@ import dynamic from 'next/dynamic'
 import HeaderContainer from '../containers/header-container'
 import Footer from '../components/footer'
 import { ChainProvider } from '../contexts/chain-context'
-import { supportChains, toWagmiChain } from '../utils/chain'
+import { MarketProvider } from '../contexts/market-context'
+import { CurrencyProvider } from '../contexts/currency-context'
+import { supportChains } from '../constants/chain'
+import { toWagmiChain } from '../model/chain'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportChains.map((chain) => toWagmiChain(chain)),
@@ -74,15 +77,19 @@ function App({ Component, pageProps }: AppProps) {
         <link href="/favicon.svg" rel="icon" />
       </Head>
       <WalletProvider>
-        <ChainProvider>
-          <Web3AnalyticWrapper>
-            <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-              <HeaderContainer />
-              <Component {...pageProps} />
-              <Footer />
-            </div>
-          </Web3AnalyticWrapper>
-        </ChainProvider>
+        <Web3AnalyticWrapper>
+          <ChainProvider>
+            <MarketProvider>
+              <CurrencyProvider>
+                <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+                  <HeaderContainer />
+                  <Component {...pageProps} />
+                  <Footer />
+                </div>
+              </CurrencyProvider>
+            </MarketProvider>
+          </ChainProvider>
+        </Web3AnalyticWrapper>
       </WalletProvider>
     </>
   )

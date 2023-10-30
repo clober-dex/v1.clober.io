@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNetwork } from 'wagmi'
 
 import { Chain } from '../model/chain'
-import { supportChains } from '../utils/chain'
+import { supportChains } from '../constants/chain'
 
 type ChainContext = {
   selectedChain: Chain
@@ -17,9 +17,8 @@ const Context = React.createContext<ChainContext>({
 export const ChainProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { chain } = useNetwork()
   const [selectedChain, setSelectedChain] = React.useState<Chain>(
-    supportChains[0],
+    supportChains[0], // TODO: cache localstorage
   )
-  console.log('selectedChain', selectedChain.id)
 
   useEffect(() => {
     if (chain) {

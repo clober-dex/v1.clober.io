@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Currency, getLogo } from '../../model/currency'
 import { BigDecimal, formatDollarValue, formatUnits } from '../../utils/numbers'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
+import { CurrencyIcon } from '../icon/currency-icon'
 
 import NumberInput from './number-input'
 
@@ -60,7 +61,7 @@ const CurrencyAmountInput = ({
               onClick={onCurrencyClick}
             >
               <div className="w-5 h-5 relative">
-                <Image src={getLogo(currency)} alt={currency.name} fill />
+                <CurrencyIcon currency={currency} />
               </div>
               <div className="text-sm sm:text-base text-white">
                 {currency.symbol}

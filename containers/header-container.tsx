@@ -5,7 +5,7 @@ import { useAccount, useSwitchNetwork } from 'wagmi'
 import { useChainContext } from '../contexts/chain-context'
 import ChainSelector from '../components/selector/chain-selector'
 import { WalletSelector } from '../components/selector/wallet-selector'
-import { supportChains } from '../utils/chain'
+import { supportChains } from '../constants/chain'
 
 const HeaderContainer = () => {
   const { selectedChain, setSelectedChain } = useChainContext()

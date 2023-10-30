@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import { Currency } from '../model/currency'
 import LimitSettingForm from '../components/form/limit-setting-form'
@@ -7,6 +8,9 @@ import OrderBook from '../components/order-book'
 import { Chart } from '../components/chart'
 import OpenOrderList from '../components/open-order-list'
 import { OpenOrder } from '../model/open-order'
+import { useChainContext } from '../contexts/chain-context'
+import { formatUnits } from '../utils/numbers'
+import { useMarketContext } from '../contexts/market-context'
 
 const availableDecimalPlacesGroups = [
   { label: '0.000001', value: 6 },
@@ -85,39 +89,6 @@ const bids = [
   },
 ]
 
-const currencies = [
-  {
-    address: '0x0000000000000000000000000000000000000001',
-    name: 'USDC',
-    symbol: 'USDC',
-    decimals: 6,
-  },
-  {
-    address: '0x0000000000000000000000000000000000000002',
-    name: 'WBTC',
-    symbol: 'WBTC',
-    decimals: 8,
-  },
-  {
-    address: '0x0000000000000000000000000000000000000003',
-    name: 'WETH',
-    symbol: 'WETH',
-    decimals: 18,
-  },
-  {
-    address: '0x0000000000000000000000000000000000000004',
-    name: 'USDT',
-    symbol: 'USDT',
-    decimals: 6,
-  },
-  {
-    address: '0x0000000000000000000000000000000000000005',
-    name: 'DAI',
-    symbol: 'DAI',
-    decimals: 18,
-  },
-] as Currency[]
-
 const openOrders = [
   {
     baseSymbol: 'WETH',
@@ -146,31 +117,42 @@ const openOrders = [
 ] as OpenOrder[]
 
 export const LimitContainer = () => {
+  const { selectedChain } = useChainContext()
+  const { markets, selectedMarket } = useMarketContext()
+
   const [isBid, setIsBid] = useState(true)
-  const [showOrderBook, setShowOrderBook] = useState(true)
+  // const [showOrderBook, setShowOrderBook] = useState(true)
+  const showOrderBook = true
   const [selectMode, setSelectMode] = useState<'none' | 'settings'>('none')
 
   const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
-    undefined,
+    selectedMarket.quoteToken,
   )
   const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
 
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
-    undefined,
+    selectedMarket.baseToken,
   )
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
     useState(false)
+  const [claimBounty, setClaimBounty] = useState(
+    formatUnits(
+      selectedChain.defaultGasPrice ?? 0n,
+      selectedChain.nativeCurrency.decimals,
+    ),
+  )
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
-      <button
-        onClick={() => setShowOrderBook(!showOrderBook)}
-        className="rounded bg-blue-500 bg-opacity-20 text-blue-500 px-2 py-1 w-fit mb-3 text-xs sm:text-sm"
-      >
-        {showOrderBook ? 'View Chart' : 'View Order Book'}
-      </button>
+      {/* TODO */}
+      {/*<button*/}
+      {/*  onClick={() => setShowOrderBook(!showOrderBook)}*/}
+      {/*  className="rounded bg-blue-500 bg-opacity-20 text-blue-500 px-2 py-1 w-fit mb-3 text-xs sm:text-sm"*/}
+      {/*>*/}
+      {/*  {showOrderBook ? 'View Chart' : 'View Order Book'}*/}
+      {/*</button>*/}
       <div className="flex flex-col w-full lg:flex-row gap-4">
         {showOrderBook ? (
           <OrderBook
@@ -181,12 +163,21 @@ export const LimitContainer = () => {
         ) : (
           <Chart />
         )}
-        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-full sm:w-[480px] lg:h-[480px]">
+        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[480px] lg:h-[480px]">
           {selectMode === 'settings' ? (
-            <LimitSettingForm onBackClick={() => setSelectMode('none')} />
+            <LimitSettingForm
+              nativeCurrency={{
+                address: zeroAddress,
+                ...selectedChain.nativeCurrency,
+              }}
+              claimBounty={claimBounty}
+              setClaimBounty={setClaimBounty}
+              onBackClick={() => setSelectMode('none')}
+            />
           ) : (
             <LimitForm
-              currencies={currencies}
+              markets={markets}
+              selectedMarket={selectedMarket}
               isBid={isBid}
               setIsBid={setIsBid}
               setSelectMode={setSelectMode}

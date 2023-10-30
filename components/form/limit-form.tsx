@@ -1,15 +1,16 @@
-import { isAddressEqual } from 'viem'
 import React from 'react'
 
-import CurrencySelect from '../selector/currency-select'
 import NumberInput from '../input/number-input'
 import CurrencyAmountInput from '../input/currency-amount-input'
 import { Currency } from '../../model/currency'
 import { ArrowDownSvg } from '../svg/arrow-down-svg'
 import { SettingSvg } from '../svg/setting-svg'
+import MarketSelect from '../selector/market-select'
+import { Market } from '../../model/market'
 
 export const LimitForm = ({
-  currencies,
+  markets,
+  selectedMarket,
   isBid,
   setIsBid,
   setSelectMode,
@@ -26,7 +27,8 @@ export const LimitForm = ({
   outputCurrencyAmount,
   setOutputCurrencyAmount,
 }: {
-  currencies: Currency[]
+  markets: Market[]
+  selectedMarket: Market
   isBid: boolean
   setIsBid: (isBid: boolean) => void
   setSelectMode: (selectMode: 'none' | 'settings') => void
@@ -44,28 +46,22 @@ export const LimitForm = ({
   setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
 }) => {
   return showInputCurrencySelect ? (
-    <CurrencySelect
-      currencies={currencies}
+    <MarketSelect
+      markets={markets}
       onBack={() => setShowInputCurrencySelect(false)}
-      onCurrencySelect={(inputCurrency) => {
-        setInputCurrency(
-          currencies.find((currency) =>
-            isAddressEqual(currency.address, inputCurrency.address),
-          ),
-        )
+      onMarketSelect={(market: Market) => {
+        setInputCurrency(market.quoteToken)
+        setOutputCurrency(market.baseToken)
         setShowInputCurrencySelect(false)
       }}
     />
   ) : showOutputCurrencySelect ? (
-    <CurrencySelect
-      currencies={currencies}
+    <MarketSelect
+      markets={markets}
       onBack={() => setShowOutputCurrencySelect(false)}
-      onCurrencySelect={(outputCurrency) => {
-        setOutputCurrency(
-          currencies.find((currency) =>
-            isAddressEqual(currency.address, outputCurrency.address),
-          ),
-        )
+      onMarketSelect={(market: Market) => {
+        setInputCurrency(market.baseToken)
+        setOutputCurrency(market.quoteToken)
         setShowOutputCurrencySelect(false)
       }}
     />
@@ -74,7 +70,7 @@ export const LimitForm = ({
       <div className="flex rounded-lg border-solid border-[1.5px] border-gray-700 p-4 mb-3 sm:mb-4">
         <div className="flex flex-col flex-1 gap-2">
           <div className="text-gray-500 text-xs sm:text-sm">
-            {isBid ? 'Buy' : 'Sell'} {'WETH'} at rate
+            {isBid ? 'Buy' : 'Sell'} {selectedMarket.baseToken.symbol} at rate
           </div>
           <NumberInput
             value={'1600'}
