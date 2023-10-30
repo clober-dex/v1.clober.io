@@ -1,7 +1,6 @@
 import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import '../../styles/globals.css'
-
 import { zeroAddress } from 'viem'
 
 import LimitSettingForm from './limit-setting-form'

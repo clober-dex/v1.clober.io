@@ -2,7 +2,6 @@ import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import '../../styles/globals.css'
 
-import { Currency } from '../../model/currency'
 import { dummyMarkets } from '../../.storybook/dummy-data/market'
 
 import { LimitForm } from './limit-form'
