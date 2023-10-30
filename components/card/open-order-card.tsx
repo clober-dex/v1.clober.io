@@ -24,11 +24,11 @@ export const OpenOrderCard = ({
       </div>
       <div className="flex flex-col gap-1.5">
         <div className="flex flex-row align-baseline justify-between">
-          <label className={`${textStyles.body4} text-gray-200`}>
+          <label className={`${textStyles.body3} text-gray-200`}>
             Transaction
           </label>
           <div className="flex gap-1 items-center">
-            <p className={`${textStyles.body4} text-white`}>
+            <p className={`${textStyles.body3} text-white`}>
               {formatHash(openOrder.txHash)}
             </p>
             <a
@@ -41,33 +41,33 @@ export const OpenOrderCard = ({
           </div>
         </div>
         <div className="flex flex-row align-baseline justify-between">
-          <label className={`${textStyles.body4} text-gray-200`}>
+          <label className={`${textStyles.body3} text-gray-200`}>
             Date Created
           </label>
-          <p className={`${textStyles.body4} text-white`}>
+          <p className={`${textStyles.body3} text-white`}>
             {openOrder.timestamp}
           </p>
         </div>
         <div className="flex flex-row align-baseline justify-between">
-          <label className={`${textStyles.body4} text-gray-200`}>Price</label>
-          <p className={`${textStyles.body4} text-white`}>
+          <label className={`${textStyles.body3} text-gray-200`}>Price</label>
+          <p className={`${textStyles.body3} text-white`}>
             {formatUnits(openOrder.price, 18)}
           </p>
         </div>
         <div className="flex flex-row align-baseline justify-between">
-          <label className={`${textStyles.body4} text-gray-200`}>
+          <label className={`${textStyles.body3} text-gray-200`}>
             Filled / Amount
           </label>
-          <p className={`${textStyles.body4} text-white`}>
+          <p className={`${textStyles.body3} text-white`}>
             {formatUnits(openOrder.filledAmount, 18)}/
             {formatUnits(openOrder.amount, 18)}
           </p>
         </div>
         <div className="flex flex-row align-baseline justify-between">
-          <label className={`${textStyles.body4} text-gray-200`}>
+          <label className={`${textStyles.body3} text-gray-200`}>
             Claimable
           </label>
-          <p className={`${textStyles.body4} text-white`}>
+          <p className={`${textStyles.body3} text-white`}>
             {formatUnits(openOrder.claimableAmount, 18)}
           </p>
         </div>
