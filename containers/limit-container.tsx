@@ -12,6 +12,7 @@ import { formatUnits } from '../utils/numbers'
 import { useMarketContext } from '../contexts/market-context'
 import { max } from '../utils/bigint'
 import { getPriceDecimals } from '../utils/prices'
+import { textStyles } from '../themes/text-styles'
 
 const openOrders = [
   {
@@ -152,6 +153,15 @@ export const LimitContainer = () => {
               setOutputCurrencyAmount={setOutputCurrencyAmount}
             />
           )}
+        </div>
+      </div>
+      <div className="flex p-4 sm:border-solid border-b-gray-800 border-b-[1.5px]">
+        <div className="flex gap-6">
+          <button
+            className={`m-0 p-0 bg-transparent text-gray-500 text-white ${textStyles.body2}`}
+          >
+            Open Orders
+          </button>
         </div>
       </div>
       <div className="flex w-full justify-center mt-6">

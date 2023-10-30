@@ -1,4 +1,6 @@
 export const textStyles = {
+  body2:
+    'text-[16px] leading-[22px] font-medium font-sans not-italic -tracking-[-0.005em]',
   body2Bold:
     'text-[16px] leading-[22px] font-semibold font-sans not-italic -tracking-[-0.005em]',
   body3Bold:
