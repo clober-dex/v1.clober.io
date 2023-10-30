@@ -9,6 +9,8 @@ import MarketSelect from '../selector/market-select'
 import { Market } from '../../model/market'
 
 export const LimitForm = ({
+  priceInput,
+  setPriceInput,
   markets,
   selectedMarket,
   setSelectedMarket,
@@ -21,13 +23,17 @@ export const LimitForm = ({
   setInputCurrency,
   inputCurrencyAmount,
   setInputCurrencyAmount,
+  availableInputCurrencyBalance,
   showOutputCurrencySelect,
   setShowOutputCurrencySelect,
   outputCurrency,
   setOutputCurrency,
   outputCurrencyAmount,
   setOutputCurrencyAmount,
+  availableOutputCurrencyBalance,
 }: {
+  priceInput: string
+  setPriceInput: (priceInput: string) => void
   markets: Market[]
   selectedMarket?: Market
   setSelectedMarket: (market: Market) => void
@@ -40,12 +46,14 @@ export const LimitForm = ({
   setInputCurrency: (inputCurrency: Currency | undefined) => void
   inputCurrencyAmount: string
   setInputCurrencyAmount: (inputCurrencyAmount: string) => void
+  availableInputCurrencyBalance: bigint
   showOutputCurrencySelect: boolean
   setShowOutputCurrencySelect: (showOutputCurrencySelect: boolean) => void
   outputCurrency: Currency | undefined
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
   setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
+  availableOutputCurrencyBalance: bigint
 }) => {
   return showInputCurrencySelect ? (
     <MarketSelect
@@ -77,17 +85,11 @@ export const LimitForm = ({
             {isBid ? 'Buy' : 'Sell'} {selectedMarket?.baseToken.symbol} at rate
           </div>
           <NumberInput
-            value={'1600'}
-            onValueChange={() => {}}
+            value={priceInput}
+            onValueChange={setPriceInput}
             className="text-xl w-full sm:text-2xl bg-transparent placeholder-gray-500 text-white outline-none"
           />
         </div>
-        <button
-          className="text-xs sm:text-sm h-fit p-0 m-0 rounded-sm text-blue-500 bg-transparent"
-          onClick={() => {}}
-        >
-          Set rate to market
-        </button>
       </div>
       <div
         className={`flex ${
@@ -98,14 +100,14 @@ export const LimitForm = ({
           currency={inputCurrency}
           value={inputCurrencyAmount}
           onValueChange={setInputCurrencyAmount}
-          availableAmount={0n}
+          availableAmount={availableInputCurrencyBalance}
           onCurrencyClick={() => setShowInputCurrencySelect(true)}
         />
         <CurrencyAmountInput
           currency={outputCurrency}
           value={outputCurrencyAmount}
           onValueChange={setOutputCurrencyAmount}
-          availableAmount={0n}
+          availableAmount={availableOutputCurrencyBalance}
           onCurrencyClick={() => setShowOutputCurrencySelect(true)}
         />
         <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">

@@ -25,6 +25,7 @@ export default function OrderBook({
     () =>
       Array.from(
         market.bids
+          .sort((a, b) => Number(b.priceIndex) - Number(a.priceIndex))
           .map((x) => {
             return {
               price: formatUnits(x.price, PRICE_DECIMAL),
@@ -59,6 +60,7 @@ export default function OrderBook({
     () =>
       Array.from(
         market.asks
+          .sort((a, b) => Number(a.priceIndex) - Number(b.priceIndex))
           .map((x) => {
             return {
               price: formatUnits(x.price, PRICE_DECIMAL),

@@ -11,8 +11,10 @@ import { useChainContext } from '../contexts/chain-context'
 import { formatUnits } from '../utils/numbers'
 import { useMarketContext } from '../contexts/market-context'
 import { max } from '../utils/bigint'
-import { getPriceDecimals } from '../utils/prices'
+import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
+import { toPlacesString } from '../utils/bignumber'
+import { useCurrencyContext } from '../contexts/currency-context'
 
 const openOrders = [
   {
@@ -44,6 +46,7 @@ const openOrders = [
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
   const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
+  const { balances } = useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
   // const [showOrderBook, setShowOrderBook] = useState(true)
@@ -68,6 +71,7 @@ export const LimitContainer = () => {
       selectedChain.nativeCurrency.decimals,
     ),
   )
+  const [priceInput, setPriceInput] = useState('')
 
   useEffect(() => {
     setClaimBounty(
@@ -82,8 +86,22 @@ export const LimitContainer = () => {
 
       setOutputCurrency(selectedMarket.baseToken)
       setOutputCurrencyAmount('')
+
+      if (isBid) {
+        setPriceInput(
+          toPlacesString(
+            formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
+          ),
+        )
+      } else {
+        setPriceInput(
+          toPlacesString(
+            formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
+          ),
+        )
+      }
     }
-  }, [selectedChain, selectedMarket])
+  }, [isBid, selectedChain, selectedMarket])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
@@ -133,6 +151,8 @@ export const LimitContainer = () => {
             />
           ) : (
             <LimitForm
+              priceInput={priceInput}
+              setPriceInput={setPriceInput}
               markets={markets}
               selectedMarket={selectedMarket}
               setSelectedMarket={setSelectedMarket}
@@ -145,12 +165,18 @@ export const LimitContainer = () => {
               setInputCurrency={setInputCurrency}
               inputCurrencyAmount={inputCurrencyAmount}
               setInputCurrencyAmount={setInputCurrencyAmount}
+              availableInputCurrencyBalance={
+                inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
+              }
               showOutputCurrencySelect={showOutputCurrencySelect}
               setShowOutputCurrencySelect={setShowOutputCurrencySelect}
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
               outputCurrencyAmount={outputCurrencyAmount}
               setOutputCurrencyAmount={setOutputCurrencyAmount}
+              availableOutputCurrencyBalance={
+                outputCurrency ? balances[outputCurrency.address] ?? 0n : 0n
+              }
             />
           )}
         </div>

@@ -89,9 +89,13 @@ const CurrencyAmountInput = ({
         )}
       </div>
       <div className="flex items-end justify-between">
-        <div className="text-gray-500 text-xs sm:text-sm">
-          ~{formatDollarValue(parseUnits(value, decimals), decimals, price)}
-        </div>
+        {price ? (
+          <div className="text-gray-500 text-xs sm:text-sm">
+            ~{formatDollarValue(parseUnits(value, decimals), decimals, price)}
+          </div>
+        ) : (
+          <div></div>
+        )}
         {!props.disabled && currency ? (
           <div className="flex text-xs sm:text-sm gap-1 sm:gap-2">
             <div className="text-gray-500">Available</div>

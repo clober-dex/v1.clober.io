@@ -63,6 +63,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }, {})
     },
     {
+      refetchInterval: 2000,
       refetchOnWindowFocus: true,
     },
   )
