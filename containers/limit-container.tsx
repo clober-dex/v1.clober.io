@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
+import BigNumber from 'bignumber.js'
 
 import { Currency } from '../model/currency'
 import LimitSettingForm from '../components/form/limit-setting-form'
@@ -15,6 +16,7 @@ import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
 import { toPlacesString } from '../utils/bignumber'
 import { useCurrencyContext } from '../contexts/currency-context'
+import { Decimals } from '../model/decimals'
 
 const openOrders = [
   {
@@ -71,7 +73,33 @@ export const LimitContainer = () => {
       selectedChain.nativeCurrency.decimals,
     ),
   )
+  const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
+    Decimals | undefined
+  >(undefined)
   const [priceInput, setPriceInput] = useState('')
+
+  const availableDecimalPlacesGroups = useMemo(
+    () =>
+      selectedMarket
+        ? Array.from(Array(4).keys()).map((i) => {
+            const decimalPlaces = getPriceDecimals(
+              max(
+                selectedMarket.bids[0]?.price ?? 0n,
+                selectedMarket.asks[0]?.price ?? 0n,
+              ),
+              selectedMarket.d,
+              selectedMarket.r,
+            )
+            return {
+              label: (10 ** (i - decimalPlaces)).toFixed(
+                Math.max(decimalPlaces - i, 0),
+              ),
+              value: decimalPlaces - i,
+            }
+          })
+        : [],
+    [selectedMarket],
+  )
 
   useEffect(() => {
     setClaimBounty(
@@ -87,6 +115,8 @@ export const LimitContainer = () => {
       setOutputCurrency(selectedMarket.baseToken)
       setOutputCurrencyAmount('')
 
+      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+
       if (isBid) {
         setPriceInput(
           toPlacesString(
@@ -101,7 +131,7 @@ export const LimitContainer = () => {
         )
       }
     }
-  }, [isBid, selectedChain, selectedMarket])
+  }, [availableDecimalPlacesGroups, isBid, selectedChain, selectedMarket])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
@@ -113,27 +143,84 @@ export const LimitContainer = () => {
       {/*  {showOrderBook ? 'View Chart' : 'View Order Book'}*/}
       {/*</button>*/}
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {showOrderBook && selectedMarket ? (
+        {showOrderBook && selectedMarket && selectedDecimalPlaces ? (
           <OrderBook
-            market={selectedMarket}
-            availableDecimalPlacesGroups={Array.from(Array(3).keys()).map(
-              (i) => {
-                const decimalPlaces = getPriceDecimals(
-                  max(
-                    selectedMarket.bids[0]?.price ?? 0n,
-                    selectedMarket.asks[0]?.price ?? 0n,
-                  ),
-                  selectedMarket.d,
-                  selectedMarket.r,
-                )
-                return {
-                  label: (10 ** (i - decimalPlaces)).toFixed(
-                    Math.max(decimalPlaces - i, 0),
-                  ),
-                  value: decimalPlaces - i,
-                }
-              },
+            name={`${selectedMarket.baseToken.symbol}/${selectedMarket.quoteToken.symbol}`}
+            bids={Array.from(
+              [...selectedMarket.bids.map((depth) => ({ ...depth }))]
+                .sort((a, b) => Number(b.priceIndex) - Number(a.priceIndex))
+                .map((x) => {
+                  return {
+                    price: formatUnits(x.price, PRICE_DECIMAL),
+                    size: new BigNumber(
+                      formatUnits(
+                        x.baseAmount,
+                        selectedMarket.quoteToken.decimals,
+                      ),
+                    ),
+                  }
+                })
+                .reduce((prev, curr) => {
+                  const price = new BigNumber(curr.price)
+                  const key = new BigNumber(price).toFixed(
+                    selectedDecimalPlaces.value,
+                    BigNumber.ROUND_FLOOR,
+                  )
+                  prev.set(
+                    key,
+                    prev.has(key)
+                      ? {
+                          ...curr,
+                          size: curr.size.plus(prev.get(key)?.size || 0),
+                        }
+                      : {
+                          price: key,
+                          size: curr.size,
+                        },
+                  )
+                  return prev
+                }, new Map<string, { price: string; size: BigNumber }>())
+                .values(),
             )}
+            asks={Array.from(
+              [...selectedMarket.asks.map((depth) => ({ ...depth }))]
+                .sort((a, b) => Number(a.priceIndex) - Number(b.priceIndex))
+                .map((x) => {
+                  return {
+                    price: formatUnits(x.price, PRICE_DECIMAL),
+                    size: new BigNumber(
+                      formatUnits(
+                        x.baseAmount,
+                        selectedMarket.baseToken.decimals,
+                      ),
+                    ),
+                  }
+                })
+                .reduce((prev, curr) => {
+                  const price = new BigNumber(curr.price)
+                  const key = new BigNumber(price).toFixed(
+                    selectedDecimalPlaces.value,
+                    BigNumber.ROUND_FLOOR,
+                  )
+                  prev.set(
+                    key,
+                    prev.has(key)
+                      ? {
+                          ...curr,
+                          size: curr.size.plus(prev.get(key)?.size || 0),
+                        }
+                      : {
+                          price: key,
+                          size: curr.size,
+                        },
+                  )
+                  return prev
+                }, new Map<string, { price: string; size: BigNumber }>())
+                .values(),
+            )}
+            availableDecimalPlacesGroups={availableDecimalPlacesGroups}
+            selectedDecimalPlaces={selectedDecimalPlaces}
+            setSelectedDecimalPlaces={setSelectedDecimalPlaces}
           />
         ) : (
           <></>

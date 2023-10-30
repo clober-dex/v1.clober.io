@@ -12,7 +12,7 @@ export default {
   render: ({ ...args }) => (
     <div className="flex w-full justify-center mt-6">
       <OpenOrderList
-        className="flex flex-col w-[448px] h-[154px] lg:grid lg:grid-cols-3 gap-1"
+        className="flex flex-col w-[448px] h-[154px] gap-2"
         {...args}
       />
     </div>
