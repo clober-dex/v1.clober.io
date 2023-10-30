@@ -1,93 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import { Currency } from '../model/currency'
 import LimitSettingForm from '../components/form/limit-setting-form'
 import { LimitForm } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
-import { Chart } from '../components/chart'
 import OpenOrderList from '../components/open-order-list'
 import { OpenOrder } from '../model/open-order'
 import { useChainContext } from '../contexts/chain-context'
 import { formatUnits } from '../utils/numbers'
 import { useMarketContext } from '../contexts/market-context'
-
-const availableDecimalPlacesGroups = [
-  { label: '0.000001', value: 6 },
-  { label: '0.00001', value: 5 },
-  { label: '0.0001', value: 4 },
-  { label: '0.001', value: 3 },
-]
-
-const asks = [
-  {
-    price: '1700.4332',
-    size: '5.667',
-  },
-  {
-    price: '1701.4332',
-    size: '5.667',
-  },
-  {
-    price: '1704.3332',
-    size: '5.667',
-  },
-  {
-    price: '1750.4332',
-    size: '15.667',
-  },
-  {
-    price: '1760.4332',
-    size: '5.667',
-  },
-]
-
-const bids = [
-  {
-    price: '1691.4332',
-    size: '7.53458',
-  },
-  {
-    price: '1690.4332',
-    size: '15.2340',
-  },
-  {
-    price: '1689.79',
-    size: '13.7123',
-  },
-  {
-    price: '1686.79',
-    size: '13.7456',
-  },
-  {
-    price: '1680.766',
-    size: '3.7143',
-  },
-  {
-    price: '1679.766',
-    size: '31.7143',
-  },
-  {
-    price: '1670.766',
-    size: '16.0043',
-  },
-  {
-    price: '1670.766',
-    size: '6.0043',
-  },
-  {
-    price: '1670.766',
-    size: '6.0043',
-  },
-  {
-    price: '1670.766',
-    size: '36.0043',
-  },
-  {
-    price: '1670.766',
-    size: '6.0043',
-  },
-]
+import { max } from '../utils/bigint'
+import { getPriceDecimals } from '../utils/prices'
 
 const openOrders = [
   {
@@ -118,7 +42,7 @@ const openOrders = [
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
-  const { markets, selectedMarket } = useMarketContext()
+  const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
 
   const [isBid, setIsBid] = useState(true)
   // const [showOrderBook, setShowOrderBook] = useState(true)
@@ -126,13 +50,13 @@ export const LimitContainer = () => {
   const [selectMode, setSelectMode] = useState<'none' | 'settings'>('none')
 
   const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
-    selectedMarket.quoteToken,
+    selectedMarket?.quoteToken,
   )
   const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
 
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
-    selectedMarket.baseToken,
+    selectedMarket?.baseToken,
   )
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
@@ -144,9 +68,15 @@ export const LimitContainer = () => {
     ),
   )
 
+  useEffect(() => {
+    if (!selectedMarket) {
+      setSelectedMarket(markets[0])
+    }
+  }, [markets, selectedMarket, setSelectedMarket, selectedChain])
+
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
-      {/* TODO */}
+      {/* TODO CHART */}
       {/*<button*/}
       {/*  onClick={() => setShowOrderBook(!showOrderBook)}*/}
       {/*  className="rounded bg-blue-500 bg-opacity-20 text-blue-500 px-2 py-1 w-fit mb-3 text-xs sm:text-sm"*/}
@@ -154,14 +84,30 @@ export const LimitContainer = () => {
       {/*  {showOrderBook ? 'View Chart' : 'View Order Book'}*/}
       {/*</button>*/}
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {showOrderBook ? (
+        {showOrderBook && selectedMarket ? (
           <OrderBook
-            bids={bids}
-            asks={asks}
-            availableDecimalPlacesGroups={availableDecimalPlacesGroups}
+            market={selectedMarket}
+            availableDecimalPlacesGroups={Array.from(Array(3).keys()).map(
+              (i) => {
+                const decimalPlaces = getPriceDecimals(
+                  max(
+                    selectedMarket.bids[0]?.price ?? 0n,
+                    selectedMarket.asks[0]?.price ?? 0n,
+                  ),
+                  selectedMarket.d,
+                  selectedMarket.r,
+                )
+                return {
+                  label: (10 ** (i - decimalPlaces)).toFixed(
+                    Math.max(decimalPlaces - i, 0),
+                  ),
+                  value: decimalPlaces - i,
+                }
+              },
+            )}
           />
         ) : (
-          <Chart />
+          <></>
         )}
         <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[480px] lg:h-[480px]">
           {selectMode === 'settings' ? (
@@ -178,6 +124,7 @@ export const LimitContainer = () => {
             <LimitForm
               markets={markets}
               selectedMarket={selectedMarket}
+              setSelectedMarket={setSelectedMarket}
               isBid={isBid}
               setIsBid={setIsBid}
               setSelectMode={setSelectMode}

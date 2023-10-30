@@ -4,6 +4,9 @@ query getMarkets {
     orderToken
     takerFee
     quoteUnit
+    a
+    d
+    r
     quoteToken {
       id
       name
@@ -18,7 +21,9 @@ query getMarkets {
     }
     depths {
       price
+      priceIndex
       rawAmount
+      baseAmount
       isBid
     }
   }

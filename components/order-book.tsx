@@ -1,21 +1,87 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
+
+import { Market } from '../model/market'
+import { formatUnits } from '../utils/numbers'
+import { Decimals } from '../model/decimals'
+import { PRICE_DECIMAL } from '../utils/prices'
+import { toPlacesString } from '../utils/bignumber'
 
 import DecimalsSelector from './selector/decimals-selector'
 
 export default function OrderBook({
-  bids,
-  asks,
+  market,
   availableDecimalPlacesGroups,
   ...props
 }: {
-  bids: { price: string; size: string }[]
-  asks: { price: string; size: string }[]
-  availableDecimalPlacesGroups: { label: string; value: number }[]
+  market: Market
+  availableDecimalPlacesGroups: Decimals[]
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const biggest = BigNumber.max(
-    asks.reduce((acc, { size }) => BigNumber.max(acc, size), new BigNumber(0)),
-    bids.reduce((acc, { size }) => BigNumber.max(acc, size), new BigNumber(0)),
+  const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<Decimals>(
+    availableDecimalPlacesGroups[0],
+  )
+
+  const bids = useMemo(() => {
+    const map = new Map<string, { price: string; size: BigNumber }>()
+    market.bids
+      .map((x) => {
+        return {
+          price: formatUnits(x.price, PRICE_DECIMAL),
+          size: new BigNumber(
+            formatUnits(x.baseAmount, market.quoteToken.decimals),
+          ),
+        }
+      })
+      .forEach((x) => {
+        const price = new BigNumber(x.price)
+        const key = new BigNumber(price).toFixed(selectedDecimalPlaces.value)
+
+        let newValue = x
+        if (map.has(key)) {
+          const prev = map.get(key)
+          newValue = {
+            ...newValue,
+            size: newValue.size.plus(prev?.size || 0),
+          }
+        }
+        newValue.price = key
+        map.set(key, newValue)
+      })
+    return Array.from(map.values())
+  }, [market, selectedDecimalPlaces])
+
+  const asks = useMemo(() => {
+    const map = new Map<string, { price: string; size: BigNumber }>()
+    market.asks
+      .map((x) => {
+        return {
+          price: formatUnits(x.price, PRICE_DECIMAL),
+          size: new BigNumber(
+            formatUnits(x.baseAmount, market.baseToken.decimals),
+          ),
+        }
+      })
+      .forEach((x) => {
+        const price = new BigNumber(x.price)
+        const key = new BigNumber(price).toFixed(selectedDecimalPlaces.value)
+
+        let newValue = x
+        if (map.has(key)) {
+          const prev = map.get(key)
+          newValue = {
+            ...newValue,
+            size: newValue.size.plus(prev?.size || 0),
+          }
+        }
+        newValue.price = key
+        map.set(key, newValue)
+      })
+    return Array.from(map.values())
+  }, [market, selectedDecimalPlaces])
+
+  const biggestDepth = BigNumber.max(
+    BigNumber.max(...asks.map(({ size }) => size), 0),
+    BigNumber.max(...bids.map(({ size }) => size), 0),
   )
 
   return (
@@ -25,12 +91,13 @@ export default function OrderBook({
     >
       <div className="flex items-center justify-between">
         <div className="text-sm sm:text-base text-white font-bold">
-          ETC-USDC
+          {market.baseToken.symbol}/{market.quoteToken.symbol}
         </div>
         <div className="flex items-center gap-2">
           <DecimalsSelector
             availableDecimalPlacesGroups={availableDecimalPlacesGroups}
-            value={availableDecimalPlacesGroups[0]}
+            value={selectedDecimalPlaces}
+            onValueChange={setSelectedDecimalPlaces}
           />
         </div>
       </div>
@@ -47,13 +114,13 @@ export default function OrderBook({
                 key={`bid-${index}`}
                 className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
               >
-                <div className="text-gray-200">{size}</div>
+                <div className="text-gray-200">{toPlacesString(size)}</div>
                 <div className="text-green-500">{price}</div>
                 <div
                   className="absolute h-full right-0 bg-[#45D87F26]"
                   style={{
                     width: `${new BigNumber(size)
-                      .div(biggest)
+                      .div(biggestDepth)
                       .multipliedBy(100)
                       .toNumber()}%`,
                   }}
@@ -74,12 +141,12 @@ export default function OrderBook({
                 className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
               >
                 <div className="text-red-500">{price}</div>
-                <div className="text-gray-200">{size}</div>
+                <div className="text-gray-200">{toPlacesString(size)}</div>
                 <div
                   className="absolute h-full left-0 bg-[#F94E5C26]"
                   style={{
                     width: `${new BigNumber(size)
-                      .div(biggest)
+                      .div(biggestDepth)
                       .multipliedBy(100)
                       .toNumber()}%`,
                   }}

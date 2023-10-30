@@ -4,9 +4,11 @@ import { useQuery } from 'wagmi'
 import { Market } from '../model/market'
 import { fetchMarkets } from '../apis/market'
 
+import { useChainContext } from './chain-context'
+
 type MarketContext = {
   markets: Market[]
-  selectedMarket: Market
+  selectedMarket?: Market
   setSelectedMarket: (market: Market) => void
 }
 
@@ -17,10 +19,12 @@ const Context = React.createContext<MarketContext>({
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const { selectedChain } = useChainContext()
+
   const { data: markets } = useQuery(
-    ['markets'],
+    ['markets', selectedChain],
     async () => {
-      return fetchMarkets()
+      return fetchMarkets(selectedChain.id)
     },
     {
       initialData: [],
@@ -29,7 +33,9 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     },
   )
   // TODO: cache localstorage
-  const [selectedMarket, setSelectedMarket] = React.useState<Market>(markets[0])
+  const [selectedMarket, setSelectedMarket] = React.useState<
+    Market | undefined
+  >(undefined)
 
   return (
     <Context.Provider value={{ markets, selectedMarket, setSelectedMarket }}>

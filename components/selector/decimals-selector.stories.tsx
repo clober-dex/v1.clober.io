@@ -22,5 +22,6 @@ export const Default: Story = {
       { label: '0.001', value: 3 },
     ],
     value: { label: '0.001', value: 3 },
+    onValueChange: () => {},
   },
 }

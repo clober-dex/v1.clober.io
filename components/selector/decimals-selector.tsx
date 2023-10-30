@@ -3,16 +3,19 @@ import { Listbox, Transition } from '@headlessui/react'
 
 import { textStyles } from '../../themes/text-styles'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
+import { Decimals } from '../../model/decimals'
 
 export default function DecimalsSelector({
   availableDecimalPlacesGroups,
   value,
+  onValueChange,
 }: {
-  availableDecimalPlacesGroups: { label: string; value: number }[]
-  value: { label: string; value: number }
+  availableDecimalPlacesGroups: Decimals[]
+  value: Decimals
+  onValueChange: (value: Decimals) => void
 }) {
   return (
-    <Listbox value={value}>
+    <Listbox value={value} onChange={onValueChange}>
       {({ open }) => (
         <>
           <div className="relative">
@@ -27,13 +30,13 @@ export default function DecimalsSelector({
 
             <Transition show={open} as={Fragment}>
               <Listbox.Options className="absolute z-[1500] top-6 right-0 mt-0 min-w-[4rem] p-0 bg-gray-700 rounded">
-                {availableDecimalPlacesGroups.map(({ label, value }, index) => (
+                {availableDecimalPlacesGroups.map((value, index) => (
                   <Listbox.Option
                     key={index}
                     className={`py-1 px-2 text-right text-white ${textStyles.body5} hover:bg-gray-600 first:rounded-t-lg last:rounded-b-lg`}
                     value={value}
                   >
-                    <span>{label}</span>
+                    <span>{value.label}</span>
                   </Listbox.Option>
                 ))}
               </Listbox.Options>

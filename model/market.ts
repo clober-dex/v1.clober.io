@@ -6,7 +6,9 @@ import { Currency } from './currency'
 
 type Depth = {
   price: bigint
+  priceIndex: bigint
   rawAmount: bigint
+  baseAmount: bigint
   isBid: boolean
 }
 
@@ -18,6 +20,9 @@ export class Market {
   orderToken: `0x${string}`
   takerFee: bigint
   quoteUnit: bigint
+  a: bigint
+  d: bigint
+  r: bigint
   quoteToken: Currency
   baseToken: Currency
   quotePrecisionComplement: bigint
@@ -30,6 +35,9 @@ export class Market {
     orderToken: `0x${string}`,
     takerFee: bigint,
     quoteUnit: bigint,
+    a: bigint,
+    d: bigint,
+    r: bigint,
     quoteToken: Currency,
     baseToken: Currency,
     quotePrecisionComplement: bigint,
@@ -41,6 +49,9 @@ export class Market {
     this.orderToken = orderToken
     this.takerFee = takerFee
     this.quoteUnit = quoteUnit
+    this.a = a
+    this.d = d
+    this.r = r
     this.quoteToken = quoteToken
     this.baseToken = baseToken
     this.quotePrecisionComplement = quotePrecisionComplement
@@ -55,6 +66,9 @@ export class Market {
       market.orderToken,
       market.takerFee,
       market.quoteUnit,
+      market.a,
+      market.d,
+      market.r,
       market.quoteToken,
       market.baseToken,
       market.quotePrecisionComplement,
@@ -70,6 +84,9 @@ export class Market {
       getAddress(dto.orderToken),
       BigInt(dto.takerFee),
       BigInt(dto.quoteUnit),
+      BigInt(dto.a),
+      BigInt(dto.d),
+      BigInt(dto.r),
       dto.quoteToken,
       dto.baseToken,
       10n ** (18n - BigInt(dto.quoteToken.decimals)),
@@ -81,7 +98,9 @@ export class Market {
         })
         .map((depth) => ({
           price: BigInt(depth.price),
+          priceIndex: BigInt(depth.priceIndex),
           rawAmount: BigInt(depth.rawAmount),
+          baseAmount: BigInt(depth.baseAmount),
           isBid: depth.isBid,
         })),
       dto.depths
@@ -91,7 +110,9 @@ export class Market {
         })
         .map((depth) => ({
           price: BigInt(depth.price),
+          priceIndex: BigInt(depth.priceIndex),
           rawAmount: BigInt(depth.rawAmount),
+          baseAmount: BigInt(depth.baseAmount),
           isBid: depth.isBid,
         })),
     )

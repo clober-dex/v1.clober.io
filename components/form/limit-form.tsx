@@ -11,6 +11,7 @@ import { Market } from '../../model/market'
 export const LimitForm = ({
   markets,
   selectedMarket,
+  setSelectedMarket,
   isBid,
   setIsBid,
   setSelectMode,
@@ -28,7 +29,8 @@ export const LimitForm = ({
   setOutputCurrencyAmount,
 }: {
   markets: Market[]
-  selectedMarket: Market
+  selectedMarket?: Market
+  setSelectedMarket: (market: Market) => void
   isBid: boolean
   setIsBid: (isBid: boolean) => void
   setSelectMode: (selectMode: 'none' | 'settings') => void
@@ -53,6 +55,7 @@ export const LimitForm = ({
         setInputCurrency(market.quoteToken)
         setOutputCurrency(market.baseToken)
         setShowInputCurrencySelect(false)
+        setSelectedMarket(market)
       }}
     />
   ) : showOutputCurrencySelect ? (
@@ -63,6 +66,7 @@ export const LimitForm = ({
         setInputCurrency(market.baseToken)
         setOutputCurrency(market.quoteToken)
         setShowOutputCurrencySelect(false)
+        setSelectedMarket(market)
       }}
     />
   ) : (
@@ -70,7 +74,7 @@ export const LimitForm = ({
       <div className="flex rounded-lg border-solid border-[1.5px] border-gray-700 p-4 mb-3 sm:mb-4">
         <div className="flex flex-col flex-1 gap-2">
           <div className="text-gray-500 text-xs sm:text-sm">
-            {isBid ? 'Buy' : 'Sell'} {selectedMarket.baseToken.symbol} at rate
+            {isBid ? 'Buy' : 'Sell'} {selectedMarket?.baseToken.symbol} at rate
           </div>
           <NumberInput
             value={'1600'}

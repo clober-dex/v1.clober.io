@@ -30,7 +30,7 @@ export default function ChainSelector({
       >
         <ChainIcon className="relative w-4 h-4" chain={chain} />
         <p className={`hidden lg:block ${textStyles.body3Bold}`}>
-          {chain.name.split(' ')[0]}
+          {chain.name}
         </p>
         <TriangleDownSvg className="hidden lg:block" />
       </button>
