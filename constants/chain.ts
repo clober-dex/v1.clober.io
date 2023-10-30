@@ -9,7 +9,7 @@ export const supportChains: Chain[] =
     ? [
         {
           ...couponFinanceChain,
-          defaultGasPrice: 1000000n,
+          defaultGasPrice: 0n,
           icon: 'https://www.coupon.finance/favicon.svg',
         },
         {

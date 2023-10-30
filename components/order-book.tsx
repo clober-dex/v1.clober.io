@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
 
 import { Market } from '../model/market'
@@ -21,63 +21,77 @@ export default function OrderBook({
     availableDecimalPlacesGroups[0],
   )
 
-  const bids = useMemo(() => {
-    const map = new Map<string, { price: string; size: BigNumber }>()
-    market.bids
-      .map((x) => {
-        return {
-          price: formatUnits(x.price, PRICE_DECIMAL),
-          size: new BigNumber(
-            formatUnits(x.baseAmount, market.quoteToken.decimals),
-          ),
-        }
-      })
-      .forEach((x) => {
-        const price = new BigNumber(x.price)
-        const key = new BigNumber(price).toFixed(selectedDecimalPlaces.value)
+  const bids = useMemo(
+    () =>
+      Array.from(
+        market.bids
+          .map((x) => {
+            return {
+              price: formatUnits(x.price, PRICE_DECIMAL),
+              size: new BigNumber(
+                formatUnits(x.baseAmount, market.quoteToken.decimals),
+              ),
+            }
+          })
+          .reduce((prev, curr) => {
+            const price = new BigNumber(curr.price)
+            const key = new BigNumber(price).toFixed(
+              selectedDecimalPlaces?.value ?? PRICE_DECIMAL,
+              BigNumber.ROUND_FLOOR,
+            )
+            prev.set(
+              key,
+              prev.has(key)
+                ? {
+                    ...curr,
+                    size: curr.size.plus(prev.get(key)?.size || 0),
+                  }
+                : curr,
+            )
+            return prev
+          }, new Map<string, { price: string; size: BigNumber }>())
+          .values(),
+      ),
+    [market, selectedDecimalPlaces],
+  )
 
-        let newValue = x
-        if (map.has(key)) {
-          const prev = map.get(key)
-          newValue = {
-            ...newValue,
-            size: newValue.size.plus(prev?.size || 0),
-          }
-        }
-        newValue.price = key
-        map.set(key, newValue)
-      })
-    return Array.from(map.values())
-  }, [market, selectedDecimalPlaces])
+  const asks = useMemo(
+    () =>
+      Array.from(
+        market.asks
+          .map((x) => {
+            return {
+              price: formatUnits(x.price, PRICE_DECIMAL),
+              size: new BigNumber(
+                formatUnits(x.baseAmount, market.baseToken.decimals),
+              ),
+            }
+          })
+          .reduce((prev, curr) => {
+            const price = new BigNumber(curr.price)
+            const key = new BigNumber(price).toFixed(
+              selectedDecimalPlaces?.value ?? PRICE_DECIMAL,
+              BigNumber.ROUND_FLOOR,
+            )
+            prev.set(
+              key,
+              prev.has(key)
+                ? {
+                    ...curr,
+                    size: curr.size.plus(prev.get(key)?.size || 0),
+                  }
+                : curr,
+            )
+            return prev
+          }, new Map<string, { price: string; size: BigNumber }>())
+          .values(),
+      ),
+    [market, selectedDecimalPlaces],
+  )
 
-  const asks = useMemo(() => {
-    const map = new Map<string, { price: string; size: BigNumber }>()
-    market.asks
-      .map((x) => {
-        return {
-          price: formatUnits(x.price, PRICE_DECIMAL),
-          size: new BigNumber(
-            formatUnits(x.baseAmount, market.baseToken.decimals),
-          ),
-        }
-      })
-      .forEach((x) => {
-        const price = new BigNumber(x.price)
-        const key = new BigNumber(price).toFixed(selectedDecimalPlaces.value)
-
-        let newValue = x
-        if (map.has(key)) {
-          const prev = map.get(key)
-          newValue = {
-            ...newValue,
-            size: newValue.size.plus(prev?.size || 0),
-          }
-        }
-        newValue.price = key
-        map.set(key, newValue)
-      })
-    return Array.from(map.values())
-  }, [market, selectedDecimalPlaces])
+  useEffect(() => {
+    setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+  }, [availableDecimalPlacesGroups, setSelectedDecimalPlaces])
 
   const biggestDepth = BigNumber.max(
     BigNumber.max(...asks.map(({ size }) => size), 0),
@@ -108,7 +122,36 @@ export default function OrderBook({
             <div>Amount</div>
             <div>Price</div>
           </div>
-          {bids.map(({ price, size }, index) => {
+          {Array.from(
+            market.bids
+              .map((x) => {
+                return {
+                  price: formatUnits(x.price, PRICE_DECIMAL),
+                  size: new BigNumber(
+                    formatUnits(x.baseAmount, market.quoteToken.decimals),
+                  ),
+                }
+              })
+              .reduce((prev, curr) => {
+                const price = new BigNumber(curr.price)
+                const key = new BigNumber(price).toFixed(
+                  selectedDecimalPlaces.value,
+                )
+
+                let newValue = curr
+                if (prev.has(key)) {
+                  const prevValue = prev.get(key)
+                  newValue = {
+                    ...newValue,
+                    size: newValue.size.plus(prevValue?.size || 0),
+                  }
+                }
+                newValue.price = key
+                prev.set(key, newValue)
+                return prev
+              }, new Map<string, { price: string; size: BigNumber }>())
+              .values(),
+          ).map(({ price, size }, index) => {
             return (
               <div
                 key={`bid-${index}`}
@@ -134,7 +177,36 @@ export default function OrderBook({
             <div>Price</div>
             <div>Amount</div>
           </div>
-          {asks.map(({ price, size }, index) => {
+          {Array.from(
+            market.asks
+              .map((x) => {
+                return {
+                  price: formatUnits(x.price, PRICE_DECIMAL),
+                  size: new BigNumber(
+                    formatUnits(x.baseAmount, market.baseToken.decimals),
+                  ),
+                }
+              })
+              .reduce((prev, curr) => {
+                const price = new BigNumber(curr.price)
+                const key = new BigNumber(price).toFixed(
+                  selectedDecimalPlaces.value,
+                )
+
+                let newValue = curr
+                if (prev.has(key)) {
+                  const prevValue = prev.get(key)
+                  newValue = {
+                    ...newValue,
+                    size: newValue.size.plus(prevValue?.size || 0),
+                  }
+                }
+                newValue.price = key
+                prev.set(key, newValue)
+                return prev
+              }, new Map<string, { price: string; size: BigNumber }>())
+              .values(),
+          ).map(({ price, size }, index) => {
             return (
               <div
                 key={`ask-${index}`}

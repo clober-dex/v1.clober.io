@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useQuery } from 'wagmi'
+import { isAddressEqual } from 'viem'
 
 import { Market } from '../model/market'
 import { fetchMarkets } from '../apis/market'
@@ -36,6 +37,19 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [selectedMarket, setSelectedMarket] = React.useState<
     Market | undefined
   >(undefined)
+
+  useEffect(() => {
+    if (!selectedMarket) {
+      setSelectedMarket(markets[0])
+    } else if (
+      selectedMarket &&
+      !markets.find((market) =>
+        isAddressEqual(market.address, selectedMarket.address),
+      )
+    ) {
+      setSelectedMarket(markets[0])
+    }
+  }, [markets, selectedChain, selectedMarket])
 
   return (
     <Context.Provider value={{ markets, selectedMarket, setSelectedMarket }}>

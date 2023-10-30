@@ -69,10 +69,20 @@ export const LimitContainer = () => {
   )
 
   useEffect(() => {
-    if (!selectedMarket) {
-      setSelectedMarket(markets[0])
+    setClaimBounty(
+      formatUnits(
+        selectedChain.defaultGasPrice ?? 0n,
+        selectedChain.nativeCurrency.decimals,
+      ),
+    )
+    if (selectedMarket) {
+      setInputCurrency(selectedMarket.quoteToken)
+      setInputCurrencyAmount('')
+
+      setOutputCurrency(selectedMarket.baseToken)
+      setOutputCurrencyAmount('')
     }
-  }, [markets, selectedMarket, setSelectedMarket, selectedChain])
+  }, [selectedChain, selectedMarket])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
