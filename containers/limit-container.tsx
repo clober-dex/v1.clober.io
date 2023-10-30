@@ -181,7 +181,12 @@ export const LimitContainer = () => {
                   return prev
                 }, new Map<string, { price: string; size: BigNumber }>())
                 .values(),
-            )}
+            ).map((x) => {
+              return {
+                price: x.price,
+                size: x.size.toString(),
+              }
+            })}
             asks={Array.from(
               [...selectedMarket.asks.map((depth) => ({ ...depth }))]
                 .sort((a, b) => Number(a.priceIndex) - Number(b.priceIndex))
@@ -217,7 +222,12 @@ export const LimitContainer = () => {
                   return prev
                 }, new Map<string, { price: string; size: BigNumber }>())
                 .values(),
-            )}
+            ).map((x) => {
+              return {
+                price: x.price,
+                size: x.size.toString(),
+              }
+            })}
             availableDecimalPlacesGroups={availableDecimalPlacesGroups}
             selectedDecimalPlaces={selectedDecimalPlaces}
             setSelectedDecimalPlaces={setSelectedDecimalPlaces}
@@ -271,7 +281,7 @@ export const LimitContainer = () => {
       <div className="flex p-4 sm:border-solid border-b-gray-800 border-b-[1.5px]">
         <div className="flex gap-6">
           <button
-            className={`m-0 p-0 bg-transparent text-gray-500 text-white ${textStyles.body2}`}
+            className={`m-0 p-0 bg-transparent text-white ${textStyles.body2}`}
           >
             Open Orders
           </button>
