@@ -63,7 +63,7 @@ export const SwapContainer = () => {
   )
   return (
     <div className="flex flex-col w-fit max-sm:w-full mb-4 sm:mb-6">
-      <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[480px] lg:h-[480px]">
+      <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[480px]">
         <SwapForm
           currencies={currencies}
           prices={{ '0x0000000000000000000000000000000000000000': 1800 }}

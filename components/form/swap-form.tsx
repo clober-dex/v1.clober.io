@@ -66,7 +66,7 @@ export const SwapForm = ({
   const { showDropdown, setShowDropdown } = useDropdown()
 
   const exchangeRate =
-    !new BigNumber(inputCurrencyAmount).isNaN() ||
+    !new BigNumber(inputCurrencyAmount).isNaN() &&
     !new BigNumber(outputCurrencyAmount).isNaN()
       ? new BigNumber(outputCurrencyAmount).dividedBy(
           new BigNumber(inputCurrencyAmount),

@@ -17,6 +17,10 @@ export const supportChains: Chain[] =
           ...polygonZkEvm,
           defaultGasPrice: 1000000n,
         },
+        {
+          ...arbitrum,
+          defaultGasPrice: 1000000n,
+        },
       ]
     : [
         {

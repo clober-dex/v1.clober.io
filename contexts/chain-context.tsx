@@ -22,7 +22,7 @@ export const ChainProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   useEffect(() => {
     if (chain) {
-      setSelectedChain(chain)
+      setSelectedChain(supportChains.find((c) => c.id === chain.id)!)
     }
   }, [chain])
 
