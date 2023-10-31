@@ -9,14 +9,14 @@ import OrderBook from '../components/order-book'
 import OpenOrderList from '../components/open-order-list'
 import { OpenOrder } from '../model/open-order'
 import { useChainContext } from '../contexts/chain-context'
-import { formatUnits } from '../utils/numbers'
 import { useMarketContext } from '../contexts/market-context'
-import { min } from '../utils/bigint'
+import { formatUnits, min } from '../utils/bigint'
 import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
 import { toPlacesString } from '../utils/bignumber'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../model/decimals'
+import { BlockNumberWidget } from '../components/block-number-widget'
 
 const openOrders = [
   {
@@ -304,6 +304,7 @@ export const LimitContainer = () => {
       <div className="flex w-full justify-center mt-6">
         <OpenOrderList openOrders={openOrders} />
       </div>
+      <BlockNumberWidget latestBlockNumber={0} />
     </div>
   )
 }

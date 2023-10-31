@@ -2,9 +2,9 @@ import React from 'react'
 import Image from 'next/image'
 
 import { Currency, getLogo } from '../../model/currency'
-import { formatUnits } from '../../utils/numbers'
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { SearchSvg } from '../svg/search-svg'
+import { formatUnits } from '../../utils/bigint'
 
 const CurrencySelect = ({
   currencies,
@@ -44,7 +44,7 @@ const CurrencySelect = ({
           />
         </div>
       </div>
-      <div className="flex flex-col bg-gray-900 rounded-b-xl sm:rounded-b-3xl">
+      <div className="flex flex-col h-72 overflow-y-auto bg-gray-900 rounded-b-xl sm:rounded-b-3xl">
         {currencies.map((currency) => (
           <button
             key={currency.address}

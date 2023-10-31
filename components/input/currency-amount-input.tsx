@@ -3,9 +3,9 @@ import { parseUnits } from 'viem'
 import Image from 'next/image'
 
 import { Currency, getLogo } from '../../model/currency'
-import { BigDecimal, formatDollarValue, formatUnits } from '../../utils/numbers'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { CurrencyIcon } from '../icon/currency-icon'
+import { formatDollarValue, formatUnits } from '../../utils/bigint'
 
 import NumberInput from './number-input'
 
@@ -22,7 +22,7 @@ const CurrencyAmountInput = ({
   value: string
   onValueChange: (value: string) => void
   availableAmount: bigint
-  price?: BigDecimal
+  price?: number
   onCurrencyClick?: () => void
 } & React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -96,19 +96,21 @@ const CurrencyAmountInput = ({
         ) : (
           <div></div>
         )}
-        {!props.disabled && currency ? (
-          <div className="flex text-xs sm:text-sm gap-1 sm:gap-2">
-            <div className="text-gray-500">Available</div>
-            <div className="text-white">
-              {formatUnits(availableAmount, currency.decimals, price)}
+        <div className="h-4">
+          {!props.disabled && currency ? (
+            <div className="flex text-xs sm:text-sm gap-1 sm:gap-2">
+              <div className="text-gray-500">Available</div>
+              <div className="text-white">
+                {formatUnits(availableAmount, currency.decimals, price)}
+              </div>
+              <button className="text-blue-500" onClick={onMaxClick}>
+                MAX
+              </button>
             </div>
-            <button className="text-blue-500" onClick={onMaxClick}>
-              MAX
-            </button>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   )

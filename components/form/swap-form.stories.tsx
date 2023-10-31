@@ -2,33 +2,32 @@ import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import '../../styles/globals.css'
 
-import { dummyMarkets } from '../../.storybook/dummy-data/market'
-import { dummyCurrencies } from '../../.storybook/dummy-data/currencies'
+import { zeroAddress } from 'viem'
 
-import { LimitForm } from './limit-form'
+import { dummyCurrencies } from '../../.storybook/dummy-data/currencies'
+import { dummyPrices } from '../../.storybook/dummy-data/prices'
+
+import { SwapForm } from './swap-form'
 
 export default {
-  title: 'LimitForm',
-  component: LimitForm,
+  title: 'SwapForm',
+  component: SwapForm,
   parameters: {
     layout: 'centered',
   },
   render: ({ ...args }) => (
     <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-full sm:w-[480px] lg:h-[480px]">
-      <LimitForm {...args} />
+      <SwapForm {...args} />
     </div>
   ),
-} as Meta<typeof LimitForm>
+} as Meta<typeof SwapForm>
 
-type Story = StoryObj<typeof LimitForm>
+type Story = StoryObj<typeof SwapForm>
 
 export const Default: Story = {
   args: {
-    markets: dummyMarkets,
-    selectedMarket: dummyMarkets[0],
-    isBid: true,
-    setIsBid: () => {},
-    setSelectMode: () => {},
+    currencies: dummyCurrencies,
+    prices: dummyPrices,
     showInputCurrencySelect: false,
     setShowInputCurrencySelect: () => {},
     inputCurrency: undefined,
@@ -46,25 +45,35 @@ export const Default: Story = {
 
 export const Selected: Story = {
   args: {
-    markets: dummyMarkets,
-    selectedMarket: dummyMarkets[0],
-    isBid: true,
-    setIsBid: () => {},
-    setSelectMode: () => {},
+    currencies: dummyCurrencies,
+    prices: dummyPrices,
     showInputCurrencySelect: false,
     setShowInputCurrencySelect: () => {},
-    inputCurrency: dummyCurrencies[0],
+    inputCurrency: dummyCurrencies[3],
     setInputCurrency: () => {},
-    inputCurrencyAmount: '0.1',
+    inputCurrencyAmount: '1.123',
     setInputCurrencyAmount: () => {},
-    availableInputCurrencyBalance: 10000000000n,
+    availableInputCurrencyBalance: 10000000000000000000n,
     showOutputCurrencySelect: false,
     setShowOutputCurrencySelect: () => {},
-    outputCurrency: dummyCurrencies[4],
+    outputCurrency: dummyCurrencies[5],
     setOutputCurrency: () => {},
-    outputCurrencyAmount: '0.1',
+    outputCurrencyAmount: '2000',
     setOutputCurrencyAmount: () => {},
     availableOutputCurrencyBalance: 100000000000000000n,
+    slippageInput: '1.00',
+    setSlippageInput: () => {},
+    partitionInput: '1',
+    setPartitionInput: () => {},
+    swapLogic: 'GasEfficient',
+    setSwapLogic: () => {},
+    gasAmount: 1000000000000000n,
+    nativeCurrency: {
+      address: zeroAddress,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
   },
 }
 

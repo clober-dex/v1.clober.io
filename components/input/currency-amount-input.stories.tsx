@@ -29,10 +29,7 @@ export const Default: Story = {
     value: '1',
     onValueChange: () => {},
     availableAmount: 1000000000000000000n,
-    price: {
-      value: 176800000000n,
-      decimals: 8,
-    },
+    price: 1780,
   },
 }
 
@@ -41,10 +38,7 @@ export const SelectToken: Story = {
     value: '0',
     onValueChange: () => {},
     availableAmount: 1000000000000000000n,
-    price: {
-      value: 176800000000n,
-      decimals: 8,
-    },
+    price: 1780,
     onCurrencyClick: () => {},
   },
 }

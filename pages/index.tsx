@@ -27,6 +27,7 @@ export default function Home() {
         </div>
         {isLimit ? <LimitContainer /> : <SwapContainer />}
       </div>
+      <div className="absolute w-full h-[30%] bottom-0 bg-gradient-to-t from-blue-500 to-transparent opacity-[15%] pointer-events-none" />
     </div>
   )
 }

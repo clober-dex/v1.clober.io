@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { formatUnits } from './numbers'
 import { getDecimalPlaces } from './bignumber'
+import { formatUnits } from './bigint'
 
 export const PRICE_DECIMAL = 18
 

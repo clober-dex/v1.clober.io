@@ -1,11 +1,11 @@
 import React from 'react'
 import { getAddress, isAddress, isAddressEqual } from 'viem'
 
-import { formatUnits } from '../../utils/numbers'
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { SearchSvg } from '../svg/search-svg'
 import { Market } from '../../model/market'
 import { CurrencyIcon } from '../icon/currency-icon'
+import { formatUnits } from '../../utils/bigint'
 
 const MarketSelect = ({
   markets,

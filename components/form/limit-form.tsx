@@ -7,6 +7,7 @@ import { ArrowDownSvg } from '../svg/arrow-down-svg'
 import { SettingSvg } from '../svg/setting-svg'
 import MarketSelect from '../selector/market-select'
 import { Market } from '../../model/market'
+import { ActionButton } from '../button/action-button'
 
 export const LimitForm = ({
   priceInput,
@@ -130,12 +131,11 @@ export const LimitForm = ({
           Setting
         </button>
       </div>
-      <button
-        className="flex items-center font-bold justify-center rounded-lg bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 text-base sm:text-xl h-12 sm:h-16"
+      <ActionButton
         disabled={false}
-      >
-        Connect wallet
-      </button>
+        onClick={() => {}}
+        text={'Connect wallet'}
+      />
     </>
   )
 }
