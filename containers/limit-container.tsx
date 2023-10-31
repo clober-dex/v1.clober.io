@@ -11,12 +11,12 @@ import { OpenOrder } from '../model/open-order'
 import { useChainContext } from '../contexts/chain-context'
 import { formatUnits } from '../utils/numbers'
 import { useMarketContext } from '../contexts/market-context'
-import { max } from '../utils/bigint'
+import { min } from '../utils/bigint'
 import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
 import { toPlacesString } from '../utils/bignumber'
 import { useCurrencyContext } from '../contexts/currency-context'
-import { Decimals } from '../model/decimals'
+import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../model/decimals'
 
 const openOrders = [
   {
@@ -78,28 +78,39 @@ export const LimitContainer = () => {
   >(undefined)
   const [priceInput, setPriceInput] = useState('')
 
-  const availableDecimalPlacesGroups = useMemo(
-    () =>
-      selectedMarket
-        ? Array.from(Array(4).keys()).map((i) => {
+  const availableDecimalPlacesGroups = useMemo(() => {
+    const availableDecimalPlacesGroups = selectedMarket
+      ? (Array.from(Array(4).keys())
+          .map((i) => {
+            const minPrice = min(
+              selectedMarket.bids.sort(
+                (a, b) => Number(b.priceIndex) - Number(a.priceIndex),
+              )[0]?.price ?? 0n,
+              selectedMarket.asks.sort(
+                (a, b) => Number(a.priceIndex) - Number(b.priceIndex),
+              )[0]?.price ?? 0n,
+            )
             const decimalPlaces = getPriceDecimals(
-              max(
-                selectedMarket.bids[0]?.price ?? 0n,
-                selectedMarket.asks[0]?.price ?? 0n,
-              ),
+              minPrice,
               selectedMarket.d,
               selectedMarket.r,
             )
-            return {
-              label: (10 ** (i - decimalPlaces)).toFixed(
-                Math.max(decimalPlaces - i, 0),
-              ),
-              value: decimalPlaces - i,
+            const label = (10 ** (i - decimalPlaces)).toFixed(
+              Math.max(decimalPlaces - i, 0),
+            )
+            if (new BigNumber(formatUnits(minPrice, PRICE_DECIMAL)).gt(label)) {
+              return {
+                label,
+                value: decimalPlaces - i,
+              }
             }
           })
-        : [],
-    [selectedMarket],
-  )
+          .filter((x) => x) as Decimals[])
+      : []
+    return availableDecimalPlacesGroups.length > 0
+      ? availableDecimalPlacesGroups
+      : DEFAULT_DECIMAL_PLACES_GROUPS
+  }, [selectedMarket])
 
   useEffect(() => {
     setClaimBounty(
@@ -143,7 +154,10 @@ export const LimitContainer = () => {
       {/*  {showOrderBook ? 'View Chart' : 'View Order Book'}*/}
       {/*</button>*/}
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {showOrderBook && selectedMarket && selectedDecimalPlaces ? (
+        {showOrderBook &&
+        selectedMarket &&
+        availableDecimalPlacesGroups &&
+        selectedDecimalPlaces ? (
           <OrderBook
             name={`${selectedMarket.baseToken.symbol}/${selectedMarket.quoteToken.symbol}`}
             bids={Array.from(
@@ -170,7 +184,7 @@ export const LimitContainer = () => {
                     key,
                     prev.has(key)
                       ? {
-                          ...curr,
+                          price: key,
                           size: curr.size.plus(prev.get(key)?.size || 0),
                         }
                       : {
@@ -211,7 +225,7 @@ export const LimitContainer = () => {
                     key,
                     prev.has(key)
                       ? {
-                          ...curr,
+                          price: key,
                           size: curr.size.plus(prev.get(key)?.size || 0),
                         }
                       : {

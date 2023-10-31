@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { LimitContainer } from '../containers/limit-container'
+import { SwapContainer } from '../containers/swap-container'
 
 export default function Home() {
   const [isLimit, setIsLimit] = useState(true)
@@ -24,7 +25,7 @@ export default function Home() {
             Swap
           </button>
         </div>
-        {isLimit ? <LimitContainer /> : <></>}
+        {isLimit ? <LimitContainer /> : <SwapContainer />}
       </div>
     </div>
   )
