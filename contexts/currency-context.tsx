@@ -19,12 +19,14 @@ type CurrencyContext = {
   currencies: Currency[]
   prices: Prices
   balances: Balances
+  calculateETHValue: (currency: Currency, willPayAmount: bigint) => bigint
 }
 
 const Context = React.createContext<CurrencyContext>({
   currencies: [],
   prices: {},
   balances: {},
+  calculateETHValue: () => 0n,
 })
 
 export const isEthereum = (currency: Currency) => {
@@ -120,6 +122,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         currencies: currencies ?? [],
         prices: prices ?? {},
         balances: balances ?? {},
+        calculateETHValue,
       }}
     >
       {children}
