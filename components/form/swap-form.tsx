@@ -122,6 +122,7 @@ export const SwapForm = ({
           onValueChange={setInputCurrencyAmount}
           availableAmount={availableInputCurrencyBalance}
           onCurrencyClick={() => setShowInputCurrencySelect(true)}
+          price={inputCurrency ? prices[inputCurrency.address] : undefined}
         />
         <CurrencyAmountInput
           currency={outputCurrency}
@@ -129,6 +130,7 @@ export const SwapForm = ({
           onValueChange={setOutputCurrencyAmount}
           availableAmount={availableOutputCurrencyBalance}
           onCurrencyClick={() => setShowOutputCurrencySelect(true)}
+          price={outputCurrency ? prices[outputCurrency.address] : undefined}
         />
       </div>
       <div className="flex justify-between items-center">
