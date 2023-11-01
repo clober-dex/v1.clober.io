@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { parseUnits } from 'viem'
 import { useAccount, useFeeData, useQuery } from 'wagmi'
+import { polygonZkEvm } from 'wagmi/chains'
 
 import { SwapForm } from '../components/form/swap-form'
 import { Currency } from '../model/currency'
@@ -8,6 +9,7 @@ import { useCurrencyContext } from '../contexts/currency-context'
 import { useChainContext } from '../contexts/chain-context'
 import { fetchQuotes } from '../apis/quotes'
 import { formatUnits } from '../utils/bigint'
+import OdosPathVizViewer from '../components/odos-pathviz-viewer'
 
 export const SwapContainer = () => {
   const { data: feeData } = useFeeData()
@@ -69,37 +71,47 @@ export const SwapContainer = () => {
   )
 
   return (
-    <div className="flex flex-col w-fit max-sm:w-full mb-4 sm:mb-6">
-      <div className="flex flex-col rounded-2xl bg-gray-900 p-6 sm:w-[480px]">
-        <SwapForm
-          currencies={currencies}
-          balances={balances}
-          prices={prices}
-          showInputCurrencySelect={showInputCurrencySelect}
-          setShowInputCurrencySelect={setShowInputCurrencySelect}
-          inputCurrency={inputCurrency}
-          setInputCurrency={setInputCurrency}
-          inputCurrencyAmount={inputCurrencyAmount}
-          setInputCurrencyAmount={setInputCurrencyAmount}
-          availableInputCurrencyBalance={
-            inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
-          }
-          showOutputCurrencySelect={showOutputCurrencySelect}
-          setShowOutputCurrencySelect={setShowOutputCurrencySelect}
-          outputCurrency={outputCurrency}
-          setOutputCurrency={setOutputCurrency}
-          outputCurrencyAmount={formatUnits(
-            data?.amountOut ?? 0n,
-            outputCurrency?.decimals ?? 18,
-          ).toString()}
-          slippageInput={slippageInput}
-          setSlippageInput={setSlippageInput}
-          partitionInput={partitionInput}
-          setPartitionInput={setPartitionInput}
-          swapLogic={swapLogic}
-          setSwapLogic={setSwapLogic}
-          gasEstimateValue={data?.gasEstimateValue ?? 0}
-        />
+    <div className="flex flex-col w-fit mb-4 sm:mb-6">
+      <div className="flex flex-col w-full lg:flex-row gap-4">
+        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 sm:w-[528px] lg:w-[480px]">
+          <SwapForm
+            currencies={currencies}
+            balances={balances}
+            prices={prices}
+            showInputCurrencySelect={showInputCurrencySelect}
+            setShowInputCurrencySelect={setShowInputCurrencySelect}
+            inputCurrency={inputCurrency}
+            setInputCurrency={setInputCurrency}
+            inputCurrencyAmount={inputCurrencyAmount}
+            setInputCurrencyAmount={setInputCurrencyAmount}
+            availableInputCurrencyBalance={
+              inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
+            }
+            showOutputCurrencySelect={showOutputCurrencySelect}
+            setShowOutputCurrencySelect={setShowOutputCurrencySelect}
+            outputCurrency={outputCurrency}
+            setOutputCurrency={setOutputCurrency}
+            outputCurrencyAmount={formatUnits(
+              data?.amountOut ?? 0n,
+              outputCurrency?.decimals ?? 18,
+            ).toString()}
+            slippageInput={slippageInput}
+            setSlippageInput={setSlippageInput}
+            partitionInput={partitionInput}
+            setPartitionInput={setPartitionInput}
+            swapLogic={swapLogic}
+            setSwapLogic={setSwapLogic}
+            gasEstimateValue={data?.gasEstimateValue ?? 0}
+          />
+        </div>
+        {/* TODO: remove this */}
+        {selectedChain.id !== polygonZkEvm.id ? (
+          <div className="flex flex-col rounded-2xl bg-gray-900 p-6">
+            <OdosPathVizViewer pathVizData={data?.pathViz} />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )
