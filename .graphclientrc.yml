@@ -2,7 +2,7 @@ sources:
   - name: clober-v1
     handler:
       graphql:
-        endpoint: '{context.url:https://dev-subgraph.coupon.finance/subgraphs/name/coupon-subgraph}'
+        endpoint: '{context.url:https://dev-subgraph.coupon.finance/subgraphs/name/core-v1-subgraph}'
 
 documents:
   - ./apis/**/*.graphql

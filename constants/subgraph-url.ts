@@ -6,7 +6,7 @@ export const SUBGRAPH_URL: {
   [CHAIN_IDS.ARBITRUM]:
     'https://api.studio.thegraph.com/query/49804/core-v1-subgraph/version/latest',
   [CHAIN_IDS.COUPON_FINANCE_CHAIN]:
-    'https://dev-subgraph.coupon.finance/subgraphs/name/coupon-subgraph',
+    'https://dev-subgraph.coupon.finance/subgraphs/name/core-v1-subgraph',
   [CHAIN_IDS.POLYGON_ZKEVM]:
     'https://api.studio.thegraph.com/query/49804/zkevm-core-v1-subgraph/version/latest',
 }
