@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { parseUnits, zeroAddress } from 'viem'
+import { parseUnits } from 'viem'
 import { useAccount, useFeeData, useQuery } from 'wagmi'
 import { polygonZkEvm } from 'wagmi/chains'
 
@@ -13,7 +13,7 @@ import OdosPathVizViewer from '../components/odos-pathviz-viewer'
 import { useSwapContext } from '../contexts/swap-context'
 
 export const SwapContainer = () => {
-  const { swap } = useSwapContext()
+  const { swap, swapClober } = useSwapContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
@@ -104,16 +104,33 @@ export const SwapContainer = () => {
             gasEstimateValue={data?.gasEstimateValue ?? 0}
             actionButtonProps={{
               disabled:
+                !userAddress ||
                 !inputCurrency ||
                 !outputCurrency ||
                 !inputCurrencyAmount ||
                 !data,
               onClick: async () => {
-                if (!inputCurrency || !userAddress || !data) {
+                if (
+                  !userAddress ||
+                  !inputCurrency ||
+                  !outputCurrency ||
+                  !inputCurrencyAmount ||
+                  !data
+                ) {
                   return
                 }
-                // TODO fix it
-                if (selectedChain.id === polygonZkEvm.id) {
+                // TODO remove it
+                if (selectedChain.id === polygonZkEvm.id && data.amountOut) {
+                  await swapClober(
+                    inputCurrency,
+                    outputCurrency,
+                    parseUnits(
+                      inputCurrencyAmount,
+                      inputCurrency?.decimals ?? 18,
+                    ),
+                    parseFloat(slippageInput),
+                    swapLogic === 'GasEfficient',
+                  )
                   return
                 } else if (!data.pathId) {
                   return
@@ -124,7 +141,6 @@ export const SwapContainer = () => {
                     inputCurrencyAmount,
                     inputCurrency?.decimals ?? 18,
                   ),
-                  userAddress,
                   data.pathId,
                 )
               },

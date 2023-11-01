@@ -3,7 +3,6 @@ import { createPublicClient, http } from 'viem'
 import { Currency } from '../model/currency'
 import { IERC20__factory } from '../typechain'
 import { CHAIN_IDS, supportChains } from '../constants/chain'
-import { toWagmiChain } from '../model/chain'
 
 export async function fetchAllowance(
   chainId: CHAIN_IDS,
