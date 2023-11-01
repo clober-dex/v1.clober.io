@@ -13,6 +13,7 @@ import { SwapSettingModal } from '../modal/swap-setting-modal'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
+import { ArrowDownSvg } from '../svg/arrow-down-svg'
 export const SwapForm = ({
   currencies,
   balances,
@@ -31,8 +32,6 @@ export const SwapForm = ({
   outputCurrencyAmount,
   slippageInput,
   setSlippageInput,
-  partitionInput,
-  setPartitionInput,
   swapLogic,
   setSwapLogic,
   gasEstimateValue,
@@ -55,8 +54,6 @@ export const SwapForm = ({
   outputCurrencyAmount: string
   slippageInput: string
   setSlippageInput: (slippageInput: string) => void
-  partitionInput: string
-  setPartitionInput: (partitionInput: string) => void
   swapLogic: 'GasEfficient' | 'MaximizeReturn'
   setSwapLogic: (swapLogic: 'GasEfficient' | 'MaximizeReturn') => void
   gasEstimateValue: number
@@ -128,6 +125,20 @@ export const SwapForm = ({
           price={outputCurrency ? prices[outputCurrency.address] : undefined}
           disabled={true}
         />
+        <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">
+          <button
+            className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
+            onClick={() => {
+              const prevInputCurrency = inputCurrency
+              const prevOutputCurrency = outputCurrency
+              setInputCurrency(prevOutputCurrency)
+              setOutputCurrency(prevInputCurrency)
+              setInputCurrencyAmount('')
+            }}
+          >
+            <ArrowDownSvg className="w-4 h-4 sm:w-6 sm:h-6" />
+          </button>
+        </div>
       </div>
       <div className="flex justify-between items-center">
         <div className="flex text-xs sm:text-sm text-white">
@@ -162,8 +173,6 @@ export const SwapForm = ({
             <SwapSettingModal
               slippageInput={slippageInput}
               setSlippageInput={setSlippageInput}
-              partitionInput={partitionInput}
-              setPartitionInput={setPartitionInput}
             />
           ) : (
             <></>

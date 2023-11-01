@@ -16,7 +16,5 @@ export const Default: Story = {
   args: {
     slippageInput: '1.00',
     setSlippageInput: () => {},
-    partitionInput: '1',
-    setPartitionInput: () => {},
   },
 }

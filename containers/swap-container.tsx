@@ -32,7 +32,6 @@ export const SwapContainer = () => {
     useState(false)
 
   const [slippageInput, setSlippageInput] = useState('1')
-  const [partitionInput, setPartitionInput] = useState('1')
   const [swapLogic, setSwapLogic] = useState<'GasEfficient' | 'MaximizeReturn'>(
     'MaximizeReturn',
   )
@@ -67,6 +66,7 @@ export const SwapContainer = () => {
           slippageLimitPercent: parseFloat(slippageInput),
           userAddress,
           gasPrice: feeData.gasPrice,
+          gasEffectiveMode: swapLogic === 'GasEfficient',
         })
       }
     },
@@ -99,8 +99,6 @@ export const SwapContainer = () => {
             ).toString()}
             slippageInput={slippageInput}
             setSlippageInput={setSlippageInput}
-            partitionInput={partitionInput}
-            setPartitionInput={setPartitionInput}
             swapLogic={swapLogic}
             setSwapLogic={setSwapLogic}
             gasEstimateValue={data?.gasEstimateValue ?? 0}
