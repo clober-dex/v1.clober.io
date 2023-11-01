@@ -12,8 +12,11 @@ import useDropdown from '../../hooks/useDropdown'
 import { SwapSettingModal } from '../modal/swap-setting-modal'
 import { ActionButton } from '../button/action-button'
 import { formatDollarValue } from '../../utils/bigint'
+import { Prices } from '../../model/prices'
+import { Balances } from '../../model/balances'
 export const SwapForm = ({
   currencies,
+  balances,
   prices,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
@@ -39,7 +42,8 @@ export const SwapForm = ({
   nativeCurrency,
 }: {
   currencies: Currency[]
-  prices: { [address in `0x${string}`]: number }
+  balances: Balances
+  prices: Prices
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect: (showInputCurrencySelect: boolean) => void
   inputCurrency: Currency | undefined
@@ -83,6 +87,8 @@ export const SwapForm = ({
             )
           : currencies
       }
+      balances={balances}
+      prices={prices}
       onBack={() => setShowInputCurrencySelect(false)}
       onCurrencySelect={(currency) => {
         setInputCurrency(currency)
@@ -99,6 +105,8 @@ export const SwapForm = ({
             )
           : currencies
       }
+      balances={balances}
+      prices={prices}
       onBack={() => setShowOutputCurrencySelect(false)}
       onCurrencySelect={(currency) => {
         setOutputCurrency(currency)

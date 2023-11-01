@@ -26,11 +26,11 @@ const Context = React.createContext<CurrencyContext>({
   balances: {},
 })
 
-export const isEthereum = (currency: Currency) => {
-  return WrappedEthers.map((address) => getAddress(address)).includes(
-    getAddress(currency.address),
-  )
-}
+// export const isEthereum = (currency: Currency) => {
+//   return WrappedEthers.map((address) => getAddress(address)).includes(
+//     getAddress(currency.address),
+//   )
+// }
 
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { selectedChain } = useChainContext()
@@ -83,15 +83,18 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           args: [userAddress],
         })),
       })
-      return results.reduce((acc: {}, { result }, index: number) => {
-        const currency = uniqueCurrencies[index]
-        return {
-          ...acc,
-          [currency.address]: isEthereum(currency)
-            ? (result ?? 0n) + (balance?.value ?? 0n)
-            : result,
-        }
-      }, {})
+      return results.reduce(
+        (acc: {}, { result }, index: number) => {
+          const currency = uniqueCurrencies[index]
+          return {
+            ...acc,
+            [getAddress(currency.address)]: result ?? 0n,
+          }
+        },
+        {
+          [zeroAddress]: balance?.value ?? 0n,
+        },
+      )
     },
     {
       refetchInterval: 2000,
