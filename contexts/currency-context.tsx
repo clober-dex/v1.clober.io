@@ -6,7 +6,6 @@ import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { Balances } from '../model/balances'
 import { Currency } from '../model/currency'
 import { IERC20__factory } from '../typechain'
-import { WrappedEthers } from '../constants/weths'
 import { fetchCurrencies } from '../apis/currency'
 import { Prices } from '../model/prices'
 import { fetchPrices } from '../apis/prices'
@@ -49,7 +48,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       return fetchPrices(selectedChain)
     },
     {
-      refetchInterval: 2000,
+      refetchInterval: 10 * 1000,
       refetchOnWindowFocus: true,
     },
   )
@@ -97,7 +96,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       )
     },
     {
-      refetchInterval: 2000,
+      refetchInterval: 10 * 1000,
       refetchOnWindowFocus: true,
     },
   )

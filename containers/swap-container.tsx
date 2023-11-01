@@ -1,12 +1,17 @@
 import React, { useState } from 'react'
-import { zeroAddress } from 'viem'
+import { parseUnits } from 'viem'
+import { useAccount, useFeeData, useQuery } from 'wagmi'
 
 import { SwapForm } from '../components/form/swap-form'
 import { Currency } from '../model/currency'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { useChainContext } from '../contexts/chain-context'
+import { fetchQuotes } from '../apis/quotes'
+import { formatUnits } from '../utils/bigint'
 
 export const SwapContainer = () => {
+  const { data: feeData } = useFeeData()
+  const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const { balances, currencies, prices } = useCurrencyContext()
 
@@ -19,7 +24,6 @@ export const SwapContainer = () => {
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
     undefined,
   )
-  const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
     useState(false)
 
@@ -28,6 +32,42 @@ export const SwapContainer = () => {
   const [swapLogic, setSwapLogic] = useState<'GasEfficient' | 'MaximizeReturn'>(
     'MaximizeReturn',
   )
+
+  const { data } = useQuery(
+    [
+      'quotes',
+      inputCurrency,
+      outputCurrency,
+      inputCurrencyAmount,
+      slippageInput,
+      userAddress,
+      selectedChain,
+      swapLogic, // todo: remove
+    ],
+    async () => {
+      if (
+        feeData &&
+        feeData.gasPrice &&
+        inputCurrency &&
+        outputCurrency &&
+        parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18) > 0n
+      ) {
+        return fetchQuotes({
+          chainId: selectedChain.id,
+          amountIn: parseUnits(
+            inputCurrencyAmount,
+            inputCurrency?.decimals ?? 18,
+          ),
+          inputCurrency,
+          outputCurrency,
+          slippageLimitPercent: parseFloat(slippageInput),
+          userAddress,
+          gasPrice: feeData.gasPrice,
+        })
+      }
+    },
+  )
+
   return (
     <div className="flex flex-col w-fit max-sm:w-full mb-4 sm:mb-6">
       <div className="flex flex-col rounded-2xl bg-gray-900 p-6 sm:w-[480px]">
@@ -48,22 +88,17 @@ export const SwapContainer = () => {
           setShowOutputCurrencySelect={setShowOutputCurrencySelect}
           outputCurrency={outputCurrency}
           setOutputCurrency={setOutputCurrency}
-          outputCurrencyAmount={outputCurrencyAmount}
-          setOutputCurrencyAmount={setOutputCurrencyAmount}
-          availableOutputCurrencyBalance={
-            outputCurrency ? balances[outputCurrency.address] ?? 0n : 0n
-          }
+          outputCurrencyAmount={formatUnits(
+            data?.amountOut ?? 0n,
+            outputCurrency?.decimals ?? 18,
+          ).toString()}
           slippageInput={slippageInput}
           setSlippageInput={setSlippageInput}
           partitionInput={partitionInput}
           setPartitionInput={setPartitionInput}
           swapLogic={swapLogic}
           setSwapLogic={setSwapLogic}
-          gasAmount={1000000000000000n}
-          nativeCurrency={{
-            address: zeroAddress,
-            ...selectedChain.nativeCurrency,
-          }}
+          gasEstimateValue={data?.gasEstimateValue ?? 0}
         />
       </div>
     </div>
