@@ -17,7 +17,7 @@ export const OpenOrderCard = ({
     (Number(openOrder.filledAmount) / Number(openOrder.amount)) * 100
   return (
     <div
-      className="flex flex-col w-[320px] gap-4 bg-gray-900 rounded-2xl p-4"
+      className="flex flex-col lg:w-[320px] gap-4 bg-gray-900 rounded-2xl p-4"
       {...props}
     >
       <div className="flex text-sm text-white justify-between">
