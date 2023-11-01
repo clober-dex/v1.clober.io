@@ -9,9 +9,5 @@ export function getLogo(currency?: Currency): string {
   if (!currency) {
     return ''
   }
-  console.log(
-    'ddd',
-    `https://assets.odos.xyz/tokens/${currency.symbol.toUpperCase()}.webp`,
-  )
   return `https://assets.odos.xyz/tokens/${currency.symbol.toUpperCase()}.webp`
 }
