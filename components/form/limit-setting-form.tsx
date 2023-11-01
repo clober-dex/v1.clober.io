@@ -51,7 +51,7 @@ export default function LimitSettingForm({
             Set bounty to 0 {nativeCurrency.symbol || ''}
           </button>
         </div>
-        <p className="text-gray-500 text-xs w-[366px] lg:w-auto">
+        <p className="text-gray-500 text-xs lg:w-auto">
           By setting a Claim Bounty, you can incentivize others to claim your
           orders for you. The default Claim Bounty is based on the average gas
           cost of claiming an order. To learn more about how Claim Bounties

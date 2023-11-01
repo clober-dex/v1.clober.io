@@ -1,9 +1,10 @@
+import { Currency } from './currency'
+
 export type OpenOrder = {
-  baseSymbol: string
-  quoteSymbol: string
+  inputCurrency: Currency
+  outputCurrency: Currency
   isBid: boolean
   txHash: `0x${string}`
-  timestamp: string
   price: bigint
   filledAmount: bigint
   amount: bigint

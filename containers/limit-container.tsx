@@ -17,30 +17,29 @@ import { toPlacesString } from '../utils/bignumber'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../model/decimals'
 import { BlockNumberWidget } from '../components/block-number-widget'
+import { dummyCurrencies } from '../.storybook/dummy-data/currencies'
 
 const openOrders = [
   {
-    baseSymbol: 'WETH',
-    quoteSymbol: 'USDC',
+    inputCurrency: dummyCurrencies[0],
+    outputCurrency: dummyCurrencies[1],
     isBid: true,
     txHash:
       '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
-    timestamp: 'Sep 22, 2023 8:34 PM',
     price: 1600000000000000000000n,
     filledAmount: 120000000000000000n,
     amount: 1000000000000000000n,
     claimableAmount: 700000000000000000n,
   },
   {
-    baseSymbol: 'WETH',
-    quoteSymbol: 'USDC',
+    inputCurrency: dummyCurrencies[1],
+    outputCurrency: dummyCurrencies[0],
     isBid: false,
     txHash:
       '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
-    timestamp: 'Sep 22, 2023 8:34 PM',
     price: 1600000000000000000000n,
     filledAmount: 1000000000000000000n,
-    amount: 1230000000000000000n,
+    amount: 1230000n,
     claimableAmount: 500000000000000000n,
   },
 ] as OpenOrder[]
