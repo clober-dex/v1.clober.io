@@ -116,9 +116,7 @@ export const LimitForm = ({
             className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
             onClick={() => setIsBid(!isBid)}
           >
-            <div className="w-4 h-4 sm:w-6 sm:h-6 relative">
-              <ArrowDownSvg />
-            </div>
+            <ArrowDownSvg className="w-4 h-4 sm:w-6 sm:h-6" />
           </button>
         </div>
       </div>

@@ -249,7 +249,7 @@ export const LimitContainer = () => {
         ) : (
           <></>
         )}
-        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[480px] lg:h-[480px]">
+        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[360px] sm:w-[480px] lg:h-[480px]">
           {selectMode === 'settings' ? (
             <LimitSettingForm
               nativeCurrency={{
@@ -301,7 +301,7 @@ export const LimitContainer = () => {
           </button>
         </div>
       </div>
-      <div className="flex w-full justify-center mt-6">
+      <div className="flex w-full justify-center mt-0 sm:mt-4">
         <OpenOrderList openOrders={openOrders} />
       </div>
       <BlockNumberWidget latestBlockNumber={0} />
