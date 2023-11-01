@@ -17,7 +17,7 @@ export const OpenOrderCard = ({
     (Number(openOrder.filledAmount) / Number(openOrder.amount)) * 100
   return (
     <div
-      className="flex flex-col lg:w-[320px] gap-4 bg-gray-900 rounded-2xl p-4"
+      className="flex flex-col shadow border border-solid border-gray-800 lg:w-[310px] gap-4 bg-gray-900 rounded-2xl p-4"
       {...props}
     >
       <div className="flex text-sm text-white justify-between">
@@ -33,7 +33,9 @@ export const OpenOrderCard = ({
           </a>
         </div>
         <div
-          className={`${openOrder.isBid ? 'text-green-500' : 'text-red-500'}`}
+          className={`${
+            openOrder.isBid ? 'text-green-500' : 'text-red-500'
+          } text-sm font-bold`}
         >
           {openOrder.isBid ? 'Bid' : 'Ask'}
         </div>
