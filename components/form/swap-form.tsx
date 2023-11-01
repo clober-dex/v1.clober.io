@@ -10,10 +10,10 @@ import { GasSvg } from '../svg/gas-svg'
 import { SettingSvg } from '../svg/setting-svg'
 import useDropdown from '../../hooks/useDropdown'
 import { SwapSettingModal } from '../modal/swap-setting-modal'
-import { ActionButton } from '../button/action-button'
-import { formatDollarValue } from '../../utils/bigint'
+import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
+import { ArrowDownSvg } from '../svg/arrow-down-svg'
 export const SwapForm = ({
   currencies,
   balances,
@@ -30,16 +30,12 @@ export const SwapForm = ({
   outputCurrency,
   setOutputCurrency,
   outputCurrencyAmount,
-  setOutputCurrencyAmount,
-  availableOutputCurrencyBalance,
   slippageInput,
   setSlippageInput,
-  partitionInput,
-  setPartitionInput,
   swapLogic,
   setSwapLogic,
-  gasAmount,
-  nativeCurrency,
+  gasEstimateValue,
+  actionButtonProps,
 }: {
   currencies: Currency[]
   balances: Balances
@@ -56,16 +52,12 @@ export const SwapForm = ({
   outputCurrency: Currency | undefined
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
-  setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
-  availableOutputCurrencyBalance: bigint
   slippageInput: string
   setSlippageInput: (slippageInput: string) => void
-  partitionInput: string
-  setPartitionInput: (partitionInput: string) => void
   swapLogic: 'GasEfficient' | 'MaximizeReturn'
   setSwapLogic: (swapLogic: 'GasEfficient' | 'MaximizeReturn') => void
-  gasAmount: bigint
-  nativeCurrency: Currency
+  gasEstimateValue: number
+  actionButtonProps: ActionButtonProps
 }) => {
   const { showDropdown, setShowDropdown } = useDropdown()
 
@@ -122,14 +114,31 @@ export const SwapForm = ({
           onValueChange={setInputCurrencyAmount}
           availableAmount={availableInputCurrencyBalance}
           onCurrencyClick={() => setShowInputCurrencySelect(true)}
+          price={inputCurrency ? prices[inputCurrency.address] : undefined}
         />
         <CurrencyAmountInput
           currency={outputCurrency}
           value={outputCurrencyAmount}
-          onValueChange={setOutputCurrencyAmount}
-          availableAmount={availableOutputCurrencyBalance}
+          onValueChange={() => {}}
+          availableAmount={0n}
           onCurrencyClick={() => setShowOutputCurrencySelect(true)}
+          price={outputCurrency ? prices[outputCurrency.address] : undefined}
+          disabled={true}
         />
+        <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">
+          <button
+            className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
+            onClick={() => {
+              const prevInputCurrency = inputCurrency
+              const prevOutputCurrency = outputCurrency
+              setInputCurrency(prevOutputCurrency)
+              setOutputCurrency(prevInputCurrency)
+              setInputCurrencyAmount('')
+            }}
+          >
+            <ArrowDownSvg className="w-4 h-4 sm:w-6 sm:h-6" />
+          </button>
+        </div>
       </div>
       <div className="flex justify-between items-center">
         <div className="flex text-xs sm:text-sm text-white">
@@ -149,11 +158,7 @@ export const SwapForm = ({
         <div className="flex text-xs sm:text-sm text-white">
           <GasSvg className="mr-0.5" />
           <div className="flex text-xs sm:text-sm text-white">
-            {formatDollarValue(
-              gasAmount,
-              nativeCurrency.decimals,
-              prices[nativeCurrency.address] ?? 0,
-            )}
+            {toPlacesString(gasEstimateValue)}
           </div>
         </div>
       </div>
@@ -168,8 +173,6 @@ export const SwapForm = ({
             <SwapSettingModal
               slippageInput={slippageInput}
               setSlippageInput={setSlippageInput}
-              partitionInput={partitionInput}
-              setPartitionInput={setPartitionInput}
             />
           ) : (
             <></>
@@ -192,11 +195,7 @@ export const SwapForm = ({
           </button>
         </div>
       </div>
-      <ActionButton
-        disabled={false}
-        onClick={() => {}}
-        text={'Connect wallet'}
-      />
+      <ActionButton {...actionButtonProps} />
     </>
   )
 }

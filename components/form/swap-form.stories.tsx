@@ -1,7 +1,6 @@
 import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import '../../styles/globals.css'
-import { zeroAddress } from 'viem'
 
 import { dummyCurrencies } from '../../.storybook/dummy-data/currencies'
 import { dummyPrices } from '../../.storybook/dummy-data/prices'
@@ -38,7 +37,11 @@ export const Default: Story = {
     outputCurrency: undefined,
     setOutputCurrency: () => {},
     outputCurrencyAmount: '0.1',
-    setOutputCurrencyAmount: () => {},
+    actionButtonProps: {
+      disabled: false,
+      onClick: () => {},
+      text: 'Swap',
+    },
   },
 }
 
@@ -58,20 +61,15 @@ export const Selected: Story = {
     outputCurrency: dummyCurrencies[5],
     setOutputCurrency: () => {},
     outputCurrencyAmount: '2000',
-    setOutputCurrencyAmount: () => {},
-    availableOutputCurrencyBalance: 100000000000000000n,
     slippageInput: '1.00',
     setSlippageInput: () => {},
-    partitionInput: '1',
-    setPartitionInput: () => {},
     swapLogic: 'GasEfficient',
     setSwapLogic: () => {},
-    gasAmount: 1000000000000000n,
-    nativeCurrency: {
-      address: zeroAddress,
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18,
+    gasEstimateValue: 1.12,
+    actionButtonProps: {
+      disabled: false,
+      onClick: () => {},
+      text: 'Swap',
     },
   },
 }
