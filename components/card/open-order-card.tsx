@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { formatHash } from '../../utils/string'
 import { OutlinkSvg } from '../svg/outlink-svg'
 import { OpenOrder } from '../../model/open-order'
 import { formatUnits } from '../../utils/bigint'
