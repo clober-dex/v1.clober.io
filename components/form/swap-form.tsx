@@ -10,7 +10,7 @@ import { GasSvg } from '../svg/gas-svg'
 import { SettingSvg } from '../svg/setting-svg'
 import useDropdown from '../../hooks/useDropdown'
 import { SwapSettingModal } from '../modal/swap-setting-modal'
-import { ActionButton } from '../button/action-button'
+import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 export const SwapForm = ({
@@ -36,6 +36,7 @@ export const SwapForm = ({
   swapLogic,
   setSwapLogic,
   gasEstimateValue,
+  actionButtonProps,
 }: {
   currencies: Currency[]
   balances: Balances
@@ -59,6 +60,7 @@ export const SwapForm = ({
   swapLogic: 'GasEfficient' | 'MaximizeReturn'
   setSwapLogic: (swapLogic: 'GasEfficient' | 'MaximizeReturn') => void
   gasEstimateValue: number
+  actionButtonProps: ActionButtonProps
 }) => {
   const { showDropdown, setShowDropdown } = useDropdown()
 
@@ -184,11 +186,7 @@ export const SwapForm = ({
           </button>
         </div>
       </div>
-      <ActionButton
-        disabled={false}
-        onClick={() => {}}
-        text={'Connect wallet'}
-      />
+      <ActionButton {...actionButtonProps} />
     </>
   )
 }

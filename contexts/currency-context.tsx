@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useAccount, useBalance, useQuery } from 'wagmi'
 import { readContracts } from '@wagmi/core'
 import { getAddress, isAddressEqual, zeroAddress } from 'viem'
@@ -9,6 +9,8 @@ import { IERC20__factory } from '../typechain'
 import { fetchCurrencies } from '../apis/currency'
 import { Prices } from '../model/prices'
 import { fetchPrices } from '../apis/prices'
+import { max } from '../utils/bigint'
+import { WrappedEthers } from '../constants/weths'
 
 import { useMarketContext } from './market-context'
 import { useChainContext } from './chain-context'
@@ -25,11 +27,11 @@ const Context = React.createContext<CurrencyContext>({
   balances: {},
 })
 
-// export const isEthereum = (currency: Currency) => {
-//   return WrappedEthers.map((address) => getAddress(address)).includes(
-//     getAddress(currency.address),
-//   )
-// }
+export const isEthereum = (currency: Currency) => {
+  return WrappedEthers.map((address) => getAddress(address)).includes(
+    getAddress(currency.address),
+  )
+}
 
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { selectedChain } = useChainContext()
@@ -99,6 +101,17 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       refetchInterval: 10 * 1000,
       refetchOnWindowFocus: true,
     },
+  ) as { data: Balances }
+
+  const calculateETHValue = useCallback(
+    (currency: Currency, willPayAmount: bigint) => {
+      if (!balance || !balances || !isEthereum(currency)) {
+        return 0n
+      }
+      const wrappedETHBalance = balances[currency.address] - balance.value
+      return max(willPayAmount - wrappedETHBalance, 0n)
+    },
+    [balance, balances],
   )
 
   return (

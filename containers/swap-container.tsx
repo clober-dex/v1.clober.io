@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { parseUnits } from 'viem'
+import { parseUnits, zeroAddress } from 'viem'
 import { useAccount, useFeeData, useQuery } from 'wagmi'
 import { polygonZkEvm } from 'wagmi/chains'
 
@@ -10,8 +10,10 @@ import { useChainContext } from '../contexts/chain-context'
 import { fetchQuotes } from '../apis/quotes'
 import { formatUnits } from '../utils/bigint'
 import OdosPathVizViewer from '../components/odos-pathviz-viewer'
+import { useSwapContext } from '../contexts/swap-context'
 
 export const SwapContainer = () => {
+  const { swap } = useSwapContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
@@ -102,6 +104,34 @@ export const SwapContainer = () => {
             swapLogic={swapLogic}
             setSwapLogic={setSwapLogic}
             gasEstimateValue={data?.gasEstimateValue ?? 0}
+            actionButtonProps={{
+              disabled:
+                !inputCurrency ||
+                !outputCurrency ||
+                !inputCurrencyAmount ||
+                !data,
+              onClick: async () => {
+                if (!inputCurrency || !userAddress || !data) {
+                  return
+                }
+                // TODO fix it
+                if (selectedChain.id === polygonZkEvm.id) {
+                  return
+                } else if (!data.pathId) {
+                  return
+                }
+                await swap(
+                  inputCurrency,
+                  parseUnits(
+                    inputCurrencyAmount,
+                    inputCurrency?.decimals ?? 18,
+                  ),
+                  userAddress,
+                  data.pathId,
+                )
+              },
+              text: 'Swap',
+            }}
           />
         </div>
         {/* TODO: remove this */}

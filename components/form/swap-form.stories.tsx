@@ -37,6 +37,11 @@ export const Default: Story = {
     outputCurrency: undefined,
     setOutputCurrency: () => {},
     outputCurrencyAmount: '0.1',
+    actionButtonProps: {
+      disabled: false,
+      onClick: () => {},
+      text: 'Swap',
+    },
   },
 }
 
@@ -63,6 +68,11 @@ export const Selected: Story = {
     swapLogic: 'GasEfficient',
     setSwapLogic: () => {},
     gasEstimateValue: 1.12,
+    actionButtonProps: {
+      disabled: false,
+      onClick: () => {},
+      text: 'Swap',
+    },
   },
 }
 
