@@ -130,7 +130,7 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: x.size.toString(),
+                size: toPlacesString(x.size),
               }
             }),
             Array.from(
@@ -171,7 +171,7 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: x.size.toString(),
+                size: toPlacesString(x.size),
               }
             }),
           ]
@@ -227,22 +227,22 @@ export const LimitContainer = () => {
       )
 
       const accumulatedSInputCurrencyAmount = depthClickedIndex.isBid
-        ? bids
-            .reduce(
+        ? toPlacesString(
+            bids.reduce(
               (prev, curr, index) =>
                 index <= depthClickedIndex.index ? prev.plus(curr.size) : prev,
               new BigNumber(0),
-            )
-            .toString()
-        : asks
-            .reduce(
+            ),
+          )
+        : toPlacesString(
+            asks.reduce(
               (prev, curr, index) =>
                 index <= depthClickedIndex.index
                   ? prev.plus(new BigNumber(curr.size).times(curr.price))
                   : prev,
               new BigNumber(0),
-            )
-            .toString()
+            ),
+          )
       setInputCurrencyAmount(accumulatedSInputCurrencyAmount)
     } else {
       if (isBid) {
@@ -286,9 +286,9 @@ export const LimitContainer = () => {
     }
 
     if (previousValues.current.priceInput !== priceInput) {
-      const outputCurrencyAmount = new BigNumber(inputCurrencyAmount)
-        .div(priceInput)
-        .toString()
+      const outputCurrencyAmount = toPlacesString(
+        new BigNumber(inputCurrencyAmount).div(priceInput),
+      )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
         priceInput,
@@ -304,7 +304,7 @@ export const LimitContainer = () => {
       const priceInput =
         expectedPriceInput.isNaN() || !expectedPriceInput.isFinite()
           ? previousValues.current.priceInput
-          : expectedPriceInput.toString()
+          : toPlacesString(expectedPriceInput)
       setPriceInput(priceInput)
       previousValues.current = {
         priceInput,
@@ -314,9 +314,9 @@ export const LimitContainer = () => {
     } else if (
       previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
     ) {
-      const outputCurrencyAmount = new BigNumber(inputCurrencyAmount)
-        .div(priceInput)
-        .toString()
+      const outputCurrencyAmount = toPlacesString(
+        new BigNumber(inputCurrencyAmount).div(priceInput),
+      )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
         priceInput,

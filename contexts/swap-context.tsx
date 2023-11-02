@@ -221,9 +221,7 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
             result.routes,
             inputCurrencyAmount,
             new BigNumber(1)
-              .minus(
-                new BigNumber(slippageLimitPercent).dividedBy(100).toString(),
-              )
+              .minus(new BigNumber(slippageLimitPercent).dividedBy(100))
               .multipliedBy(result.amountOut)
               .toFixed(0),
             result.amountOut,
