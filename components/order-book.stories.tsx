@@ -38,6 +38,7 @@ export const Default: Story = {
     ],
     selectedDecimalPlaces: { label: '0.00001', value: 5 },
     setSelectedDecimalPlaces: () => {},
+    setDepthClickedIndex: () => {},
   },
 }
 

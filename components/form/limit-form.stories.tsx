@@ -27,7 +27,6 @@ export const Default: Story = {
     markets: dummyMarkets,
     selectedMarket: dummyMarkets[0],
     isBid: true,
-    setIsBid: () => {},
     setSelectMode: () => {},
     showInputCurrencySelect: false,
     setShowInputCurrencySelect: () => {},
@@ -41,6 +40,7 @@ export const Default: Story = {
     setOutputCurrency: () => {},
     outputCurrencyAmount: '0.1',
     setOutputCurrencyAmount: () => {},
+    swapInputCurrencyAndOutputCurrency: () => {},
   },
 }
 
@@ -49,7 +49,6 @@ export const Selected: Story = {
     markets: dummyMarkets,
     selectedMarket: dummyMarkets[0],
     isBid: true,
-    setIsBid: () => {},
     setSelectMode: () => {},
     showInputCurrencySelect: false,
     setShowInputCurrencySelect: () => {},
@@ -65,6 +64,7 @@ export const Selected: Story = {
     outputCurrencyAmount: '0.1',
     setOutputCurrencyAmount: () => {},
     availableOutputCurrencyBalance: 100000000000000000n,
+    swapInputCurrencyAndOutputCurrency: () => {},
   },
 }
 
