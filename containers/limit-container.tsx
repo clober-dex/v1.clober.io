@@ -51,6 +51,9 @@ export const LimitContainer = () => {
     Decimals | undefined
   >(undefined)
   const [priceInput, setPriceInput] = useState('')
+  const [depthClickedIndex, setDepthClickedIndex] = useState<
+    { isBid: boolean; index: number } | undefined
+  >(undefined)
 
   const availableDecimalPlacesGroups = useMemo(() => {
     const availableDecimalPlacesGroups = selectedMarket
@@ -86,48 +89,11 @@ export const LimitContainer = () => {
       : DEFAULT_DECIMAL_PLACES_GROUPS
   }, [selectedMarket])
 
-  useEffect(() => {
-    setClaimBounty(
-      formatUnits(
-        selectedChain.defaultGasPrice ?? 0n,
-        selectedChain.nativeCurrency.decimals,
-      ),
-    )
-    if (selectedMarket) {
-      setInputCurrency(selectedMarket.quoteToken)
-      setInputCurrencyAmount('')
-
-      setOutputCurrency(selectedMarket.baseToken)
-      setOutputCurrencyAmount('')
-
-      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-
-      if (isBid) {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-      } else {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-      }
-    }
-  }, [availableDecimalPlacesGroups, isBid, selectedChain, selectedMarket])
-
-  return (
-    <div className="flex flex-col w-fit mb-4 sm:mb-6">
-      <div className="flex flex-col w-full lg:flex-row gap-4">
-        {showOrderBook &&
-        selectedMarket &&
-        availableDecimalPlacesGroups &&
-        selectedDecimalPlaces ? (
-          <OrderBook
-            name={`${selectedMarket.baseToken.symbol}/${selectedMarket.quoteToken.symbol}`}
-            bids={Array.from(
+  const [bids, asks] = useMemo(
+    () =>
+      selectedMarket && selectedDecimalPlaces
+        ? [
+            Array.from(
               [...selectedMarket.bids.map((depth) => ({ ...depth }))]
                 .sort((a, b) => Number(b.priceIndex) - Number(a.priceIndex))
                 .map((x) => {
@@ -167,8 +133,8 @@ export const LimitContainer = () => {
                 price: x.price,
                 size: x.size.toString(),
               }
-            })}
-            asks={Array.from(
+            }),
+            Array.from(
               [...selectedMarket.asks.map((depth) => ({ ...depth }))]
                 .sort((a, b) => Number(a.priceIndex) - Number(b.priceIndex))
                 .map((x) => {
@@ -208,10 +174,61 @@ export const LimitContainer = () => {
                 price: x.price,
                 size: x.size.toString(),
               }
-            })}
+            }),
+          ]
+        : [[], []],
+    [selectedDecimalPlaces, selectedMarket],
+  )
+
+  useEffect(() => {
+    setClaimBounty(
+      formatUnits(
+        selectedChain.defaultGasPrice ?? 0n,
+        selectedChain.nativeCurrency.decimals,
+      ),
+    )
+    if (selectedMarket) {
+      setInputCurrency(selectedMarket.quoteToken)
+      setInputCurrencyAmount('')
+
+      setOutputCurrency(selectedMarket.baseToken)
+      setOutputCurrencyAmount('')
+
+      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+
+      if (isBid) {
+        setPriceInput(
+          toPlacesString(
+            formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
+          ),
+        )
+      } else {
+        setPriceInput(
+          toPlacesString(
+            formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
+          ),
+        )
+      }
+    }
+  }, [availableDecimalPlacesGroups, isBid, selectedChain, selectedMarket])
+
+  useEffect(() => {}, [depthClickedIndex])
+
+  return (
+    <div className="flex flex-col w-fit mb-4 sm:mb-6">
+      <div className="flex flex-col w-full lg:flex-row gap-4">
+        {showOrderBook &&
+        selectedMarket &&
+        availableDecimalPlacesGroups &&
+        selectedDecimalPlaces ? (
+          <OrderBook
+            name={`${selectedMarket.baseToken.symbol}/${selectedMarket.quoteToken.symbol}`}
+            bids={bids}
+            asks={asks}
             availableDecimalPlacesGroups={availableDecimalPlacesGroups}
             selectedDecimalPlaces={selectedDecimalPlaces}
             setSelectedDecimalPlaces={setSelectedDecimalPlaces}
+            setDepthClickedIndex={setDepthClickedIndex}
           />
         ) : (
           <></>
@@ -271,7 +288,6 @@ export const LimitContainer = () => {
       <div className="flex w-full justify-center mt-0 sm:mt-4">
         <OpenOrderList openOrders={openOrders} />
       </div>
-      <BlockNumberWidget latestBlockNumber={0} />
     </div>
   )
 }

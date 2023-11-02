@@ -13,6 +13,7 @@ export default function OrderBook({
   availableDecimalPlacesGroups,
   selectedDecimalPlaces,
   setSelectedDecimalPlaces,
+  setDepthClickedIndex,
   ...props
 }: {
   name: string
@@ -21,6 +22,7 @@ export default function OrderBook({
   availableDecimalPlacesGroups: Decimals[]
   selectedDecimalPlaces: Decimals
   setSelectedDecimalPlaces: (decimals: Decimals) => void
+  setDepthClickedIndex: (index: { isBid: boolean; index: number }) => void
 } & React.HTMLAttributes<HTMLDivElement>) {
   const biggestDepth = BigNumber.max(
     BigNumber.max(...asks.map(({ size }) => size), 0),
@@ -54,9 +56,10 @@ export default function OrderBook({
             .slice(0, 20)
             .map(({ price, size }, index) => {
               return (
-                <div
+                <button
                   key={`bid-${index}`}
                   className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
+                  onClick={() => setDepthClickedIndex({ isBid: true, index })}
                 >
                   <div className="text-gray-200">{toPlacesString(size)}</div>
                   <div className="text-green-500">{price}</div>
@@ -69,7 +72,7 @@ export default function OrderBook({
                         .toNumber()}%`,
                     }}
                   />
-                </div>
+                </button>
               )
             })}
         </div>
@@ -83,9 +86,10 @@ export default function OrderBook({
             .slice(0, 20)
             .map(({ price, size }, index) => {
               return (
-                <div
+                <button
                   key={`ask-${index}`}
                   className="px-2 flex items-center justify-between shrink-0 relative tabular-nums"
+                  onClick={() => setDepthClickedIndex({ isBid: false, index })}
                 >
                   <div className="text-red-500">{price}</div>
                   <div className="text-gray-200">{toPlacesString(size)}</div>
@@ -98,7 +102,7 @@ export default function OrderBook({
                         .toNumber()}%`,
                     }}
                   />
-                </div>
+                </button>
               )
             })}
         </div>
