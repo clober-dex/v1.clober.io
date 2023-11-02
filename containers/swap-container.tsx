@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { parseUnits } from 'viem'
 import { useAccount, useFeeData, useQuery } from 'wagmi'
 import { polygonZkEvm } from 'wagmi/chains'
@@ -71,6 +71,13 @@ export const SwapContainer = () => {
       }
     },
   )
+
+  useEffect(() => {
+    setInputCurrency(undefined)
+    setInputCurrencyAmount('')
+    setShowInputCurrencySelect(false)
+    setOutputCurrency(undefined)
+  }, [selectedChain])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
