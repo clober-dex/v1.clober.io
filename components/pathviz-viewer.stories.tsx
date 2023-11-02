@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import '../styles/globals.css'
 import { PathViz } from '../model/pathviz'
 
-import OdosPathvizViewer from './odos-pathviz-viewer'
+import OdosPathvizViewer from './path-viz-viewer'
 
 const dummyPathviz = {
   nodes: [
