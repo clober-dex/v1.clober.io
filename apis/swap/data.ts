@@ -16,8 +16,8 @@ export async function fetchSwapData(
   gas: bigint
   value: bigint
   to: `0x${string}`
-  nonce: number
-  gasPrice: bigint
+  nonce?: number
+  gasPrice?: bigint
 }> {
   const { aggregator } = await fetchQuotes(
     aggregators,

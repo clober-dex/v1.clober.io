@@ -1,4 +1,10 @@
-import { getAddress, stringToHex, zeroAddress } from 'viem'
+import {
+  encodeFunctionData,
+  getAddress,
+  isAddressEqual,
+  stringToHex,
+  zeroAddress,
+} from 'viem'
 import qs from 'qs'
 import BigNumber from 'bignumber.js'
 
@@ -13,15 +19,15 @@ import { Aggregator } from './index'
 type SubRouteDto = {
   dex_id: string
   dex_type: string
-  tokens: string[]
+  tokens: []
   pools: string[]
 }
 
 type SubRoute = {
-  dexType: number
-  tokens: string[]
-  pools: string[]
-  extraData: string
+  dexType: bigint
+  tokens: `0x${string}`[]
+  pools: `0x${string}`[]
+  extraData: `0x${string}`
 }
 
 type RouteDto = {
@@ -30,7 +36,7 @@ type RouteDto = {
 }
 
 type Route = {
-  inputAmount: string
+  inputAmount: bigint
   subRoutes: SubRoute[]
 }
 
@@ -54,6 +60,76 @@ const DexType = {
   Clober: 8,
   BalancerV2: 9,
 }
+
+const abi = [
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'uint256',
+            name: 'inputAmount',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'dexType',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address[]',
+                name: 'tokens',
+                type: 'address[]',
+              },
+              {
+                internalType: 'address[]',
+                name: 'pools',
+                type: 'address[]',
+              },
+              {
+                internalType: 'bytes',
+                name: 'extraData',
+                type: 'bytes',
+              },
+            ],
+            internalType: 'struct IAggregator.SubRoute[]',
+            name: 'subRoutes',
+            type: 'tuple[]',
+          },
+        ],
+        internalType: 'struct IAggregator.Route[]',
+        name: 'routes',
+        type: 'tuple[]',
+      },
+      {
+        internalType: 'uint256',
+        name: 'inputAmount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minOutputAmount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'expectedOutputAmount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address',
+      },
+    ],
+    name: 'swap',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+] as const
 
 export class CloberAggregator implements Aggregator {
   public readonly baseUrl = 'https://pathfinder.clober-api.com'
@@ -93,7 +169,7 @@ export class CloberAggregator implements Aggregator {
     }, {} as Prices)
   }
 
-  private buildExtraData(dexId: string): string {
+  private buildExtraData(dexId: string): `0x${string}` {
     if (dexId === 'QUICKSWAP_V3') {
       return '0x000000000000000000000000f6ad3ccf71abb3e12becf6b3d2a74c963859adcd'
     } else if (dexId === 'DOVESWAP_V3') {
@@ -114,15 +190,15 @@ export class CloberAggregator implements Aggregator {
       const subRoutes: SubRoute[] = routeDto.sub_routes.map((subRoute) => {
         const dexType = DexType[subRoute.dex_type as keyof typeof DexType]
         return {
-          dexType,
-          tokens: subRoute.tokens,
-          pools: subRoute.pools,
+          dexType: BigInt(dexType),
+          tokens: subRoute.tokens as `0x${string}`[],
+          pools: subRoute.pools as `0x${string}`[],
           extraData: this.buildExtraData(subRoute.dex_id),
         }
       })
 
       const route: Route = {
-        inputAmount,
+        inputAmount: BigInt(inputAmount),
         subRoutes,
       }
       routes.push(route)
@@ -167,26 +243,51 @@ export class CloberAggregator implements Aggregator {
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
+    slippageLimitPercent: number,
+    gasPrice: bigint,
+    userAddress: `0x${string}`,
   ): Promise<{
     data: `0x${string}`
     gas: bigint
     value: bigint
     to: `0x${string}`
-    nonce: number
-    gasPrice: bigint
+    nonce?: number
+    gasPrice?: bigint
   }> {
-    await this.quote(inputCurrency, amountIn, outputCurrency)
+    const { gasLimit, amountOut } = await this.quote(
+      inputCurrency,
+      amountIn,
+      outputCurrency,
+    )
     if (!this.routes) {
       throw new Error('No routes')
     }
 
+    const minOutputAmount = BigInt(
+      new BigNumber(1)
+        .minus(new BigNumber(slippageLimitPercent).dividedBy(100).toString())
+        .multipliedBy(amountOut.toString())
+        .toFixed(0),
+    )
+    const data = encodeFunctionData({
+      abi,
+      functionName: 'swap',
+      args: [this.routes, amountIn, minOutputAmount, amountOut, userAddress],
+    })
+
     return {
-      data: zeroAddress,
-      gas: BigInt(0),
-      value: BigInt(0),
-      to: zeroAddress,
-      nonce: 0,
-      gasPrice: BigInt(0),
+      data,
+      gas: BigInt(
+        new BigNumber(gasLimit.toString())
+          .multipliedBy(1.4)
+          .plus(30000)
+          .toFixed(0),
+      ),
+      value: isAddressEqual(inputCurrency.address, zeroAddress)
+        ? amountIn
+        : BigInt(0),
+      to: this.contract,
+      gasPrice,
     }
   }
 }

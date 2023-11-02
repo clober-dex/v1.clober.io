@@ -150,6 +150,17 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
       try {
         if (!isAddressEqual(inputCurrency.address, zeroAddress)) {
+          setConfirmation({
+            title: 'Approve',
+            body: 'Please confirm in your wallet.',
+            fields: [
+              {
+                currency: inputCurrency,
+                label: inputCurrency.symbol,
+                value: formatUnits(amountIn, inputCurrency.decimals),
+              },
+            ],
+          })
           await approve20(
             selectedChain.id,
             walletClient,
@@ -181,7 +192,13 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
           ],
         })
         await walletClient.sendTransaction({
-          ...transaction,
+          // ...transaction,
+          data: transaction.data,
+          to: transaction.to,
+          value: transaction.value,
+          gas: transaction.gas,
+          // gasPrice: transaction.gasPrice,
+          // nonce: transaction.nonce,
         })
       } catch (e) {
         console.error(e)

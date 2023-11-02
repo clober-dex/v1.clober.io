@@ -113,8 +113,8 @@ export class OdosAggregator implements Aggregator {
     gas: bigint
     value: bigint
     to: `0x${string}`
-    nonce: number
-    gasPrice: bigint
+    nonce?: number
+    gasPrice?: bigint
   }> {
     await this.quote(
       inputCurrency,
@@ -134,7 +134,7 @@ export class OdosAggregator implements Aggregator {
         value: string
         to: `0x${string}`
         nonce: number
-        gasPrice: number
+        gasPrice: bigint
       }
     }>(this.baseUrl, 'sor/assemble', {
       method: 'POST',

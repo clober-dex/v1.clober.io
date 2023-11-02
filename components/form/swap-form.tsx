@@ -117,7 +117,9 @@ export const SwapForm = ({
           currency={inputCurrency}
           value={inputCurrencyAmount}
           onValueChange={setInputCurrencyAmount}
-          availableAmount={availableInputCurrencyBalance}
+          availableAmount={BigInt(
+            Math.floor(Number(availableInputCurrencyBalance) * 0.997),
+          )}
           onCurrencyClick={() => setShowInputCurrencySelect(true)}
           price={inputCurrency ? prices[inputCurrency.address] : undefined}
         />

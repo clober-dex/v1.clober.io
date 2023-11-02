@@ -32,7 +32,7 @@ export interface Aggregator {
     gas: bigint
     value: bigint
     to: `0x${string}`
-    nonce: number
-    gasPrice: bigint
+    nonce?: number
+    gasPrice?: bigint
   }>
 }
