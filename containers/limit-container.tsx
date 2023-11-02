@@ -179,7 +179,7 @@ export const LimitContainer = () => {
     [selectedDecimalPlaces, selectedMarket],
   )
 
-  // selectedChain && selectedMarket
+  // When selectedChain or selectedMarket or isBid is changed, reset the form
   useEffect(() => {
     setClaimBounty(
       formatUnits(
@@ -196,80 +196,37 @@ export const LimitContainer = () => {
       setOutputCurrencyAmount('')
 
       setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-    }
-  }, [availableDecimalPlacesGroups, selectedChain, selectedMarket])
+      setInputCurrencyAmount('')
+      setOutputCurrencyAmount('')
 
-  // isBid && depthClickedIndex
-  useEffect(() => {
-    if (!selectedMarket) {
-      return
-    }
-
-    if (
-      depthClickedIndex &&
-      ((depthClickedIndex.isBid && bids[depthClickedIndex.index]) ||
-        (!depthClickedIndex.isBid && asks[depthClickedIndex.index]))
-    ) {
       setPriceInput(
-        depthClickedIndex.isBid
-          ? bids[depthClickedIndex.index].price
-          : asks[depthClickedIndex.index].price,
+        isBid
+          ? toPlacesString(
+              formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
+            )
+          : toPlacesString(
+              formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
+            ),
       )
       setInputCurrency(
-        depthClickedIndex.isBid
-          ? selectedMarket.baseToken
-          : selectedMarket.quoteToken,
+        isBid ? selectedMarket.quoteToken : selectedMarket.baseToken,
       )
       setOutputCurrency(
-        depthClickedIndex.isBid
-          ? selectedMarket.quoteToken
-          : selectedMarket.baseToken,
+        isBid ? selectedMarket.baseToken : selectedMarket.quoteToken,
       )
-
-      const accumulatedSInputCurrencyAmount = depthClickedIndex.isBid
-        ? toPlacesString(
-            bids.reduce(
-              (prev, curr, index) =>
-                index <= depthClickedIndex.index ? prev.plus(curr.size) : prev,
-              new BigNumber(0),
-            ),
-          )
-        : toPlacesString(
-            asks.reduce(
-              (prev, curr, index) =>
-                index <= depthClickedIndex.index
-                  ? prev.plus(new BigNumber(curr.size).times(curr.price))
-                  : prev,
-              new BigNumber(0),
-            ),
-          )
-      setInputCurrencyAmount(accumulatedSInputCurrencyAmount)
-    } else {
-      if (isBid) {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-        setInputCurrency(selectedMarket.quoteToken)
-        setInputCurrencyAmount('')
-
-        setOutputCurrency(selectedMarket.baseToken)
-        setOutputCurrencyAmount('')
-      } else {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-        setInputCurrency(selectedMarket.baseToken)
-        setInputCurrencyAmount('')
-
-        setOutputCurrency(selectedMarket.quoteToken)
-        setOutputCurrencyAmount('')
-      }
     }
-  }, [asks, bids, depthClickedIndex, isBid, selectedMarket])
+  }, [availableDecimalPlacesGroups, isBid, selectedChain, selectedMarket])
+
+  // When depthClickedIndex is changed, reset the priceInput
+  useEffect(() => {
+    if (depthClickedIndex) {
+      setPriceInput(
+        depthClickedIndex.isBid
+          ? bids[depthClickedIndex.index]?.price
+          : asks[depthClickedIndex.index]?.price,
+      )
+    }
+  }, [asks, bids, depthClickedIndex])
 
   const previousValues = useRef({
     priceInput,
@@ -285,6 +242,7 @@ export const LimitContainer = () => {
       return
     }
 
+    // `priceInput` is changed -> `outputCurrencyAmount` will be changed
     if (previousValues.current.priceInput !== priceInput) {
       const outputCurrencyAmount = toPlacesString(
         isBid
@@ -297,7 +255,9 @@ export const LimitContainer = () => {
         outputCurrencyAmount,
         inputCurrencyAmount,
       }
-    } else if (
+    }
+    // `outputCurrencyAmount` is changed -> `priceInput` will be changed
+    else if (
       previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
     ) {
       const expectedPriceInput = isBid
@@ -313,7 +273,9 @@ export const LimitContainer = () => {
         outputCurrencyAmount,
         inputCurrencyAmount,
       }
-    } else if (
+    }
+    // `inputCurrencyAmount` is changed -> `outputCurrencyAmount` will be changed
+    else if (
       previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
     ) {
       const outputCurrencyAmount = toPlacesString(
