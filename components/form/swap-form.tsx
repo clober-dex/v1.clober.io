@@ -1,5 +1,5 @@
-import React from 'react'
-import { isAddressEqual } from 'viem'
+import React, { useMemo } from 'react'
+import { isAddressEqual, parseUnits } from 'viem'
 import BigNumber from 'bignumber.js'
 
 import CurrencyAmountInput from '../input/currency-amount-input'
@@ -14,6 +14,7 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ArrowDownSvg } from '../svg/arrow-down-svg'
+
 export const SwapForm = ({
   currencies,
   balances,
@@ -67,7 +68,15 @@ export const SwapForm = ({
       ? new BigNumber(outputCurrencyAmount).dividedBy(
           new BigNumber(inputCurrencyAmount),
         )
-      : undefined
+      : new BigNumber(0)
+  const isLoadingResults = useMemo(() => {
+    return !!(
+      inputCurrency &&
+      outputCurrency &&
+      parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18) > 0n &&
+      parseUnits(outputCurrencyAmount, outputCurrency?.decimals ?? 18) === 0n
+    )
+  }, [inputCurrency, inputCurrencyAmount, outputCurrency, outputCurrencyAmount])
 
   return showInputCurrencySelect ? (
     <CurrencySelect
@@ -130,8 +139,7 @@ export const SwapForm = ({
             className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
             onClick={() => {
               const prevInputCurrency = inputCurrency
-              const prevOutputCurrency = outputCurrency
-              setInputCurrency(prevOutputCurrency)
+              setInputCurrency(outputCurrency)
               setOutputCurrency(prevInputCurrency)
               setInputCurrencyAmount('')
             }}
@@ -143,23 +151,37 @@ export const SwapForm = ({
       <div className="flex justify-between items-center">
         <div className="flex text-xs sm:text-sm text-white">
           1 {inputCurrency?.symbol ?? 'IN'} ={' '}
-          {exchangeRate ? toPlacesString(exchangeRate) : '? '}
-          {outputCurrency?.symbol ?? 'OUT'}
-          <span className="text-gray-500">
-            (~$
-            {toPlacesString(
-              exchangeRate && outputCurrency
-                ? exchangeRate.multipliedBy(prices[outputCurrency.address] ?? 0)
-                : 0,
-            )}
-            )
-          </span>
+          {isLoadingResults ? (
+            <span className="w-[100px] mx-1 rounded animate-pulse bg-gray-500" />
+          ) : (
+            <>
+              {exchangeRate ? toPlacesString(exchangeRate) : '? '}
+              {outputCurrency?.symbol ?? 'OUT'}
+              <span className="text-gray-500">
+                (~$
+                {toPlacesString(
+                  exchangeRate && outputCurrency
+                    ? exchangeRate.multipliedBy(
+                        prices[outputCurrency.address] ?? 0,
+                      )
+                    : 0,
+                )}
+                )
+              </span>
+            </>
+          )}
         </div>
-        <div className="flex text-xs sm:text-sm text-white">
-          <GasSvg className="mr-0.5" />
-          <div className="flex text-xs sm:text-sm text-white">
-            {toPlacesString(gasEstimateValue)}
+        <div className="flex relative items-center text-xs sm:text-sm text-white">
+          <div className="flex items-center h-full mr-0.5">
+            <GasSvg />
           </div>
+          {isLoadingResults ? (
+            <span className="w-[50px] h-[20px] mx-1 rounded animate-pulse bg-gray-500" />
+          ) : (
+            <div className="flex text-xs sm:text-sm text-white">
+              {toPlacesString(gasEstimateValue)}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex justify-between items-center mt-4 mb-4 h-7 gap-2">

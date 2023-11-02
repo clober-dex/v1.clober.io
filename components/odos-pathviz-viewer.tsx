@@ -50,7 +50,7 @@ const _PathViz = ({ pathVizData }: { pathVizData?: PathViz }) => {
   if (!pathVizData || !pathVizData.nodes) {
     return (
       <div
-        className={`flex flex-col bg-gray-900 overflow-hidden rounded-2xl min-h-[280px] w-full md:w-[480px] lg:w-[704px]`}
+        className={`flex flex-col bg-gray-900 overflow-hidden rounded-2xl min-h-[280px] w-full md:w-[480px] lg:w-[504px]`}
       ></div>
     )
   }
@@ -112,7 +112,7 @@ const _PathViz = ({ pathVizData }: { pathVizData?: PathViz }) => {
 
   return (
     <div
-      className={`flex flex-col bg-gray-900 overflow-hidden rounded-2xl min-h-[280px] w-full md:w-[480px] lg:w-[704px]`}
+      className={`flex flex-col bg-gray-900 overflow-hidden rounded-2xl min-h-[280px] w-full md:w-[480px] lg:w-[504px]`}
     >
       <ReactFlow
         nodeTypes={nodeTypes}
