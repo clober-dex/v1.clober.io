@@ -26,20 +26,19 @@ export const LimitContainer = () => {
   const [isBid, setIsBid] = useState(true)
   // const [showOrderBook, setShowOrderBook] = useState(true)
   const showOrderBook = true
-  const [selectMode, setSelectMode] = useState<'none' | 'settings'>('none')
+  const [selectMode, setSelectMode] = useState<
+    'none' | 'settings' | 'selectMarket'
+  >('none')
 
   const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
     selectedMarket?.quoteToken,
   )
   const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
-  const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
 
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
     selectedMarket?.baseToken,
   )
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
-  const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
-    useState(false)
   const [claimBounty, setClaimBounty] = useState(
     formatUnits(
       selectedChain.defaultGasPrice ?? 0n,
@@ -331,8 +330,6 @@ export const LimitContainer = () => {
               setSelectedMarket={setSelectedMarket}
               isBid={isBid}
               setSelectMode={setSelectMode}
-              showInputCurrencySelect={showInputCurrencySelect}
-              setShowInputCurrencySelect={setShowInputCurrencySelect}
               inputCurrency={inputCurrency}
               setInputCurrency={setInputCurrency}
               inputCurrencyAmount={inputCurrencyAmount}
@@ -340,8 +337,6 @@ export const LimitContainer = () => {
               availableInputCurrencyBalance={
                 inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
               }
-              showOutputCurrencySelect={showOutputCurrencySelect}
-              setShowOutputCurrencySelect={setShowOutputCurrencySelect}
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
               outputCurrencyAmount={outputCurrencyAmount}
