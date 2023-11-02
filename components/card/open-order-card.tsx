@@ -4,6 +4,8 @@ import { OutlinkSvg } from '../svg/outlink-svg'
 import { OpenOrder } from '../../model/open-order'
 import { formatUnits } from '../../utils/bigint'
 import { ActionButton } from '../button/action-button'
+import { toPlacesString } from '../../utils/bignumber'
+import { PRICE_DECIMAL } from '../../utils/prices'
 
 export const OpenOrderCard = ({
   openOrder,
@@ -11,12 +13,16 @@ export const OpenOrderCard = ({
 }: React.HTMLAttributes<HTMLDivElement> & {
   openOrder: OpenOrder
 }) => {
+  const filledRatio =
+    (Number(openOrder.filledAmount) / Number(openOrder.amount)) * 100
   return (
-    <div className="flex flex-col gap-4 bg-gray-900 rounded-2xl p-4" {...props}>
+    <div
+      className="flex flex-col shadow border border-solid border-gray-800 lg:w-[310px] gap-4 bg-gray-900 rounded-2xl p-4"
+      {...props}
+    >
       <div className="flex text-sm text-white justify-between">
         <div className="font-bold flex flex-row items-center gap-1">
-          {formatUnits(openOrder.amount, openOrder.inputCurrency.decimals)}{' '}
-          {openOrder.inputCurrency.symbol} &#x2192; {1600}{' '}
+          {openOrder.inputCurrency.symbol} &#x2192;{'  '}
           {openOrder.outputCurrency.symbol}
           <a
             target="_blank"
@@ -27,29 +33,61 @@ export const OpenOrderCard = ({
           </a>
         </div>
         <div
-          className={`${openOrder.isBid ? 'text-green-500' : 'text-red-500'}`}
+          className={`${
+            openOrder.isBid ? 'text-green-500' : 'text-red-500'
+          } text-sm font-bold`}
         >
-          {openOrder.isBid ? 'Buy' : 'Sell'}
+          {openOrder.isBid ? 'Bid' : 'Ask'}
         </div>
       </div>
       <div className="flex flex-col text-xs sm:text-sm">
         <div className="flex flex-col align-baseline justify-between gap-2">
           <div className="flex flex-row align-baseline justify-between">
+            <label className="text-gray-200">You sell</label>
+            <p className="text-white">
+              {toPlacesString(
+                formatUnits(openOrder.amount, openOrder.inputCurrency.decimals),
+              )}
+            </p>
+          </div>
+          <div className="flex flex-row align-baseline justify-between">
+            <label className="text-gray-200">You buy</label>
+            <p className="text-white">
+              {toPlacesString(
+                formatUnits(
+                  openOrder.amount * openOrder.price,
+                  openOrder.outputCurrency.decimals + PRICE_DECIMAL,
+                ),
+              )}
+            </p>
+          </div>
+          <div className="flex flex-row align-baseline justify-between">
             <label className="text-gray-200">Price</label>
-            <p className="text-white">{formatUnits(openOrder.price, 18)}</p>
+            <p className="text-white">
+              {toPlacesString(formatUnits(openOrder.price, PRICE_DECIMAL))}
+            </p>
           </div>
           <div className="flex flex-row align-baseline justify-between">
             <label className="text-gray-200">Filled</label>
             <div className="flex flex-row gap-1">
-              <p className="text-white">{'45%'}</p>
-              <p className="text-gray-400">(1200)</p>
+              <p className="text-white">{filledRatio.toFixed(2)}%</p>
+              <p className="text-gray-400">
+                (
+                {toPlacesString(
+                  formatUnits(
+                    openOrder.filledAmount,
+                    openOrder.inputCurrency.decimals,
+                  ),
+                )}
+                )
+              </p>
             </div>
           </div>
           <div className="w-full bg-gray-200 rounded-lg dark:bg-gray-700">
             <div
               className="flex items-center justify-center h-1.5 bg-blue-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-lg"
               style={{
-                width: '45%',
+                width: `${filledRatio}%`,
               }}
             />
           </div>

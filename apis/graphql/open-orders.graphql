@@ -1,0 +1,25 @@
+query getOpenOrders($userAddress: String!) {
+    openOrders(where: { user: $userAddress }) {
+        market {
+            quoteToken {
+                id
+                name
+                symbol
+                decimals
+            }
+            baseToken {
+                id
+                name
+                symbol
+                decimals
+            }
+        }
+        price
+        isBid
+        baseAmount
+        baseFilledAmount
+        baseClaimedAmount
+        createdAt
+        txHash
+    }
+}

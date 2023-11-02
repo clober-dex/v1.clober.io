@@ -12,7 +12,7 @@ export default function OpenOrderList({
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className="flex flex-col w-full h-full lg:grid lg:grid-cols-3 gap-2"
+      className="flex flex-col w-full h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6"
       {...props}
     >
       {openOrders.map((openOrder, index) => (
