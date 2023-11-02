@@ -63,8 +63,6 @@ export const Selected: Story = {
     outputCurrencyAmount: '2000',
     slippageInput: '1.00',
     setSlippageInput: () => {},
-    swapLogic: 'GasEfficient',
-    setSwapLogic: () => {},
     gasEstimateValue: 1.12,
     actionButtonProps: {
       disabled: false,

@@ -13,15 +13,15 @@ import { formatUnits, min } from '../utils/bigint'
 import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
 import { toPlacesString } from '../utils/bignumber'
-import { useCurrencyContext } from '../contexts/currency-context'
 import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../model/decimals'
 import { useOpenOrderContext } from '../contexts/open-order-context'
+import { useLimitContext } from '../contexts/limit-context'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
   const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
-  const { balances } = useCurrencyContext()
   const { openOrders } = useOpenOrderContext()
+  const { balances } = useLimitContext()
 
   const [isBid, setIsBid] = useState(true)
   // const [showOrderBook, setShowOrderBook] = useState(true)

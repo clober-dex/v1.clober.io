@@ -24,7 +24,7 @@ const stringToColor = (str: string) => {
   return '#' + color
 }
 
-export default function OdosPathVizViewer({
+export default function PathVizViewer({
   pathVizData,
 }: {
   pathVizData?: PathViz
