@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
@@ -207,8 +207,8 @@ export const LimitContainer = () => {
 
     if (
       depthClickedIndex &&
-      ((depthClickedIndex.isBid && bids[depthClickedIndex.index].price) ||
-        (!depthClickedIndex.isBid && asks[depthClickedIndex.index].price))
+      ((depthClickedIndex.isBid && bids[depthClickedIndex.index]) ||
+        (!depthClickedIndex.isBid && asks[depthClickedIndex.index]))
     ) {
       setPriceInput(
         depthClickedIndex.isBid
@@ -270,6 +270,61 @@ export const LimitContainer = () => {
       }
     }
   }, [asks, bids, depthClickedIndex, isBid, selectedMarket])
+
+  const previousValues = useRef({
+    priceInput,
+    outputCurrencyAmount,
+    inputCurrencyAmount,
+  })
+
+  useEffect(() => {
+    if (
+      new BigNumber(inputCurrencyAmount).isNaN() ||
+      new BigNumber(inputCurrencyAmount).isZero()
+    ) {
+      return
+    }
+
+    if (previousValues.current.priceInput !== priceInput) {
+      const outputCurrencyAmount = new BigNumber(inputCurrencyAmount)
+        .div(priceInput)
+        .toString()
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    } else if (
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const expectedPriceInput = new BigNumber(inputCurrencyAmount).div(
+        outputCurrencyAmount,
+      )
+      const priceInput =
+        expectedPriceInput.isNaN() || !expectedPriceInput.isFinite()
+          ? previousValues.current.priceInput
+          : expectedPriceInput.toString()
+      setPriceInput(priceInput)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    } else if (
+      previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
+    ) {
+      const outputCurrencyAmount = new BigNumber(inputCurrencyAmount)
+        .div(priceInput)
+        .toString()
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+  }, [priceInput, inputCurrencyAmount, outputCurrencyAmount])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
