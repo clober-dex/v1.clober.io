@@ -16,7 +16,6 @@ export const LimitForm = ({
   selectedMarket,
   setSelectedMarket,
   isBid,
-  setIsBid,
   setSelectMode,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
@@ -32,6 +31,7 @@ export const LimitForm = ({
   outputCurrencyAmount,
   setOutputCurrencyAmount,
   availableOutputCurrencyBalance,
+  swapInputCurrencyAndOutputCurrency,
 }: {
   priceInput: string
   setPriceInput: (priceInput: string) => void
@@ -39,7 +39,6 @@ export const LimitForm = ({
   selectedMarket?: Market
   setSelectedMarket: (market: Market) => void
   isBid: boolean
-  setIsBid: (isBid: boolean) => void
   setSelectMode: (selectMode: 'none' | 'settings') => void
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect: (showInputCurrencySelect: boolean) => void
@@ -55,6 +54,7 @@ export const LimitForm = ({
   outputCurrencyAmount: string
   setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
   availableOutputCurrencyBalance: bigint
+  swapInputCurrencyAndOutputCurrency: () => void
 }) => {
   return showInputCurrencySelect ? (
     <MarketSelect
@@ -92,11 +92,7 @@ export const LimitForm = ({
           />
         </div>
       </div>
-      <div
-        className={`flex ${
-          isBid ? 'flex-col' : 'flex-col-reverse'
-        } relative gap-2 sm:gap-4 mb-3 sm:mb-4`}
-      >
+      <div className="flex flex-col relative gap-2 sm:gap-4 mb-3 sm:mb-4">
         <CurrencyAmountInput
           currency={inputCurrency}
           value={inputCurrencyAmount}
@@ -114,7 +110,7 @@ export const LimitForm = ({
         <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">
           <button
             className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
-            onClick={() => setIsBid(!isBid)}
+            onClick={swapInputCurrencyAndOutputCurrency}
           >
             <ArrowDownSvg className="w-4 h-4 sm:w-6 sm:h-6" />
           </button>
