@@ -129,7 +129,10 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: toPlacesString(x.size),
+                size: toPlacesString(
+                  x.size,
+                  selectedMarket.quoteToken.decimals,
+                ),
               }
             }),
             Array.from(
@@ -170,7 +173,7 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: toPlacesString(x.size),
+                size: toPlacesString(x.size, selectedMarket.baseToken.decimals),
               }
             }),
           ]
@@ -202,9 +205,11 @@ export const LimitContainer = () => {
         isBid
           ? toPlacesString(
               formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
+              PRICE_DECIMAL,
             )
           : toPlacesString(
               formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
+              PRICE_DECIMAL,
             ),
       )
       setInputCurrency(
@@ -247,6 +252,7 @@ export const LimitContainer = () => {
         isBid
           ? new BigNumber(inputCurrencyAmount).div(priceInput)
           : new BigNumber(inputCurrencyAmount).times(priceInput),
+        outputCurrency?.decimals ?? 18,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -265,7 +271,7 @@ export const LimitContainer = () => {
       const priceInput =
         expectedPriceInput.isNaN() || !expectedPriceInput.isFinite()
           ? previousValues.current.priceInput
-          : toPlacesString(expectedPriceInput)
+          : toPlacesString(expectedPriceInput, PRICE_DECIMAL)
       setPriceInput(priceInput)
       previousValues.current = {
         priceInput,
@@ -281,6 +287,7 @@ export const LimitContainer = () => {
         isBid
           ? new BigNumber(inputCurrencyAmount).div(priceInput)
           : new BigNumber(inputCurrencyAmount).times(priceInput),
+        outputCurrency?.decimals ?? 18,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
