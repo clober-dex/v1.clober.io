@@ -11,7 +11,6 @@ import { readContracts } from '@wagmi/core'
 
 import { approve20 } from '../utils/approve20'
 import { Currency } from '../model/currency'
-import { OdosRouter } from '../constants/odos-router'
 import { CHAIN_IDS } from '../constants/chain'
 import { formatUnits } from '../utils/bigint'
 import { fetchCurrencies } from '../apis/swap/currencies'
@@ -149,6 +148,28 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
 
       try {
+        setConfirmation({
+          title: 'Swap',
+          body: 'Please confirm in your wallet.',
+          fields: [
+            {
+              currency: inputCurrency,
+              label: inputCurrency.symbol,
+              value: formatUnits(amountIn, inputCurrency.decimals),
+            },
+          ],
+        })
+
+        const transaction = await fetchSwapData(
+          AGGREGATORS[selectedChain.id as CHAIN_IDS],
+          inputCurrency,
+          amountIn,
+          outputCurrency,
+          slippageLimitPercent,
+          gasPrice,
+          userAddress,
+        )
+
         if (!isAddressEqual(inputCurrency.address, zeroAddress)) {
           setConfirmation({
             title: 'Approve',
@@ -166,19 +187,10 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
             walletClient,
             inputCurrency,
             userAddress,
-            OdosRouter[selectedChain.id as CHAIN_IDS],
+            transaction.to,
             amountIn,
           )
         }
-        const transaction = await fetchSwapData(
-          AGGREGATORS[selectedChain.id as CHAIN_IDS],
-          inputCurrency,
-          amountIn,
-          outputCurrency,
-          slippageLimitPercent,
-          gasPrice,
-          userAddress,
-        )
 
         setConfirmation({
           title: 'Swap',
@@ -192,13 +204,10 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
           ],
         })
         await walletClient.sendTransaction({
-          // ...transaction,
           data: transaction.data,
           to: transaction.to,
           value: transaction.value,
           gas: transaction.gas,
-          // gasPrice: transaction.gasPrice,
-          // nonce: transaction.nonce,
         })
       } catch (e) {
         console.error(e)
