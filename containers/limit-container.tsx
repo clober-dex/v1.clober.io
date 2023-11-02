@@ -205,7 +205,11 @@ export const LimitContainer = () => {
       return
     }
 
-    if (depthClickedIndex) {
+    if (
+      depthClickedIndex &&
+      ((depthClickedIndex.isBid && bids[depthClickedIndex.index].price) ||
+        (!depthClickedIndex.isBid && asks[depthClickedIndex.index].price))
+    ) {
       setPriceInput(
         depthClickedIndex.isBid
           ? bids[depthClickedIndex.index].price
