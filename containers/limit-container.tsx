@@ -287,7 +287,9 @@ export const LimitContainer = () => {
 
     if (previousValues.current.priceInput !== priceInput) {
       const outputCurrencyAmount = toPlacesString(
-        new BigNumber(inputCurrencyAmount).div(priceInput),
+        isBid
+          ? new BigNumber(inputCurrencyAmount).div(priceInput)
+          : new BigNumber(inputCurrencyAmount).times(priceInput),
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -298,9 +300,9 @@ export const LimitContainer = () => {
     } else if (
       previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
     ) {
-      const expectedPriceInput = new BigNumber(inputCurrencyAmount).div(
-        outputCurrencyAmount,
-      )
+      const expectedPriceInput = isBid
+        ? new BigNumber(inputCurrencyAmount).div(outputCurrencyAmount)
+        : new BigNumber(inputCurrencyAmount).times(outputCurrencyAmount)
       const priceInput =
         expectedPriceInput.isNaN() || !expectedPriceInput.isFinite()
           ? previousValues.current.priceInput
@@ -315,7 +317,9 @@ export const LimitContainer = () => {
       previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
     ) {
       const outputCurrencyAmount = toPlacesString(
-        new BigNumber(inputCurrencyAmount).div(priceInput),
+        isBid
+          ? new BigNumber(inputCurrencyAmount).div(priceInput)
+          : new BigNumber(inputCurrencyAmount).times(priceInput),
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -324,7 +328,7 @@ export const LimitContainer = () => {
         inputCurrencyAmount,
       }
     }
-  }, [priceInput, inputCurrencyAmount, outputCurrencyAmount])
+  }, [priceInput, inputCurrencyAmount, outputCurrencyAmount, isBid])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
