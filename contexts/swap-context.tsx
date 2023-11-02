@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   useAccount,
   usePublicClient,
@@ -33,11 +33,27 @@ type SwapContext = {
     slippageLimitPercent: number,
     gasEffectiveMode: boolean,
   ) => Promise<void>
+  inputCurrency: Currency | undefined
+  setInputCurrency: (currency: Currency | undefined) => void
+  inputCurrencyAmount: string
+  setInputCurrencyAmount: (amount: string) => void
+  outputCurrency: Currency | undefined
+  setOutputCurrency: (currency: Currency | undefined) => void
+  slippageInput: string
+  setSlippageInput: (slippage: string) => void
 }
 
 const Context = React.createContext<SwapContext>({
   swap: () => Promise.resolve(),
   swapClober: () => Promise.resolve(),
+  inputCurrency: undefined,
+  setInputCurrency: () => {},
+  inputCurrencyAmount: '',
+  setInputCurrencyAmount: () => {},
+  outputCurrency: undefined,
+  setOutputCurrency: () => {},
+  slippageInput: '1',
+  setSlippageInput: () => {},
 })
 
 export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -48,6 +64,15 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient()
   const { setConfirmation } = useTransactionContext()
+
+  const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
+    undefined,
+  )
+  const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
+  const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
+    undefined,
+  )
+  const [slippageInput, setSlippageInput] = useState('1')
 
   const swap = useCallback(
     async (
@@ -257,11 +282,25 @@ export const SwapProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ],
   )
 
+  useEffect(() => {
+    setInputCurrency(undefined)
+    setInputCurrencyAmount('')
+    setOutputCurrency(undefined)
+  }, [selectedChain])
+
   return (
     <Context.Provider
       value={{
         swap,
         swapClober,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        outputCurrency,
+        setOutputCurrency,
+        slippageInput,
+        setSlippageInput,
       }}
     >
       {children}

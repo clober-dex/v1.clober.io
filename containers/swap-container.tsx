@@ -4,7 +4,6 @@ import { useAccount, useFeeData, useQuery } from 'wagmi'
 import { polygonZkEvm } from 'wagmi/chains'
 
 import { SwapForm } from '../components/form/swap-form'
-import { Currency } from '../model/currency'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { useChainContext } from '../contexts/chain-context'
 import { fetchQuotes } from '../apis/quotes'
@@ -13,28 +12,26 @@ import OdosPathVizViewer from '../components/odos-pathviz-viewer'
 import { useSwapContext } from '../contexts/swap-context'
 
 export const SwapContainer = () => {
-  const { swap, swapClober } = useSwapContext()
+  const {
+    swap,
+    swapClober,
+    inputCurrency,
+    setInputCurrency,
+    inputCurrencyAmount,
+    setInputCurrencyAmount,
+    outputCurrency,
+    setOutputCurrency,
+    slippageInput,
+    setSlippageInput,
+  } = useSwapContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const { balances, currencies, prices } = useCurrencyContext()
 
-  const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
-    undefined,
-  )
-  const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
-
-  const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
-    undefined,
-  )
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
     useState(false)
-
-  const [slippageInput, setSlippageInput] = useState('1')
-  const [swapLogic, setSwapLogic] = useState<'GasEfficient' | 'MaximizeReturn'>(
-    'MaximizeReturn',
-  )
 
   const { data } = useQuery(
     [
@@ -45,7 +42,6 @@ export const SwapContainer = () => {
       slippageInput,
       userAddress,
       selectedChain,
-      swapLogic, // todo: remove
     ],
     async () => {
       if (
@@ -66,17 +62,14 @@ export const SwapContainer = () => {
           slippageLimitPercent: parseFloat(slippageInput),
           userAddress,
           gasPrice: feeData.gasPrice,
-          gasEffectiveMode: swapLogic === 'GasEfficient',
+          gasEffectiveMode: false,
         })
       }
     },
   )
 
   useEffect(() => {
-    setInputCurrency(undefined)
-    setInputCurrencyAmount('')
     setShowInputCurrencySelect(false)
-    setOutputCurrency(undefined)
   }, [selectedChain])
 
   return (
@@ -106,8 +99,6 @@ export const SwapContainer = () => {
             ).toString()}
             slippageInput={slippageInput}
             setSlippageInput={setSlippageInput}
-            swapLogic={swapLogic}
-            setSwapLogic={setSwapLogic}
             gasEstimateValue={data?.gasEstimateValue ?? 0}
             actionButtonProps={{
               disabled:

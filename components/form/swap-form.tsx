@@ -33,8 +33,6 @@ export const SwapForm = ({
   outputCurrencyAmount,
   slippageInput,
   setSlippageInput,
-  swapLogic,
-  setSwapLogic,
   gasEstimateValue,
   actionButtonProps,
 }: {
@@ -55,8 +53,6 @@ export const SwapForm = ({
   outputCurrencyAmount: string
   slippageInput: string
   setSlippageInput: (slippageInput: string) => void
-  swapLogic: 'GasEfficient' | 'MaximizeReturn'
-  setSwapLogic: (swapLogic: 'GasEfficient' | 'MaximizeReturn') => void
   gasEstimateValue: number
   actionButtonProps: ActionButtonProps
 }) => {
@@ -200,22 +196,6 @@ export const SwapForm = ({
             <></>
           )}
         </button>
-        <div className="flex w-full bg-gray-800 rounded">
-          <button
-            onClick={() => setSwapLogic('GasEfficient')}
-            disabled={swapLogic === 'GasEfficient'}
-            className="flex flex-1 items-center rounded justify-center disabled:text-blue-500 disabled:border-blue-500 text-gray-500 py-2 h-6 sm:h-7 text-xs sm:text-sm disabled:border bg-transparent"
-          >
-            Gas Efficient
-          </button>
-          <button
-            onClick={() => setSwapLogic('MaximizeReturn')}
-            disabled={swapLogic === 'MaximizeReturn'}
-            className="flex flex-1 items-center rounded justify-center disabled:text-blue-500 disabled:border-blue-500 text-gray-500 py-2 h-6 sm:h-7 text-xs sm:text-sm disabled:border bg-transparent"
-          >
-            Max Output
-          </button>
-        </div>
       </div>
       <ActionButton {...actionButtonProps} />
     </>
