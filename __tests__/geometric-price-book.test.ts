@@ -5,6 +5,8 @@ import { GeometricPriceBook__factory } from '../typechain'
 import { GeometricPriceBook } from '../model/price-book/geometric-price-book'
 
 describe('GeometricPriceBook', () => {
+  const GEOMETRIC_PRICE_BOOK_ADDRESS =
+    '0x8272Ef52C3792D08B2dB81EEb975cDf1E53a148B'
   const publicClient = createPublicClient({
     chain: arbitrum,
     transport: http('https://rpc.ankr.com/arbitrum'),
@@ -21,7 +23,7 @@ describe('GeometricPriceBook', () => {
     const actualPrices = (
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
-          address: '0xcA4C669093572c5a23DE04B848a7f706eCBdFAC2',
+          address: GEOMETRIC_PRICE_BOOK_ADDRESS,
           abi: GeometricPriceBook__factory.abi,
           functionName: 'indexToPrice',
           args: [priceIndex],
@@ -38,7 +40,7 @@ describe('GeometricPriceBook', () => {
     const actualPrices = (
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
-          address: '0xcA4C669093572c5a23DE04B848a7f706eCBdFAC2',
+          address: GEOMETRIC_PRICE_BOOK_ADDRESS,
           abi: GeometricPriceBook__factory.abi,
           functionName: 'indexToPrice',
           args: [priceIndex],
@@ -49,5 +51,54 @@ describe('GeometricPriceBook', () => {
       (price) => geometricPriceBook.priceToIndex(price, false).index,
     )
     expect(expectedPriceIndices).toEqual(randomPriceIndices)
+  })
+
+  it('maxPriceIndex & priceUpperBound', async () => {
+    const maxPriceIndex = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'maxPriceIndex',
+    })
+    const priceUpperBound = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'priceUpperBound',
+    })
+    expect(geometricPriceBook.maxPriceIndex).toEqual(BigInt(maxPriceIndex))
+    expect(geometricPriceBook.priceUpperBound).toEqual(priceUpperBound)
+  })
+
+  it('maxPriceIndex to price', async () => {
+    const maxPriceIndex = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'maxPriceIndex',
+    })
+    const actualPrice = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'indexToPrice',
+      args: [maxPriceIndex],
+    })
+    const expectedPrice = geometricPriceBook.indexToPrice(maxPriceIndex).value
+    expect(expectedPrice).toEqual(actualPrice)
+  })
+
+  it('priceUpperBound to index', async () => {
+    const priceUpperBound = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'priceUpperBound',
+    })
+    const [actualPriceIndex, actualPrice] = await publicClient.readContract({
+      address: GEOMETRIC_PRICE_BOOK_ADDRESS,
+      abi: GeometricPriceBook__factory.abi,
+      functionName: 'priceToIndex',
+      args: [priceUpperBound - 1n, false],
+    })
+    const { index: expectedPriceIndex, value: expectedPrice } =
+      geometricPriceBook.priceToIndex(priceUpperBound - 1n, false)
+    expect(expectedPrice).toEqual(actualPrice)
+    expect(expectedPriceIndex).toEqual(actualPriceIndex)
   })
 })
