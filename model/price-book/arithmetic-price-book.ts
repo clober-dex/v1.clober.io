@@ -1,49 +1,31 @@
-import JSBI from 'jsbi'
-import BigNumber from 'bignumber.js'
-
 import { PriceBook } from './price-book'
-import { Price } from './price'
+import { CloberPrice } from './cloberPrice'
 
 export class ArithmeticPriceBook implements PriceBook {
-  public readonly a: JSBI
-  public readonly d: JSBI
-
-  constructor(a: string, d: string | null) {
+  public readonly a: bigint
+  public readonly d: bigint
+  constructor(a: bigint, d: bigint | null) {
     if (!d) {
       throw `ArithmeticPriceBook: 'd' is missing`
     }
-    this.a = JSBI.BigInt(a)
-    this.d = JSBI.BigInt(d)
+    this.a = a
+    this.d = d
     this.indexToPrice = this.indexToPrice.bind(this)
     this.priceToIndex = this.priceToIndex.bind(this)
   }
 
   public strategy: 'arithmetic' | 'geometric' = 'arithmetic'
 
-  public indexToPrice(priceIndex: number): Price {
+  public indexToPrice(priceIndex: number): CloberPrice {
     return {
       index: priceIndex,
-      value: new BigNumber(
-        JSBI.add(
-          this.a,
-          JSBI.multiply(this.d, JSBI.BigInt(priceIndex)),
-        ).toString(),
-      ),
+      value: this.a + this.d * BigInt(priceIndex),
     }
   }
 
-  public priceToIndex(price: BigNumber.Value, roundingUp: boolean): Price {
-    const priceBigInt = JSBI.BigInt(price)
-    const indexBigInt = JSBI.divide(JSBI.subtract(priceBigInt, this.a), this.d)
-    let index = parseInt(indexBigInt.toString(), 10)
-
-    if (
-      roundingUp &&
-      JSBI.greaterThan(
-        JSBI.remainder(JSBI.subtract(priceBigInt, this.a), this.d),
-        JSBI.BigInt(0),
-      )
-    ) {
+  public priceToIndex(price: bigint, roundingUp: boolean): CloberPrice {
+    let index = Number((price - this.a) / this.d)
+    if (roundingUp && (price - this.a) % this.d > 0n) {
       index++
     }
     return { index, value: this.indexToPrice(index).value }

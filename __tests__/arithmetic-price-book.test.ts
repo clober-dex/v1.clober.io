@@ -13,8 +13,8 @@ describe('ArithmeticPriceBook', () => {
     Math.floor(Math.random() * 2 ** 16),
   )
   const arithmeticPriceBook = new ArithmeticPriceBook(
-    '100000000000000',
-    '100000000000000',
+    100000000000000n,
+    100000000000000n,
   )
 
   it('index to price', async () => {
@@ -28,8 +28,8 @@ describe('ArithmeticPriceBook', () => {
         })),
       })) as { result: bigint }[]
     ).map(({ result }) => result)
-    const expectedPrices = randomPriceIndices.map((priceIndex) =>
-      BigInt(arithmeticPriceBook.indexToPrice(priceIndex).value.toFixed()),
+    const expectedPrices = randomPriceIndices.map(
+      (priceIndex) => arithmeticPriceBook.indexToPrice(priceIndex).value,
     )
     expect(expectedPrices).toEqual(actualPrices)
   })
@@ -46,8 +46,7 @@ describe('ArithmeticPriceBook', () => {
       })) as { result: bigint }[]
     ).map(({ result }) => result)
     const expectedPriceIndices = actualPrices.map(
-      (price) =>
-        arithmeticPriceBook.priceToIndex(price.toString(), false).index,
+      (price) => arithmeticPriceBook.priceToIndex(price, false).index,
     )
     expect(expectedPriceIndices).toEqual(randomPriceIndices)
   })

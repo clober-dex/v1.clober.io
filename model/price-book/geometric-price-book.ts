@@ -1,8 +1,7 @@
 import JSBI from 'jsbi'
-import BigNumber from 'bignumber.js'
 
 import { PriceBook } from './price-book'
-import { Price } from './price'
+import { CloberPrice } from './cloberPrice'
 
 export class GeometricPriceBook implements PriceBook {
   private readonly MAX_UINT256 = JSBI.subtract(
@@ -273,7 +272,7 @@ export class GeometricPriceBook implements PriceBook {
 
   public strategy: 'arithmetic' | 'geometric' = 'geometric'
 
-  public indexToPrice(priceIndex: number): Price {
+  public indexToPrice(priceIndex: number): CloberPrice {
     if (JSBI.greaterThan(JSBI.BigInt(priceIndex), this.maxPriceIndex)) {
       throw `GeometricPriceBook: 'priceIndex' is invalid`
     }
@@ -473,21 +472,24 @@ export class GeometricPriceBook implements PriceBook {
 
     return {
       index: priceIndex,
-      value: new BigNumber(price.toString()),
+      value: BigInt(price.toString()),
     }
   }
 
-  public priceToIndex(price: BigNumber.Value, roundingUp: boolean): Price {
+  public priceToIndex(price: bigint, roundingUp: boolean): CloberPrice {
     if (
-      JSBI.lessThan(JSBI.BigInt(price), this._a) ||
-      JSBI.greaterThanOrEqual(JSBI.BigInt(price), this.priceUpperBound)
+      JSBI.lessThan(JSBI.BigInt(price.toString()), this._a) ||
+      JSBI.greaterThanOrEqual(
+        JSBI.BigInt(price.toString()),
+        this.priceUpperBound,
+      )
     ) {
       throw `GeometricPriceBook: 'price' is invalid`
     }
     let index = 0
     let _correctedPrice = this._a
     const shiftedPrice = JSBI.leftShift(
-      JSBI.add(JSBI.BigInt(price), JSBI.BigInt(1)),
+      JSBI.add(JSBI.BigInt(price.toString()), JSBI.BigInt(1)),
       JSBI.BigInt(64),
     )
 
@@ -603,14 +605,17 @@ export class GeometricPriceBook implements PriceBook {
       _correctedPrice = this.mulShift(_correctedPrice, this._r0)
     }
 
-    if (roundingUp && JSBI.lessThan(_correctedPrice, JSBI.BigInt(price))) {
+    if (
+      roundingUp &&
+      JSBI.lessThan(_correctedPrice, JSBI.BigInt(price.toString()))
+    ) {
       if (JSBI.greaterThanOrEqual(JSBI.BigInt(index), this.maxPriceIndex)) {
         throw `GeometricPriceBook: 'price' is invalid`
       }
       index += 1
       return { index, value: this.indexToPrice(index).value }
     } else {
-      return { index, value: new BigNumber(_correctedPrice.toString()) }
+      return { index, value: BigInt(_correctedPrice.toString()) }
     }
   }
 

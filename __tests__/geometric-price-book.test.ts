@@ -28,8 +28,8 @@ describe('GeometricPriceBook', () => {
         })),
       })) as { result: bigint }[]
     ).map(({ result }) => result)
-    const expectedPrices = randomPriceIndices.map((priceIndex) =>
-      BigInt(geometricPriceBook.indexToPrice(priceIndex).value.toFixed()),
+    const expectedPrices = randomPriceIndices.map(
+      (priceIndex) => geometricPriceBook.indexToPrice(priceIndex).value,
     )
     expect(expectedPrices).toEqual(actualPrices)
   })
@@ -46,7 +46,7 @@ describe('GeometricPriceBook', () => {
       })) as { result: bigint }[]
     ).map(({ result }) => result)
     const expectedPriceIndices = actualPrices.map(
-      (price) => geometricPriceBook.priceToIndex(price.toString(), false).index,
+      (price) => geometricPriceBook.priceToIndex(price, false).index,
     )
     expect(expectedPriceIndices).toEqual(randomPriceIndices)
   })
