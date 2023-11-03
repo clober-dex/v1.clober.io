@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import NumberInput from '../input/number-input'
 import CurrencyAmountInput from '../input/currency-amount-input'
@@ -17,15 +17,11 @@ export const LimitForm = ({
   setSelectedMarket,
   isBid,
   setSelectMode,
-  showInputCurrencySelect,
-  setShowInputCurrencySelect,
   inputCurrency,
   setInputCurrency,
   inputCurrencyAmount,
   setInputCurrencyAmount,
   availableInputCurrencyBalance,
-  showOutputCurrencySelect,
-  setShowOutputCurrencySelect,
   outputCurrency,
   setOutputCurrency,
   outputCurrencyAmount,
@@ -39,16 +35,12 @@ export const LimitForm = ({
   selectedMarket?: Market
   setSelectedMarket: (market: Market) => void
   isBid: boolean
-  setSelectMode: (selectMode: 'none' | 'settings') => void
-  showInputCurrencySelect: boolean
-  setShowInputCurrencySelect: (showInputCurrencySelect: boolean) => void
+  setSelectMode: (selectMode: 'none' | 'settings' | 'selectMarket') => void
   inputCurrency: Currency | undefined
   setInputCurrency: (inputCurrency: Currency | undefined) => void
   inputCurrencyAmount: string
   setInputCurrencyAmount: (inputCurrencyAmount: string) => void
   availableInputCurrencyBalance: bigint
-  showOutputCurrencySelect: boolean
-  setShowOutputCurrencySelect: (showOutputCurrencySelect: boolean) => void
   outputCurrency: Currency | undefined
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
@@ -56,25 +48,16 @@ export const LimitForm = ({
   availableOutputCurrencyBalance: bigint
   swapInputCurrencyAndOutputCurrency: () => void
 }) => {
-  return showInputCurrencySelect ? (
+  const [showMarketSelect, setShowMarketSelect] = useState(false)
+
+  return showMarketSelect ? (
     <MarketSelect
       markets={markets}
-      onBack={() => setShowInputCurrencySelect(false)}
+      onBack={() => setShowMarketSelect(false)}
       onMarketSelect={(market: Market) => {
         setInputCurrency(market.quoteToken)
         setOutputCurrency(market.baseToken)
-        setShowInputCurrencySelect(false)
-        setSelectedMarket(market)
-      }}
-    />
-  ) : showOutputCurrencySelect ? (
-    <MarketSelect
-      markets={markets}
-      onBack={() => setShowOutputCurrencySelect(false)}
-      onMarketSelect={(market: Market) => {
-        setInputCurrency(market.baseToken)
-        setOutputCurrency(market.quoteToken)
-        setShowOutputCurrencySelect(false)
+        setShowMarketSelect(false)
         setSelectedMarket(market)
       }}
     />
@@ -98,14 +81,14 @@ export const LimitForm = ({
           value={inputCurrencyAmount}
           onValueChange={setInputCurrencyAmount}
           availableAmount={availableInputCurrencyBalance}
-          onCurrencyClick={() => setShowInputCurrencySelect(true)}
+          onCurrencyClick={() => setShowMarketSelect(true)}
         />
         <CurrencyAmountInput
           currency={outputCurrency}
           value={outputCurrencyAmount}
           onValueChange={setOutputCurrencyAmount}
           availableAmount={availableOutputCurrencyBalance}
-          onCurrencyClick={() => setShowOutputCurrencySelect(true)}
+          onCurrencyClick={() => setShowMarketSelect(true)}
         />
         <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 p-1 sm:p-1.5">
           <button

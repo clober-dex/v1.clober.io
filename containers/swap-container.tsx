@@ -93,7 +93,7 @@ export const SwapContainer = () => {
             outputCurrencyAmount={formatUnits(
               data?.amountOut ?? 0n,
               outputCurrency?.decimals ?? 18,
-            ).toString()}
+            )}
             slippageInput={slippageInput}
             setSlippageInput={setSlippageInput}
             gasEstimateValue={

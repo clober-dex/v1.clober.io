@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
@@ -26,20 +26,19 @@ export const LimitContainer = () => {
   const [isBid, setIsBid] = useState(true)
   // const [showOrderBook, setShowOrderBook] = useState(true)
   const showOrderBook = true
-  const [selectMode, setSelectMode] = useState<'none' | 'settings'>('none')
+  const [selectMode, setSelectMode] = useState<
+    'none' | 'settings' | 'selectMarket'
+  >('none')
 
   const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
     selectedMarket?.quoteToken,
   )
   const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
-  const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
 
   const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
     selectedMarket?.baseToken,
   )
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
-  const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
-    useState(false)
   const [claimBounty, setClaimBounty] = useState(
     formatUnits(
       selectedChain.defaultGasPrice ?? 0n,
@@ -130,7 +129,10 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: x.size.toString(),
+                size: toPlacesString(
+                  x.size,
+                  selectedMarket.quoteToken.decimals,
+                ),
               }
             }),
             Array.from(
@@ -171,7 +173,7 @@ export const LimitContainer = () => {
             ).map((x) => {
               return {
                 price: x.price,
-                size: x.size.toString(),
+                size: toPlacesString(x.size, selectedMarket.baseToken.decimals),
               }
             }),
           ]
@@ -179,7 +181,7 @@ export const LimitContainer = () => {
     [selectedDecimalPlaces, selectedMarket],
   )
 
-  // selectedChain && selectedMarket
+  // When selectedChain or selectedMarket or isBid is changed, reset the form
   useEffect(() => {
     setClaimBounty(
       formatUnits(
@@ -196,80 +198,105 @@ export const LimitContainer = () => {
       setOutputCurrencyAmount('')
 
       setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-    }
-  }, [availableDecimalPlacesGroups, selectedChain, selectedMarket])
+      setInputCurrencyAmount('')
+      setOutputCurrencyAmount('')
 
-  // isBid && depthClickedIndex
+      setPriceInput(
+        isBid
+          ? toPlacesString(
+              formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
+              PRICE_DECIMAL,
+            )
+          : toPlacesString(
+              formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
+              PRICE_DECIMAL,
+            ),
+      )
+      setInputCurrency(
+        isBid ? selectedMarket.quoteToken : selectedMarket.baseToken,
+      )
+      setOutputCurrency(
+        isBid ? selectedMarket.baseToken : selectedMarket.quoteToken,
+      )
+    }
+  }, [availableDecimalPlacesGroups, isBid, selectedChain, selectedMarket])
+
+  // When depthClickedIndex is changed, reset the priceInput
   useEffect(() => {
-    if (!selectedMarket) {
+    if (depthClickedIndex) {
+      setPriceInput(
+        depthClickedIndex.isBid
+          ? bids[depthClickedIndex.index]?.price
+          : asks[depthClickedIndex.index]?.price,
+      )
+    }
+  }, [asks, bids, depthClickedIndex])
+
+  const previousValues = useRef({
+    priceInput,
+    outputCurrencyAmount,
+    inputCurrencyAmount,
+  })
+
+  useEffect(() => {
+    if (
+      new BigNumber(inputCurrencyAmount).isNaN() ||
+      new BigNumber(inputCurrencyAmount).isZero()
+    ) {
       return
     }
 
-    if (
-      depthClickedIndex &&
-      ((depthClickedIndex.isBid && bids[depthClickedIndex.index].price) ||
-        (!depthClickedIndex.isBid && asks[depthClickedIndex.index].price))
-    ) {
-      setPriceInput(
-        depthClickedIndex.isBid
-          ? bids[depthClickedIndex.index].price
-          : asks[depthClickedIndex.index].price,
+    // `priceInput` is changed -> `outputCurrencyAmount` will be changed
+    if (previousValues.current.priceInput !== priceInput) {
+      const outputCurrencyAmount = toPlacesString(
+        isBid
+          ? new BigNumber(inputCurrencyAmount).div(priceInput)
+          : new BigNumber(inputCurrencyAmount).times(priceInput),
+        outputCurrency?.decimals ?? 18,
       )
-      setInputCurrency(
-        depthClickedIndex.isBid
-          ? selectedMarket.baseToken
-          : selectedMarket.quoteToken,
-      )
-      setOutputCurrency(
-        depthClickedIndex.isBid
-          ? selectedMarket.quoteToken
-          : selectedMarket.baseToken,
-      )
-
-      const accumulatedSInputCurrencyAmount = depthClickedIndex.isBid
-        ? bids
-            .reduce(
-              (prev, curr, index) =>
-                index <= depthClickedIndex.index ? prev.plus(curr.size) : prev,
-              new BigNumber(0),
-            )
-            .toString()
-        : asks
-            .reduce(
-              (prev, curr, index) =>
-                index <= depthClickedIndex.index
-                  ? prev.plus(new BigNumber(curr.size).times(curr.price))
-                  : prev,
-              new BigNumber(0),
-            )
-            .toString()
-      setInputCurrencyAmount(accumulatedSInputCurrencyAmount)
-    } else {
-      if (isBid) {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.asks[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-        setInputCurrency(selectedMarket.quoteToken)
-        setInputCurrencyAmount('')
-
-        setOutputCurrency(selectedMarket.baseToken)
-        setOutputCurrencyAmount('')
-      } else {
-        setPriceInput(
-          toPlacesString(
-            formatUnits(selectedMarket.bids[0]?.price ?? 0n, PRICE_DECIMAL),
-          ),
-        )
-        setInputCurrency(selectedMarket.baseToken)
-        setInputCurrencyAmount('')
-
-        setOutputCurrency(selectedMarket.quoteToken)
-        setOutputCurrencyAmount('')
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
       }
     }
-  }, [asks, bids, depthClickedIndex, isBid, selectedMarket])
+    // `outputCurrencyAmount` is changed -> `priceInput` will be changed
+    else if (
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const expectedPriceInput = isBid
+        ? new BigNumber(inputCurrencyAmount).div(outputCurrencyAmount)
+        : new BigNumber(inputCurrencyAmount).times(outputCurrencyAmount)
+      const priceInput =
+        expectedPriceInput.isNaN() || !expectedPriceInput.isFinite()
+          ? previousValues.current.priceInput
+          : toPlacesString(expectedPriceInput, PRICE_DECIMAL)
+      setPriceInput(priceInput)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+    // `inputCurrencyAmount` is changed -> `outputCurrencyAmount` will be changed
+    else if (
+      previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
+    ) {
+      const outputCurrencyAmount = toPlacesString(
+        isBid
+          ? new BigNumber(inputCurrencyAmount).div(priceInput)
+          : new BigNumber(inputCurrencyAmount).times(priceInput),
+        outputCurrency?.decimals ?? 18,
+      )
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+  }, [priceInput, inputCurrencyAmount, outputCurrencyAmount, isBid])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
@@ -310,8 +337,6 @@ export const LimitContainer = () => {
               setSelectedMarket={setSelectedMarket}
               isBid={isBid}
               setSelectMode={setSelectMode}
-              showInputCurrencySelect={showInputCurrencySelect}
-              setShowInputCurrencySelect={setShowInputCurrencySelect}
               inputCurrency={inputCurrency}
               setInputCurrency={setInputCurrency}
               inputCurrencyAmount={inputCurrencyAmount}
@@ -319,8 +344,6 @@ export const LimitContainer = () => {
               availableInputCurrencyBalance={
                 inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
               }
-              showOutputCurrencySelect={showOutputCurrencySelect}
-              setShowOutputCurrencySelect={setShowOutputCurrencySelect}
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
               outputCurrencyAmount={outputCurrencyAmount}

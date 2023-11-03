@@ -59,8 +59,3 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 }
 
 export const useMarketContext = () => React.useContext(Context) as MarketContext
-
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-  return this.toString()
-}
