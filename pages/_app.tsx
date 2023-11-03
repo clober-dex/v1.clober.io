@@ -18,7 +18,6 @@ import HeaderContainer from '../containers/header-container'
 import Footer from '../components/footer'
 import { ChainProvider } from '../contexts/chain-context'
 import { MarketProvider } from '../contexts/market-context'
-import { CurrencyProvider } from '../contexts/currency-context'
 import { supportChains } from '../constants/chain'
 import { toWagmiChain } from '../model/chain'
 import { TransactionProvider } from '../contexts/transaction-context'
@@ -85,19 +84,17 @@ function App({ Component, pageProps }: AppProps) {
           <ChainProvider>
             <MarketProvider>
               <TransactionProvider>
-                <CurrencyProvider>
-                  <OpenOrderProvider>
-                    <LimitProvider>
-                      <SwapProvider>
-                        <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-                          <HeaderContainer />
-                          <Component {...pageProps} />
-                          <Footer />
-                        </div>
-                      </SwapProvider>
-                    </LimitProvider>
-                  </OpenOrderProvider>
-                </CurrencyProvider>
+                <OpenOrderProvider>
+                  <LimitProvider>
+                    <SwapProvider>
+                      <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+                        <HeaderContainer />
+                        <Component {...pageProps} />
+                        <Footer />
+                      </div>
+                    </SwapProvider>
+                  </LimitProvider>
+                </OpenOrderProvider>
               </TransactionProvider>
             </MarketProvider>
           </ChainProvider>

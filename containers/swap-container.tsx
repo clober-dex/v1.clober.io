@@ -1,40 +1,38 @@
 import React, { useEffect, useState } from 'react'
-import { parseUnits } from 'viem'
+import { parseUnits, zeroAddress } from 'viem'
 import { useAccount, useFeeData, useQuery } from 'wagmi'
-import { polygonZkEvm } from 'wagmi/chains'
 
 import { SwapForm } from '../components/form/swap-form'
-import { Currency } from '../model/currency'
-import { useCurrencyContext } from '../contexts/currency-context'
 import { useChainContext } from '../contexts/chain-context'
-import { fetchQuotes } from '../apis/quotes'
 import { formatUnits } from '../utils/bigint'
-import OdosPathVizViewer from '../components/odos-pathviz-viewer'
+import PathVizViewer from '../components/path-viz-viewer'
 import { useSwapContext } from '../contexts/swap-context'
+import { fetchQuotes } from '../apis/swap/quotes'
+import { AGGREGATORS } from '../constants/aggregators'
+import { CHAIN_IDS } from '../constants/chain'
 
 export const SwapContainer = () => {
-  const { swap, swapClober } = useSwapContext()
+  const {
+    swap,
+    inputCurrency,
+    setInputCurrency,
+    inputCurrencyAmount,
+    setInputCurrencyAmount,
+    outputCurrency,
+    setOutputCurrency,
+    slippageInput,
+    setSlippageInput,
+    balances,
+    currencies,
+    prices,
+  } = useSwapContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
-  const { balances, currencies, prices } = useCurrencyContext()
 
-  const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
-    undefined,
-  )
-  const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
-
-  const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
-    undefined,
-  )
   const [showOutputCurrencySelect, setShowOutputCurrencySelect] =
     useState(false)
-
-  const [slippageInput, setSlippageInput] = useState('1')
-  const [swapLogic, setSwapLogic] = useState<'GasEfficient' | 'MaximizeReturn'>(
-    'MaximizeReturn',
-  )
 
   const { data } = useQuery(
     [
@@ -45,7 +43,6 @@ export const SwapContainer = () => {
       slippageInput,
       userAddress,
       selectedChain,
-      swapLogic, // todo: remove
     ],
     async () => {
       if (
@@ -55,28 +52,21 @@ export const SwapContainer = () => {
         outputCurrency &&
         parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18) > 0n
       ) {
-        return fetchQuotes({
-          chainId: selectedChain.id,
-          amountIn: parseUnits(
-            inputCurrencyAmount,
-            inputCurrency?.decimals ?? 18,
-          ),
+        return fetchQuotes(
+          AGGREGATORS[selectedChain.id as CHAIN_IDS],
           inputCurrency,
+          parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
           outputCurrency,
-          slippageLimitPercent: parseFloat(slippageInput),
+          parseFloat(slippageInput),
+          feeData.gasPrice,
           userAddress,
-          gasPrice: feeData.gasPrice,
-          gasEffectiveMode: swapLogic === 'GasEfficient',
-        })
+        )
       }
     },
   )
 
   useEffect(() => {
-    setInputCurrency(undefined)
-    setInputCurrencyAmount('')
     setShowInputCurrencySelect(false)
-    setOutputCurrency(undefined)
   }, [selectedChain])
 
   return (
@@ -106,15 +96,23 @@ export const SwapContainer = () => {
             )}
             slippageInput={slippageInput}
             setSlippageInput={setSlippageInput}
-            swapLogic={swapLogic}
-            setSwapLogic={setSwapLogic}
-            gasEstimateValue={data?.gasEstimateValue ?? 0}
+            gasEstimateValue={
+              parseFloat(
+                formatUnits(
+                  BigInt(data?.gasLimit ?? 0n) *
+                    BigInt(feeData?.gasPrice ?? 0n),
+                  selectedChain.nativeCurrency.decimals,
+                ),
+              ) * prices[zeroAddress]
+            }
             actionButtonProps={{
               disabled:
                 !userAddress ||
                 !inputCurrency ||
                 !outputCurrency ||
                 !inputCurrencyAmount ||
+                !feeData ||
+                !feeData.gasPrice ||
                 !data,
               onClick: async () => {
                 if (
@@ -122,24 +120,10 @@ export const SwapContainer = () => {
                   !inputCurrency ||
                   !outputCurrency ||
                   !inputCurrencyAmount ||
+                  !feeData ||
+                  !feeData.gasPrice ||
                   !data
                 ) {
-                  return
-                }
-                // TODO remove it
-                if (selectedChain.id === polygonZkEvm.id && data.amountOut) {
-                  await swapClober(
-                    inputCurrency,
-                    outputCurrency,
-                    parseUnits(
-                      inputCurrencyAmount,
-                      inputCurrency?.decimals ?? 18,
-                    ),
-                    parseFloat(slippageInput),
-                    swapLogic === 'GasEfficient',
-                  )
-                  return
-                } else if (!data.pathId) {
                   return
                 }
                 await swap(
@@ -148,21 +132,19 @@ export const SwapContainer = () => {
                     inputCurrencyAmount,
                     inputCurrency?.decimals ?? 18,
                   ),
-                  data.pathId,
+                  outputCurrency,
+                  parseFloat(slippageInput),
+                  feeData.gasPrice,
+                  userAddress,
                 )
               },
               text: 'Swap',
             }}
           />
         </div>
-        {/* TODO: remove this */}
-        {selectedChain.id !== polygonZkEvm.id ? (
-          <div className="flex flex-col rounded-2xl bg-gray-900 p-6">
-            <OdosPathVizViewer pathVizData={data?.pathViz} />
-          </div>
-        ) : (
-          <></>
-        )}
+        <div className="flex flex-col rounded-2xl bg-gray-900 p-6">
+          <PathVizViewer pathVizData={data?.pathViz} />
+        </div>
       </div>
     </div>
   )
