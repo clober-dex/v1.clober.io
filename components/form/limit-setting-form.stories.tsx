@@ -22,6 +22,8 @@ type Story = StoryObj<typeof LimitSettingForm>
 
 export const Default: Story = {
   args: {
+    isPostOnly: false,
+    setIsPostOnly: () => {},
     claimBounty: '0.00001',
     setClaimBounty: () => {},
     nativeCurrency: {

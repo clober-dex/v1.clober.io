@@ -214,6 +214,8 @@ export const LimitContainer = () => {
         <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[360px] sm:w-[480px] lg:h-[480px]">
           {selectMode === 'settings' ? (
             <LimitSettingForm
+              isPostOnly={isPostOnly}
+              setIsPostOnly={setIsPostOnly}
               nativeCurrency={{
                 address: zeroAddress,
                 ...selectedChain.nativeCurrency,

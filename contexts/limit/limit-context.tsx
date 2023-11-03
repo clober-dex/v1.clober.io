@@ -26,7 +26,7 @@ type LimitContext = {
   claimBounty: string
   setClaimBounty: (amount: string) => void
   isPostOnly: boolean
-  setIsPostOnly: (isPostOnly: boolean) => void
+  setIsPostOnly: (isPostOnly: (prevState: boolean) => boolean) => void
   selectedDecimalPlaces: Decimals | undefined
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   priceInput: string
