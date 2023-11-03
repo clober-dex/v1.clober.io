@@ -73,22 +73,18 @@ export const LimitContainer = () => {
       setPriceInput(
         isBid
           ? toPlacesString(
-              formatUnits(
-                selectedMarket.asks[0]?.price ??
-                  selectedMarket.bids[0]?.price ??
-                  0n,
-                PRICE_DECIMAL,
-              ),
-              PRICE_DECIMAL,
+              asks.length > 0
+                ? asks[0].price
+                : bids.length > 0
+                ? bids[0].price
+                : 0,
             )
           : toPlacesString(
-              formatUnits(
-                selectedMarket.bids[0]?.price ??
-                  selectedMarket.asks[0]?.price ??
-                  0n,
-                PRICE_DECIMAL,
-              ),
-              PRICE_DECIMAL,
+              bids.length > 0
+                ? bids[0].price
+                : asks.length > 0
+                ? asks[0].price
+                : 0,
             ),
       )
       setInputCurrency(
@@ -99,6 +95,8 @@ export const LimitContainer = () => {
       )
     }
   }, [
+    asks,
+    bids,
     availableDecimalPlacesGroups,
     isBid,
     selectedChain.defaultGasPrice,
