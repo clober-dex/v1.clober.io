@@ -23,6 +23,10 @@ export class Market {
   a: bigint
   d: bigint
   r: bigint
+  latestPriceIndex: bigint
+  latestPrice: bigint
+  maxPriceIndex: bigint
+  priceUpperBound: bigint
   quoteToken: Currency
   baseToken: Currency
   quotePrecisionComplement: bigint
@@ -38,6 +42,10 @@ export class Market {
     a: bigint,
     d: bigint,
     r: bigint,
+    latestPriceIndex: bigint,
+    latestPrice: bigint,
+    maxPriceIndex: bigint,
+    priceUpperBound: bigint,
     quoteToken: Currency,
     baseToken: Currency,
     quotePrecisionComplement: bigint,
@@ -52,6 +60,10 @@ export class Market {
     this.a = a
     this.d = d
     this.r = r
+    this.latestPriceIndex = latestPriceIndex
+    this.latestPrice = latestPrice
+    this.maxPriceIndex = maxPriceIndex
+    this.priceUpperBound = priceUpperBound
     this.quoteToken = quoteToken
     this.baseToken = baseToken
     this.quotePrecisionComplement = quotePrecisionComplement
@@ -69,6 +81,10 @@ export class Market {
       market.a,
       market.d,
       market.r,
+      market.latestPriceIndex,
+      market.latestPrice,
+      market.maxPriceIndex,
+      market.priceUpperBound,
       market.quoteToken,
       market.baseToken,
       market.quotePrecisionComplement,
@@ -87,6 +103,10 @@ export class Market {
       BigInt(dto.a),
       BigInt(dto.d),
       BigInt(dto.r),
+      BigInt(dto.latestPriceIndex),
+      BigInt(dto.latestPrice),
+      BigInt(dto.maxPriceIndex),
+      BigInt(dto.priceUpperBound),
       dto.quoteToken,
       dto.baseToken,
       10n ** (18n - BigInt(dto.quoteToken.decimals)),

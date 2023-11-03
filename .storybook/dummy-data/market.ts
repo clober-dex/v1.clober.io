@@ -9,6 +9,10 @@ export const dummyMarkets = [
     160000000000000000n,
     160000000000000000n,
     0n,
+    0n,
+    0n,
+    0n,
+    0n,
     {
       address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
       name: 'USD Coin (Arb1)',
