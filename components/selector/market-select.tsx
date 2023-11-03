@@ -1,6 +1,5 @@
 import React from 'react'
 import { getAddress, isAddress, isAddressEqual } from 'viem'
-import BigNumber from 'bignumber.js'
 
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { SearchSvg } from '../svg/search-svg'
