@@ -24,6 +24,8 @@ import { TransactionProvider } from '../contexts/transaction-context'
 import { LimitProvider } from '../contexts/limit-context'
 import { SwapProvider } from '../contexts/swap-context'
 import { OpenOrderProvider } from '../contexts/open-order-context'
+import { LimitCurrencyProvider } from '../contexts/limit-currency-context'
+import { SwapCurrencyProvider } from '../contexts/swap-currency-context'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportChains.map((chain) => toWagmiChain(chain)),
@@ -86,13 +88,17 @@ function App({ Component, pageProps }: AppProps) {
               <TransactionProvider>
                 <OpenOrderProvider>
                   <LimitProvider>
-                    <SwapProvider>
-                      <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-                        <HeaderContainer />
-                        <Component {...pageProps} />
-                        <Footer />
-                      </div>
-                    </SwapProvider>
+                    <LimitCurrencyProvider>
+                      <SwapProvider>
+                        <SwapCurrencyProvider>
+                          <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+                            <HeaderContainer />
+                            <Component {...pageProps} />
+                            <Footer />
+                          </div>
+                        </SwapCurrencyProvider>
+                      </SwapProvider>
+                    </LimitCurrencyProvider>
                   </LimitProvider>
                 </OpenOrderProvider>
               </TransactionProvider>

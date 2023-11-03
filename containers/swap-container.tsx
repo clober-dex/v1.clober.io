@@ -10,6 +10,7 @@ import { useSwapContext } from '../contexts/swap-context'
 import { fetchQuotes } from '../apis/swap/quotes'
 import { AGGREGATORS } from '../constants/aggregators'
 import { CHAIN_IDS } from '../constants/chain'
+import { useSwapCurrencyContext } from '../contexts/swap-currency-context'
 
 export const SwapContainer = () => {
   const {
@@ -22,10 +23,8 @@ export const SwapContainer = () => {
     setOutputCurrency,
     slippageInput,
     setSlippageInput,
-    balances,
-    currencies,
-    prices,
   } = useSwapContext()
+  const { balances, currencies, prices } = useSwapCurrencyContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
