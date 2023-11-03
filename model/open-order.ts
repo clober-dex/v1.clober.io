@@ -1,8 +1,8 @@
 import { Currency } from './currency'
 
 export type OpenOrder = {
-  inputCurrency: Currency
-  outputCurrency: Currency
+  inputToken: Currency
+  outputToken: Currency
   isBid: boolean
   txHash: `0x${string}`
   price: bigint

@@ -24,8 +24,8 @@ type Story = StoryObj<typeof OpenOrderCard>
 export const Bid: Story = {
   args: {
     openOrder: {
-      inputCurrency: dummyCurrencies[0],
-      outputCurrency: dummyCurrencies[1],
+      inputToken: dummyCurrencies[0],
+      outputToken: dummyCurrencies[1],
       isBid: true,
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
@@ -40,8 +40,8 @@ export const Bid: Story = {
 export const Ask: Story = {
   args: {
     openOrder: {
-      inputCurrency: dummyCurrencies[1],
-      outputCurrency: dummyCurrencies[0],
+      inputToken: dummyCurrencies[1],
+      outputToken: dummyCurrencies[0],
       isBid: false,
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',

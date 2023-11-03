@@ -22,8 +22,8 @@ export const OpenOrderCard = ({
     >
       <div className="flex text-sm text-white justify-between">
         <div className="font-bold flex flex-row items-center gap-1">
-          {openOrder.inputCurrency.symbol} &#x2192;{'  '}
-          {openOrder.outputCurrency.symbol}
+          {openOrder.inputToken.symbol} &#x2192;{'  '}
+          {openOrder.outputToken.symbol}
           <a
             target="_blank"
             href="https://etherscan.io/tx/0x84a09de087e610fbba59440ea57f7166b3a7178260c485ab8315dd51ad197475"
@@ -46,7 +46,7 @@ export const OpenOrderCard = ({
             <label className="text-gray-200">You sell</label>
             <p className="text-white">
               {toPlacesString(
-                formatUnits(openOrder.amount, openOrder.inputCurrency.decimals),
+                formatUnits(openOrder.amount, openOrder.inputToken.decimals),
               )}
             </p>
           </div>
@@ -56,7 +56,7 @@ export const OpenOrderCard = ({
               {toPlacesString(
                 formatUnits(
                   openOrder.amount * openOrder.price,
-                  openOrder.outputCurrency.decimals + PRICE_DECIMAL,
+                  openOrder.outputToken.decimals + PRICE_DECIMAL,
                 ),
               )}
             </p>
@@ -76,7 +76,7 @@ export const OpenOrderCard = ({
                 {toPlacesString(
                   formatUnits(
                     openOrder.filledAmount,
-                    openOrder.inputCurrency.decimals,
+                    openOrder.inputToken.decimals,
                   ),
                 )}
                 )

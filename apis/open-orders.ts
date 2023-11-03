@@ -21,24 +21,24 @@ export async function fetchOpenOrders(
     },
   )
   return openOrders.map((openOrder) => {
-    const inputCurrency = openOrder.isBid
+    const inputToken = openOrder.isBid
       ? openOrder.market.quoteToken
       : openOrder.market.baseToken
-    const outputCurrency = openOrder.isBid
+    const outputToken = openOrder.isBid
       ? openOrder.market.baseToken
       : openOrder.market.quoteToken
     return {
-      inputCurrency: {
-        address: getAddress(inputCurrency.id),
-        name: inputCurrency.name,
-        symbol: inputCurrency.symbol,
-        decimals: Number(inputCurrency.decimals),
+      inputToken: {
+        address: getAddress(inputToken.id),
+        name: inputToken.name,
+        symbol: inputToken.symbol,
+        decimals: Number(inputToken.decimals),
       },
-      outputCurrency: {
-        address: getAddress(outputCurrency.id),
-        name: outputCurrency.name,
-        symbol: outputCurrency.symbol,
-        decimals: Number(outputCurrency.decimals),
+      outputToken: {
+        address: getAddress(outputToken.id),
+        name: outputToken.name,
+        symbol: outputToken.symbol,
+        decimals: Number(outputToken.decimals),
       },
       isBid: openOrder.isBid,
       txHash: openOrder.txHash as `0x${string}`,
