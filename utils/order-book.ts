@@ -7,7 +7,7 @@ import { toPlacesString } from './bignumber'
 import { PRICE_DECIMAL } from './prices'
 import { formatUnits } from './bigint'
 
-export function calculateOutputCurrencyAmount(
+export function calculateOutputCurrencyAmountString(
   isBid: boolean,
   inputCurrencyAmount: string,
   priceInput: string,
@@ -21,7 +21,7 @@ export function calculateOutputCurrencyAmount(
   )
 }
 
-export function calculatePriceIndex(
+export function calculatePriceInputString(
   isBid: boolean,
   inputCurrencyAmount: string,
   outputCurrencyAmount: string,
@@ -39,7 +39,7 @@ export function parseDepth(
   isBid: boolean,
   market: Market,
   decimalPlaces: Decimals,
-) {
+): { price: string; size: string }[] {
   return Array.from(
     [...(isBid ? market.bids : market.asks).map((depth) => ({ ...depth }))]
       .sort((a, b) =>

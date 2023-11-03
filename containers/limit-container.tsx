@@ -15,8 +15,8 @@ import { toPlacesString } from '../utils/bignumber'
 import { useOpenOrderContext } from '../contexts/limit/open-order-context'
 import { useLimitContext } from '../contexts/limit/limit-context'
 import {
-  calculateOutputCurrencyAmount,
-  calculatePriceIndex,
+  calculateOutputCurrencyAmountString,
+  calculatePriceInputString,
 } from '../utils/order-book'
 import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
 
@@ -136,7 +136,7 @@ export const LimitContainer = () => {
 
     // `priceInput` is changed -> `outputCurrencyAmount` will be changed
     if (previousValues.current.priceInput !== priceInput) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmount(
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
         isBid,
         inputCurrencyAmount,
         priceInput,
@@ -153,7 +153,7 @@ export const LimitContainer = () => {
     else if (
       previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
     ) {
-      const priceInput = calculatePriceIndex(
+      const priceInput = calculatePriceInputString(
         isBid,
         inputCurrencyAmount,
         outputCurrencyAmount,
@@ -170,7 +170,7 @@ export const LimitContainer = () => {
     else if (
       previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
     ) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmount(
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
         isBid,
         inputCurrencyAmount,
         priceInput,
