@@ -3,6 +3,10 @@ import { getAddress, isAddressEqual } from 'viem'
 import { MarketDto } from '../apis/market'
 
 import { Currency } from './currency'
+import { ArithmeticPriceBook } from './price-book/arithmetic-price-book'
+import { GeometricPriceBook } from './price-book/geometric-price-book'
+import { PriceBook } from './price-book/price-book'
+import { CloberPrice } from './price-book/cloberPrice'
 
 type Depth = {
   price: bigint
@@ -33,6 +37,8 @@ export class Market {
   basePrecisionComplement: bigint
   bids: Depth[]
   asks: Depth[]
+
+  priceBook: PriceBook
 
   constructor(
     address: `0x${string}`,
@@ -70,6 +76,16 @@ export class Market {
     this.basePrecisionComplement = basePrecisionComplement
     this.bids = bids
     this.asks = asks
+    this.priceBook =
+      r === 0n ? new ArithmeticPriceBook(a, d) : new GeometricPriceBook(a, r)
+  }
+
+  indexToPrice(priceIndex: number): CloberPrice {
+    return this.priceBook.indexToPrice(priceIndex)
+  }
+
+  priceToIndex(price: bigint, roundingUp: boolean): CloberPrice {
+    return this.priceBook.priceToIndex(price, roundingUp)
   }
 
   static from(market: Market, bids: Depth[], asks: Depth[]): Market {
@@ -150,15 +166,15 @@ export class Market {
     }
   }
 
-  private quoteToRaw(amount: bigint, roundUp: boolean): bigint {
+  quoteToRaw(amount: bigint, roundUp: boolean): bigint {
     return this.divide(amount, this.quoteUnit, roundUp)
   }
 
-  private rawToQuote(rawAmount: bigint): bigint {
+  rawToQuote(rawAmount: bigint): bigint {
     return rawAmount * this.quoteUnit
   }
 
-  private baseToRaw(amount: bigint, price: bigint, roundUp: boolean): bigint {
+  baseToRaw(amount: bigint, price: bigint, roundUp: boolean): bigint {
     return this.divide(
       amount * price * this.basePrecisionComplement,
       this.PRICE_PRECISION * this.quotePrecisionComplement * this.quoteUnit,
@@ -166,11 +182,7 @@ export class Market {
     )
   }
 
-  private rawToBase(
-    rawAmount: bigint,
-    price: bigint,
-    roundUp: boolean,
-  ): bigint {
+  rawToBase(rawAmount: bigint, price: bigint, roundUp: boolean): bigint {
     return this.divide(
       this.rawToQuote(rawAmount) *
         this.PRICE_PRECISION *
