@@ -28,7 +28,7 @@ export async function fetchSwapData(
     gasPrice,
     userAddress,
   )
-  return aggregator.data(
+  return aggregator.buildCallData(
     inputCurrency,
     amountIn,
     outputCurrency,
