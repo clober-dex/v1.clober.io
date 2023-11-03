@@ -296,7 +296,13 @@ export const LimitContainer = () => {
         inputCurrencyAmount,
       }
     }
-  }, [priceInput, inputCurrencyAmount, outputCurrencyAmount, isBid])
+  }, [
+    priceInput,
+    inputCurrencyAmount,
+    outputCurrencyAmount,
+    isBid,
+    outputCurrency?.decimals,
+  ])
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
