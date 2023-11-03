@@ -1,11 +1,14 @@
 import React from 'react'
 import { getAddress, isAddress, isAddressEqual } from 'viem'
+import BigNumber from 'bignumber.js'
 
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { SearchSvg } from '../svg/search-svg'
 import { Market } from '../../model/market'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatUnits } from '../../utils/bigint'
+import { PRICE_DECIMAL } from '../../utils/prices'
+import { toPlacesString } from '../../utils/bignumber'
 
 const MarketSelect = ({
   markets,
@@ -65,34 +68,38 @@ const MarketSelect = ({
                 .toLowerCase()
                 .includes(value.toLowerCase()),
           )
-          .map((currency) => (
+          .map((market) => (
             <button
-              key={currency.address}
+              key={market.address}
               className="flex w-full px-4 py-2 items-center justify-between text-start"
-              onClick={() => onMarketSelect(currency)}
+              onClick={() => onMarketSelect(market)}
             >
               <div className="flex items-center gap-3">
                 <div className="relative w-[52px] h-6 sm:h-8">
                   <CurrencyIcon
-                    currency={currency.quoteToken}
+                    currency={market.quoteToken}
                     className="absolute w-8 h-8 right-0"
                   />
                   <CurrencyIcon
-                    currency={currency.baseToken}
+                    currency={market.baseToken}
                     className="absolute w-8 h-8 left-0"
                   />
                 </div>
                 <div className="flex flex-col justify-between">
                   <div className="text-white">
-                    {currency.baseToken.symbol}-{currency.quoteToken.symbol}
+                    {market.baseToken.symbol}-{market.quoteToken.symbol}
                   </div>
                   <div className="text-gray-500 text-xs">
-                    {currency.baseToken.name}
+                    {market.baseToken.name}
                   </div>
                 </div>
               </div>
               <div className="flex-1 text-sm text-end text-white">
-                <div>{formatUnits(1000000000000000000000n, 18)}</div>
+                <div>
+                  {toPlacesString(
+                    formatUnits(market.latestPrice ?? 0n, PRICE_DECIMAL),
+                  )}
+                </div>
               </div>
             </button>
           ))}

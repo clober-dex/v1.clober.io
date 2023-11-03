@@ -23,6 +23,10 @@ export type MarketDto = {
   a: string
   d: string
   r: string
+  latestPriceIndex: string
+  latestPrice: string
+  maxPriceIndex: string
+  priceUpperBound: string
   quoteToken: Currency
   baseToken: Currency
   depths: DepthDto[]
@@ -43,6 +47,10 @@ export async function fetchMarkets(chainId: CHAIN_IDS): Promise<Market[]> {
       a: market.a,
       d: market.d,
       r: market.r,
+      latestPriceIndex: market.latestPriceIndex,
+      latestPrice: market.latestPrice,
+      maxPriceIndex: market.maxPriceIndex,
+      priceUpperBound: market.priceUpperBound,
       quoteToken: {
         address: getAddress(market.quoteToken.id),
         name: market.quoteToken.name,
