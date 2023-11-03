@@ -13,8 +13,8 @@ describe('GeometricPriceBook', () => {
     Math.floor(Math.random() * 2 ** 10),
   )
   const geometricPriceBook = new GeometricPriceBook(
-    '10000000000000',
-    '1010000000000000000',
+    10000000000000n,
+    1010000000000000000n,
   )
 
   it('index to price', async () => {
