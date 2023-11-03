@@ -11,25 +11,30 @@ export const supportChains: Chain[] =
         {
           ...couponFinanceChain,
           defaultGasPrice: 0n,
+          expireIn: 60,
           icon: 'https://www.coupon.finance/favicon.svg',
         },
         {
           ...polygonZkEvm,
           defaultGasPrice: 1000000n,
+          expireIn: 240,
         },
         {
           ...arbitrum,
           defaultGasPrice: 1000000n,
+          expireIn: 60,
         },
       ]
     : [
         {
           ...arbitrum,
           defaultGasPrice: 1000000n,
+          expireIn: 60,
         },
         {
           ...polygonZkEvm,
           defaultGasPrice: 1000000n,
+          expireIn: 240,
         },
       ]
 

@@ -82,7 +82,7 @@ export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [claimBounty, setClaimBounty] = useState(
     formatUnits(
-      selectedChain.defaultGasPrice ?? 0n,
+      selectedChain.defaultGasPrice,
       selectedChain.nativeCurrency.decimals,
     ),
   )

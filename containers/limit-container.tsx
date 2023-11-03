@@ -59,7 +59,7 @@ export const LimitContainer = () => {
   useEffect(() => {
     setClaimBounty(
       formatUnits(
-        selectedChain.defaultGasPrice ?? 0n,
+        selectedChain.defaultGasPrice,
         selectedChain.nativeCurrency.decimals,
       ),
     )
