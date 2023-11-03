@@ -1,35 +1,35 @@
 import { createPublicClient, http } from 'viem'
-import { mainnet } from 'viem/chains'
+import { arbitrum } from 'viem/chains'
 
-import { ArithmeticPriceBook__factory } from '../typechain'
-import { ArithmeticPriceBook } from '../model/price-book/arithmetic-price-book'
+import { GeometricPriceBook__factory } from '../typechain'
+import { GeometricPriceBook } from '../model/price-book/geometric-price-book'
 
-describe('ArithmeticPriceBook', () => {
+describe('GeometricPriceBook', () => {
   const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http('https://rpc.ankr.com/eth'),
+    chain: arbitrum,
+    transport: http('https://rpc.ankr.com/arbitrum'),
   })
   const randomPriceIndices = Array.from({ length: 5 }, () =>
-    Math.floor(Math.random() * 2 ** 16),
+    Math.floor(Math.random() * 2 ** 10),
   )
-  const arithmeticPriceBook = new ArithmeticPriceBook(
-    '100000000000000',
-    '100000000000000',
+  const geometricPriceBook = new GeometricPriceBook(
+    '10000000000000',
+    '1010000000000000000',
   )
 
   it('index to price', async () => {
     const actualPrices = (
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
-          address: '0x1c230Df6364af81d1585C3B3e6aC5aaD2daD9bD9',
-          abi: ArithmeticPriceBook__factory.abi,
+          address: '0xcA4C669093572c5a23DE04B848a7f706eCBdFAC2',
+          abi: GeometricPriceBook__factory.abi,
           functionName: 'indexToPrice',
           args: [priceIndex],
         })),
       })) as { result: bigint }[]
     ).map(({ result }) => result)
     const expectedPrices = randomPriceIndices.map((priceIndex) =>
-      BigInt(arithmeticPriceBook.indexToPrice(priceIndex).value.toFixed()),
+      BigInt(geometricPriceBook.indexToPrice(priceIndex).value.toFixed()),
     )
     expect(expectedPrices).toEqual(actualPrices)
   })
@@ -38,16 +38,15 @@ describe('ArithmeticPriceBook', () => {
     const actualPrices = (
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
-          address: '0x1c230Df6364af81d1585C3B3e6aC5aaD2daD9bD9',
-          abi: ArithmeticPriceBook__factory.abi,
+          address: '0xcA4C669093572c5a23DE04B848a7f706eCBdFAC2',
+          abi: GeometricPriceBook__factory.abi,
           functionName: 'indexToPrice',
           args: [priceIndex],
         })),
       })) as { result: bigint }[]
     ).map(({ result }) => result)
     const expectedPriceIndices = actualPrices.map(
-      (price) =>
-        arithmeticPriceBook.priceToIndex(price.toString(), false).index,
+      (price) => geometricPriceBook.priceToIndex(price.toString(), false).index,
     )
     expect(expectedPriceIndices).toEqual(randomPriceIndices)
   })
