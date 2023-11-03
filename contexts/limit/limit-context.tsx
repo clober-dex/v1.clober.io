@@ -1,0 +1,166 @@
+import React, { useMemo, useState } from 'react'
+import BigNumber from 'bignumber.js'
+
+import { Currency } from '../../model/currency'
+import { formatUnits, min } from '../../utils/bigint'
+import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../../model/decimals'
+import { getPriceDecimals, PRICE_DECIMAL } from '../../utils/prices'
+import { parseDepth } from '../../utils/order-book'
+import { useChainContext } from '../chain-context'
+
+import { useMarketContext } from './market-context'
+
+type LimitContext = {
+  isBid: boolean
+  setIsBid: (isBid: (prevState: boolean) => boolean) => void
+  selectMode: 'none' | 'settings' | 'selectMarket'
+  setSelectMode: (selectMode: 'none' | 'settings' | 'selectMarket') => void
+  inputCurrency: Currency | undefined
+  setInputCurrency: (currency: Currency | undefined) => void
+  inputCurrencyAmount: string
+  setInputCurrencyAmount: (amount: string) => void
+  outputCurrency: Currency | undefined
+  setOutputCurrency: (currency: Currency | undefined) => void
+  outputCurrencyAmount: string
+  setOutputCurrencyAmount: (amount: string) => void
+  claimBounty: string
+  setClaimBounty: (amount: string) => void
+  selectedDecimalPlaces: Decimals | undefined
+  setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
+  priceInput: string
+  setPriceInput: (priceInput: string) => void
+  availableDecimalPlacesGroups: Decimals[]
+  bids: { price: string; size: string }[]
+  asks: { price: string; size: string }[]
+}
+
+const Context = React.createContext<LimitContext>({
+  isBid: true,
+  setIsBid: () => {},
+  selectMode: 'none',
+  setSelectMode: () => {},
+  inputCurrency: undefined,
+  setInputCurrency: () => {},
+  inputCurrencyAmount: '',
+  setInputCurrencyAmount: () => {},
+  outputCurrency: undefined,
+  setOutputCurrency: () => {},
+  outputCurrencyAmount: '',
+  setOutputCurrencyAmount: () => {},
+  claimBounty: '',
+  setClaimBounty: () => {},
+  selectedDecimalPlaces: undefined,
+  setSelectedDecimalPlaces: () => {},
+  priceInput: '',
+  setPriceInput: () => {},
+  availableDecimalPlacesGroups: [],
+  bids: [],
+  asks: [],
+})
+
+export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const { selectedMarket } = useMarketContext()
+  const { selectedChain } = useChainContext()
+
+  const [isBid, setIsBid] = useState(true)
+  const [selectMode, setSelectMode] = useState<
+    'none' | 'settings' | 'selectMarket'
+  >('none')
+
+  const [inputCurrency, setInputCurrency] = useState<Currency | undefined>(
+    undefined,
+  )
+  const [inputCurrencyAmount, setInputCurrencyAmount] = useState('')
+
+  const [outputCurrency, setOutputCurrency] = useState<Currency | undefined>(
+    undefined,
+  )
+  const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
+  const [claimBounty, setClaimBounty] = useState(
+    formatUnits(
+      selectedChain.defaultGasPrice ?? 0n,
+      selectedChain.nativeCurrency.decimals,
+    ),
+  )
+  const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
+    Decimals | undefined
+  >(undefined)
+  const [priceInput, setPriceInput] = useState('')
+
+  const availableDecimalPlacesGroups = useMemo(() => {
+    const availableDecimalPlacesGroups = selectedMarket
+      ? (Array.from(Array(4).keys())
+          .map((i) => {
+            const minPrice = min(
+              selectedMarket.bids.sort(
+                (a, b) => Number(b.priceIndex) - Number(a.priceIndex),
+              )[0]?.price ?? 0n,
+              selectedMarket.asks.sort(
+                (a, b) => Number(a.priceIndex) - Number(b.priceIndex),
+              )[0]?.price ?? 0n,
+            )
+            const decimalPlaces = getPriceDecimals(
+              minPrice,
+              selectedMarket.d,
+              selectedMarket.r,
+            )
+            const label = (10 ** (i - decimalPlaces)).toFixed(
+              Math.max(decimalPlaces - i, 0),
+            )
+            if (new BigNumber(formatUnits(minPrice, PRICE_DECIMAL)).gt(label)) {
+              return {
+                label,
+                value: decimalPlaces - i,
+              }
+            }
+          })
+          .filter((x) => x) as Decimals[])
+      : []
+    return availableDecimalPlacesGroups.length > 0
+      ? availableDecimalPlacesGroups
+      : DEFAULT_DECIMAL_PLACES_GROUPS
+  }, [selectedMarket])
+
+  const [bids, asks] = useMemo(
+    () =>
+      selectedMarket && selectedDecimalPlaces
+        ? [
+            parseDepth(true, selectedMarket, selectedDecimalPlaces),
+            parseDepth(false, selectedMarket, selectedDecimalPlaces),
+          ]
+        : [[], []],
+    [selectedDecimalPlaces, selectedMarket],
+  )
+
+  return (
+    <Context.Provider
+      value={{
+        isBid,
+        setIsBid,
+        selectMode,
+        setSelectMode,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        outputCurrency,
+        setOutputCurrency,
+        outputCurrencyAmount,
+        setOutputCurrencyAmount,
+        claimBounty,
+        setClaimBounty,
+        selectedDecimalPlaces,
+        setSelectedDecimalPlaces,
+        priceInput,
+        setPriceInput,
+        availableDecimalPlacesGroups,
+        bids,
+        asks,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  )
+}
+
+export const useLimitContext = () => React.useContext(Context) as LimitContext

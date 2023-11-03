@@ -22,7 +22,7 @@ export interface Aggregator {
     aggregator: Aggregator
   }>
 
-  data(
+  buildCallData(
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,

@@ -1,28 +1,30 @@
 import React from 'react'
 import { useAccount, useBalance, useQuery } from 'wagmi'
-import { getAddress, zeroAddress } from 'viem'
 import { readContracts } from '@wagmi/core'
+import { getAddress, zeroAddress } from 'viem'
 
-import { Balances } from '../model/balances'
-import { IERC20__factory } from '../typechain'
+import { Balances } from '../../model/balances'
+import { IERC20__factory } from '../../typechain'
 
 import { useMarketContext } from './market-context'
 
-type LimitContext = {
+type LimitCurrencyContext = {
   balances: Balances
 }
 
-const Context = React.createContext<LimitContext>({
+const Context = React.createContext<LimitCurrencyContext>({
   balances: {},
 })
 
-export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
+export const LimitCurrencyProvider = ({
+  children,
+}: React.PropsWithChildren<{}>) => {
   const { address: userAddress } = useAccount()
   const { data: balance } = useBalance({ address: userAddress })
   const { markets } = useMarketContext()
 
   const { data: balances } = useQuery(
-    ['balances', userAddress, balance, markets],
+    ['limit-balances', userAddress, balance, markets],
     async () => {
       if (!userAddress) {
         return {}
@@ -72,4 +74,5 @@ export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
   )
 }
 
-export const useLimitContext = () => React.useContext(Context) as LimitContext
+export const useLimitCurrencyContext = () =>
+  React.useContext(Context) as LimitCurrencyContext

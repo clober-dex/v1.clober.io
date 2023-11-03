@@ -17,13 +17,17 @@ import dynamic from 'next/dynamic'
 import HeaderContainer from '../containers/header-container'
 import Footer from '../components/footer'
 import { ChainProvider } from '../contexts/chain-context'
-import { MarketProvider } from '../contexts/market-context'
+import { MarketProvider } from '../contexts/limit/market-context'
 import { supportChains } from '../constants/chain'
 import { toWagmiChain } from '../model/chain'
 import { TransactionProvider } from '../contexts/transaction-context'
-import { LimitProvider } from '../contexts/limit-context'
-import { SwapProvider } from '../contexts/swap-context'
-import { OpenOrderProvider } from '../contexts/open-order-context'
+import { LimitProvider } from '../contexts/limit/limit-context'
+import { SwapProvider } from '../contexts/swap/swap-context'
+import { OpenOrderProvider } from '../contexts/limit/open-order-context'
+import { LimitCurrencyProvider } from '../contexts/limit/limit-currency-context'
+import { SwapCurrencyProvider } from '../contexts/swap/swap-currency-context'
+import { LimitContractProvider } from '../contexts/limit/limit-contract-context'
+import { SwapContractProvider } from '../contexts/swap/swap-contract-context'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportChains.map((chain) => toWagmiChain(chain)),
@@ -69,6 +73,30 @@ const Web3AnalyticWrapper = ({ children }: React.PropsWithChildren) => {
   return <>{children}</>
 }
 
+const LimitProvidersWrapper = ({ children }: React.PropsWithChildren) => {
+  return (
+    <MarketProvider>
+      <OpenOrderProvider>
+        <LimitProvider>
+          <LimitCurrencyProvider>
+            <LimitContractProvider>{children}</LimitContractProvider>
+          </LimitCurrencyProvider>
+        </LimitProvider>
+      </OpenOrderProvider>
+    </MarketProvider>
+  )
+}
+
+const SwapProvidersWrapper = ({ children }: React.PropsWithChildren) => {
+  return (
+    <SwapProvider>
+      <SwapCurrencyProvider>
+        <SwapContractProvider>{children}</SwapContractProvider>
+      </SwapCurrencyProvider>
+    </SwapProvider>
+  )
+}
+
 function App({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -81,23 +109,19 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       <WalletProvider>
         <Web3AnalyticWrapper>
-          <ChainProvider>
-            <MarketProvider>
-              <TransactionProvider>
-                <OpenOrderProvider>
-                  <LimitProvider>
-                    <SwapProvider>
-                      <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-                        <HeaderContainer />
-                        <Component {...pageProps} />
-                        <Footer />
-                      </div>
-                    </SwapProvider>
-                  </LimitProvider>
-                </OpenOrderProvider>
-              </TransactionProvider>
-            </MarketProvider>
-          </ChainProvider>
+          <TransactionProvider>
+            <ChainProvider>
+              <LimitProvidersWrapper>
+                <SwapProvidersWrapper>
+                  <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+                    <HeaderContainer />
+                    <Component {...pageProps} />
+                    <Footer />
+                  </div>
+                </SwapProvidersWrapper>
+              </LimitProvidersWrapper>
+            </ChainProvider>
+          </TransactionProvider>
         </Web3AnalyticWrapper>
       </WalletProvider>
     </>

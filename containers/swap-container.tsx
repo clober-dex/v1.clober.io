@@ -6,14 +6,15 @@ import { SwapForm } from '../components/form/swap-form'
 import { useChainContext } from '../contexts/chain-context'
 import { formatUnits } from '../utils/bigint'
 import PathVizViewer from '../components/path-viz-viewer'
-import { useSwapContext } from '../contexts/swap-context'
+import { useSwapContext } from '../contexts/swap/swap-context'
 import { fetchQuotes } from '../apis/swap/quotes'
 import { AGGREGATORS } from '../constants/aggregators'
 import { CHAIN_IDS } from '../constants/chain'
+import { useSwapCurrencyContext } from '../contexts/swap/swap-currency-context'
+import { useSwapContractContext } from '../contexts/swap/swap-contract-context'
 
 export const SwapContainer = () => {
   const {
-    swap,
     inputCurrency,
     setInputCurrency,
     inputCurrencyAmount,
@@ -22,10 +23,9 @@ export const SwapContainer = () => {
     setOutputCurrency,
     slippageInput,
     setSlippageInput,
-    balances,
-    currencies,
-    prices,
   } = useSwapContext()
+  const { balances, currencies, prices } = useSwapCurrencyContext()
+  const { swap } = useSwapContractContext()
   const { data: feeData } = useFeeData()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()

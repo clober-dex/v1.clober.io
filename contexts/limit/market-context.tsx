@@ -2,10 +2,9 @@ import React, { useEffect } from 'react'
 import { useQuery } from 'wagmi'
 import { isAddressEqual } from 'viem'
 
-import { Market } from '../model/market'
-import { fetchMarkets } from '../apis/market'
-
-import { useChainContext } from './chain-context'
+import { Market } from '../../model/market'
+import { fetchMarkets } from '../../apis/market'
+import { useChainContext } from '../chain-context'
 
 type MarketContext = {
   markets: Market[]

@@ -239,7 +239,7 @@ export class CloberAggregator implements Aggregator {
     }
   }
 
-  public async data(
+  public async buildCallData(
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
