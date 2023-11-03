@@ -39,6 +39,8 @@ export const LimitContainer = () => {
     setOutputCurrencyAmount,
     claimBounty,
     setClaimBounty,
+    isPostOnly,
+    setIsPostOnly,
     selectedDecimalPlaces,
     setSelectedDecimalPlaces,
     priceInput,
