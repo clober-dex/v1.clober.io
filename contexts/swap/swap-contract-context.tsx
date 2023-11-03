@@ -113,7 +113,7 @@ export const SwapContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
-        await queryClient.invalidateQueries(['balances'])
+        await queryClient.invalidateQueries(['swap-balances'])
         setConfirmation(undefined)
       }
     },
