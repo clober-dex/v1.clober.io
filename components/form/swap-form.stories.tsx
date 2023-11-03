@@ -32,11 +32,13 @@ export const Default: Story = {
     setInputCurrency: () => {},
     inputCurrencyAmount: '0.1',
     setInputCurrencyAmount: () => {},
+    availableInputCurrencyBalance: 10000000000000000000n,
     showOutputCurrencySelect: false,
     setShowOutputCurrencySelect: () => {},
     outputCurrency: undefined,
     setOutputCurrency: () => {},
     outputCurrencyAmount: '0.1',
+    gasEstimateValue: 0.0,
     actionButtonProps: {
       disabled: false,
       onClick: () => {},
