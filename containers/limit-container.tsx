@@ -7,18 +7,18 @@ import { LimitForm } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
 import OpenOrderList from '../components/open-order-list'
 import { useChainContext } from '../contexts/chain-context'
-import { useMarketContext } from '../contexts/market-context'
+import { useMarketContext } from '../contexts/limit/market-context'
 import { formatUnits } from '../utils/bigint'
 import { PRICE_DECIMAL } from '../utils/prices'
 import { textStyles } from '../themes/text-styles'
 import { toPlacesString } from '../utils/bignumber'
-import { useOpenOrderContext } from '../contexts/open-order-context'
-import { useLimitContext } from '../contexts/limit-context'
+import { useOpenOrderContext } from '../contexts/limit/open-order-context'
+import { useLimitContext } from '../contexts/limit/limit-context'
 import {
   calculateOutputCurrencyAmount,
   calculatePriceIndex,
 } from '../utils/order-book'
-import { useLimitCurrencyContext } from '../contexts/limit-currency-context'
+import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()

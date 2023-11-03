@@ -6,11 +6,11 @@ import { SwapForm } from '../components/form/swap-form'
 import { useChainContext } from '../contexts/chain-context'
 import { formatUnits } from '../utils/bigint'
 import PathVizViewer from '../components/path-viz-viewer'
-import { useSwapContext } from '../contexts/swap-context'
+import { useSwapContext } from '../contexts/swap/swap-context'
 import { fetchQuotes } from '../apis/swap/quotes'
 import { AGGREGATORS } from '../constants/aggregators'
 import { CHAIN_IDS } from '../constants/chain'
-import { useSwapCurrencyContext } from '../contexts/swap-currency-context'
+import { useSwapCurrencyContext } from '../contexts/swap/swap-currency-context'
 
 export const SwapContainer = () => {
   const {

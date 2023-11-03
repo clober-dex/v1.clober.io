@@ -3,8 +3,8 @@ import { useAccount, useBalance, useQuery } from 'wagmi'
 import { readContracts } from '@wagmi/core'
 import { getAddress, zeroAddress } from 'viem'
 
-import { Balances } from '../model/balances'
-import { IERC20__factory } from '../typechain'
+import { Balances } from '../../model/balances'
+import { IERC20__factory } from '../../typechain'
 
 import { useMarketContext } from './market-context'
 

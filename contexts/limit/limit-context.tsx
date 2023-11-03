@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
 
-import { Currency } from '../model/currency'
-import { formatUnits, min } from '../utils/bigint'
-import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../model/decimals'
-import { getPriceDecimals, PRICE_DECIMAL } from '../utils/prices'
-import { parseDepth } from '../utils/order-book'
+import { Currency } from '../../model/currency'
+import { formatUnits, min } from '../../utils/bigint'
+import { Decimals, DEFAULT_DECIMAL_PLACES_GROUPS } from '../../model/decimals'
+import { getPriceDecimals, PRICE_DECIMAL } from '../../utils/prices'
+import { parseDepth } from '../../utils/order-book'
+import { useChainContext } from '../chain-context'
 
-import { useChainContext } from './chain-context'
 import { useMarketContext } from './market-context'
 
 type LimitContext = {

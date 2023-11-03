@@ -1,10 +1,9 @@
 import React from 'react'
 import { useAccount, useQuery } from 'wagmi'
 
-import { OpenOrder } from '../model/open-order'
-import { fetchOpenOrders } from '../apis/open-orders'
-
-import { useChainContext } from './chain-context'
+import { OpenOrder } from '../../model/open-order'
+import { fetchOpenOrders } from '../../apis/open-orders'
+import { useChainContext } from '../chain-context'
 
 type OpenOrderContext = {
   openOrders: OpenOrder[]

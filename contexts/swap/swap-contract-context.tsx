@@ -2,15 +2,14 @@ import React, { useCallback } from 'react'
 import { isAddressEqual, zeroAddress } from 'viem'
 import { useQueryClient, useWalletClient } from 'wagmi'
 
-import { Currency } from '../model/currency'
-import { formatUnits } from '../utils/bigint'
-import { fetchSwapData } from '../apis/swap/data'
-import { AGGREGATORS } from '../constants/aggregators'
-import { CHAIN_IDS } from '../constants/chain'
-import { approve20 } from '../utils/approve20'
-
-import { useChainContext } from './chain-context'
-import { useTransactionContext } from './transaction-context'
+import { Currency } from '../../model/currency'
+import { formatUnits } from '../../utils/bigint'
+import { fetchSwapData } from '../../apis/swap/data'
+import { AGGREGATORS } from '../../constants/aggregators'
+import { CHAIN_IDS } from '../../constants/chain'
+import { approve20 } from '../../utils/approve20'
+import { useChainContext } from '../chain-context'
+import { useTransactionContext } from '../transaction-context'
 
 type SwapContractContext = {
   swap: (

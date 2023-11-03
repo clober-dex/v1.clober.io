@@ -3,16 +3,15 @@ import { useAccount, useBalance, useQuery } from 'wagmi'
 import { readContracts } from '@wagmi/core'
 import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 
-import { Balances } from '../model/balances'
-import { IERC20__factory } from '../typechain'
-import { Currency } from '../model/currency'
-import { Prices } from '../model/prices'
-import { fetchCurrencies } from '../apis/swap/currencies'
-import { AGGREGATORS } from '../constants/aggregators'
-import { CHAIN_IDS } from '../constants/chain'
-import { fetchPrices } from '../apis/swap/prices'
-
-import { useChainContext } from './chain-context'
+import { Balances } from '../../model/balances'
+import { IERC20__factory } from '../../typechain'
+import { Currency } from '../../model/currency'
+import { Prices } from '../../model/prices'
+import { fetchCurrencies } from '../../apis/swap/currencies'
+import { AGGREGATORS } from '../../constants/aggregators'
+import { CHAIN_IDS } from '../../constants/chain'
+import { fetchPrices } from '../../apis/swap/prices'
+import { useChainContext } from '../chain-context'
 
 type SwapCurrencyContext = {
   currencies: Currency[]

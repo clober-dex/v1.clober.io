@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
-import { Currency } from '../model/currency'
-
-import { useChainContext } from './chain-context'
+import { Currency } from '../../model/currency'
+import { useChainContext } from '../chain-context'
 
 type SwapContext = {
   inputCurrency: Currency | undefined
