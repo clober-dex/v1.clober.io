@@ -73,6 +73,30 @@ const Web3AnalyticWrapper = ({ children }: React.PropsWithChildren) => {
   return <>{children}</>
 }
 
+const LimitProvidersWrapper = ({ children }: React.PropsWithChildren) => {
+  return (
+    <MarketProvider>
+      <OpenOrderProvider>
+        <LimitProvider>
+          <LimitCurrencyProvider>
+            <LimitContractProvider>{children}</LimitContractProvider>
+          </LimitCurrencyProvider>
+        </LimitProvider>
+      </OpenOrderProvider>
+    </MarketProvider>
+  )
+}
+
+const SwapProvidersWrapper = ({ children }: React.PropsWithChildren) => {
+  return (
+    <SwapProvider>
+      <SwapCurrencyProvider>
+        <SwapContractProvider>{children}</SwapContractProvider>
+      </SwapCurrencyProvider>
+    </SwapProvider>
+  )
+}
+
 function App({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -85,31 +109,19 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       <WalletProvider>
         <Web3AnalyticWrapper>
-          <ChainProvider>
-            <MarketProvider>
-              <TransactionProvider>
-                <OpenOrderProvider>
-                  <LimitProvider>
-                    <LimitCurrencyProvider>
-                      <LimitContractProvider>
-                        <SwapProvider>
-                          <SwapCurrencyProvider>
-                            <SwapContractProvider>
-                              <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-                                <HeaderContainer />
-                                <Component {...pageProps} />
-                                <Footer />
-                              </div>
-                            </SwapContractProvider>
-                          </SwapCurrencyProvider>
-                        </SwapProvider>
-                      </LimitContractProvider>
-                    </LimitCurrencyProvider>
-                  </LimitProvider>
-                </OpenOrderProvider>
-              </TransactionProvider>
-            </MarketProvider>
-          </ChainProvider>
+          <TransactionProvider>
+            <ChainProvider>
+              <LimitProvidersWrapper>
+                <SwapProvidersWrapper>
+                  <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
+                    <HeaderContainer />
+                    <Component {...pageProps} />
+                    <Footer />
+                  </div>
+                </SwapProvidersWrapper>
+              </LimitProvidersWrapper>
+            </ChainProvider>
+          </TransactionProvider>
         </Web3AnalyticWrapper>
       </WalletProvider>
     </>
