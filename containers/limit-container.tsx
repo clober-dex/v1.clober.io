@@ -57,7 +57,7 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
-  const { limit, claim, claimAll, cancelAll } = useLimitContractContext()
+  const { limit, claim, cancel } = useLimitContractContext()
   const { claimable, claimParamsListMap, cancelParamsList } =
     useOpenOrderContext()
 
@@ -361,7 +361,7 @@ export const LimitContainer = () => {
                 Object.keys(claimParamsListMap) as `0x${string}`[],
                 Object.values(claimParamsListMap).flat(),
               ]
-              await claimAll(
+              await claim(
                 addresses.map((address) => ({
                   token: currencyMaps[address],
                   amount: claimable[address] ?? 0n,
@@ -387,7 +387,7 @@ export const LimitContainer = () => {
                 }),
                 {} as Balances,
               )
-              await cancelAll(
+              await cancel(
                 Object.entries(openOrderBalances).map(([address, amount]) => ({
                   token: currencyMaps[getAddress(address)],
                   amount,
@@ -409,10 +409,12 @@ export const LimitContainer = () => {
                 disabled: openOrder.claimableAmount === 0n,
                 onClick: async () => {
                   await claim(
-                    {
-                      amount: openOrder.claimableAmount,
-                      token: openOrder.inputToken,
-                    },
+                    [
+                      {
+                        amount: openOrder.claimableAmount,
+                        token: openOrder.inputToken,
+                      },
+                    ],
                     [
                       {
                         market: openOrder.marketAddress,
@@ -431,7 +433,22 @@ export const LimitContainer = () => {
               }}
               cancelActionButtonProps={{
                 disabled: false,
-                onClick: async () => {},
+                onClick: async () => {
+                  await cancel(
+                    [
+                      {
+                        amount: openOrder.baseAmount,
+                        token: openOrder.inputToken,
+                      },
+                    ],
+                    [
+                      {
+                        market: openOrder.marketAddress,
+                        tokenIds: [openOrder.nftId],
+                      },
+                    ],
+                  )
+                },
                 text: 'Cancel',
               }}
             />

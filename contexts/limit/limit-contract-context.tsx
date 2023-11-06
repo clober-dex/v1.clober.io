@@ -30,15 +30,11 @@ type LimitContractContext = {
     claimParamsList?: ClaimParamsList,
   ) => Promise<void>
   claim: (
-    tokenAndAmount: { token: Currency; amount: bigint },
+    tokenAndAmount: { token: Currency; amount: bigint }[],
     claimParamsList: ClaimParamsList,
   ) => Promise<void>
-  claimAll: (
-    tokenAndAmounts: { token: Currency; amount: bigint }[],
-    claimParamsList: ClaimParamsList,
-  ) => Promise<void>
-  cancelAll: (
-    tokenAndAmounts: { token: Currency; amount: bigint }[],
+  cancel: (
+    tokenAndAmount: { token: Currency; amount: bigint }[],
     cancelParamsList: CancelParamsList,
   ) => Promise<void>
 }
@@ -46,8 +42,7 @@ type LimitContractContext = {
 const Context = React.createContext<LimitContractContext>({
   limit: () => Promise.resolve(),
   claim: () => Promise.resolve(),
-  claimAll: () => Promise.resolve(),
-  cancelAll: () => Promise.resolve(),
+  cancel: () => Promise.resolve(),
 })
 
 export const LimitContractProvider = ({
@@ -187,65 +182,6 @@ export const LimitContractProvider = ({
 
   const claim = useCallback(
     async (
-      tokenAndAmount: { token: Currency; amount: bigint },
-      claimParamsList: ClaimParamsList,
-    ) => {
-      if (!walletClient) {
-        return
-      }
-
-      try {
-        setConfirmation({
-          title: `Claim`,
-          body: 'Please confirm in your wallet.',
-          fields: [
-            {
-              currency: tokenAndAmount.token,
-              label: tokenAndAmount.token.symbol,
-              value: toPlacesString(
-                formatUnits(
-                  tokenAndAmount.amount,
-                  tokenAndAmount.token.decimals,
-                ),
-              ),
-            },
-          ],
-        })
-
-        await writeContract(publicClient, walletClient, {
-          address:
-            CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].MarketRouter,
-          abi: MarketRouter__factory.abi,
-          functionName: 'claim',
-          args: [
-            BigInt(
-              Math.floor(new Date().getTime() / 1000 + selectedChain.expireIn),
-            ),
-            claimParamsList,
-          ],
-        })
-      } catch (e) {
-        console.error(e)
-      } finally {
-        await Promise.all([
-          queryClient.invalidateQueries(['limit-balances']),
-          queryClient.invalidateQueries(['open-orders']),
-        ])
-        setConfirmation(undefined)
-      }
-    },
-    [
-      publicClient,
-      queryClient,
-      selectedChain.expireIn,
-      selectedChain.id,
-      setConfirmation,
-      walletClient,
-    ],
-  )
-
-  const claimAll = useCallback(
-    async (
       tokenAndAmounts: { token: Currency; amount: bigint }[],
       claimParamsList: ClaimParamsList,
     ) => {
@@ -255,7 +191,7 @@ export const LimitContractProvider = ({
 
       try {
         setConfirmation({
-          title: `Claim All`,
+          title: `Claim`,
           body: 'Please confirm in your wallet.',
           fields: tokenAndAmounts.map((tokenAndAmount) => ({
             currency: tokenAndAmount.token,
@@ -298,7 +234,7 @@ export const LimitContractProvider = ({
     ],
   )
 
-  const cancelAll = useCallback(
+  const cancel = useCallback(
     async (
       tokenAndAmounts: { token: Currency; amount: bigint }[],
       cancelParamsList: CancelParamsList,
@@ -309,7 +245,7 @@ export const LimitContractProvider = ({
 
       try {
         setConfirmation({
-          title: `Cancel All`,
+          title: `Cancel`,
           body: 'Please confirm in your wallet.',
           fields: tokenAndAmounts.map((tokenAndAmount) => ({
             currency: tokenAndAmount.token,
@@ -351,8 +287,7 @@ export const LimitContractProvider = ({
       value={{
         limit,
         claim,
-        claimAll,
-        cancelAll,
+        cancel,
       }}
     >
       {children}
