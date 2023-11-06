@@ -61,6 +61,15 @@ export const LimitContainer = () => {
     { isBid: boolean; index: number } | undefined
   >(undefined)
 
+  // once
+  useEffect(() => {
+    setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+  }, [
+    availableDecimalPlacesGroups,
+    setInputCurrencyAmount,
+    setSelectedDecimalPlaces,
+  ])
+
   // When chain is changed
   useEffect(() => {
     setClaimBounty(
@@ -75,7 +84,27 @@ export const LimitContainer = () => {
     setClaimBounty,
   ])
 
-  // When market is changed
+  // When selectedMarket is changed
+  useEffect(() => {
+    if (selectedMarket?.quoteToken && selectedMarket?.baseToken) {
+      setInputCurrency(
+        isBid ? selectedMarket.quoteToken : selectedMarket.baseToken,
+      )
+      setOutputCurrency(
+        isBid ? selectedMarket.baseToken : selectedMarket.quoteToken,
+      )
+    }
+  }, [
+    isBid,
+    selectedMarket?.baseToken,
+    selectedMarket?.quoteToken,
+    setInputCurrency,
+    setInputCurrencyAmount,
+    setOutputCurrency,
+    setOutputCurrencyAmount,
+  ])
+
+  // When depth is changed
   const highestBidPrice = bids[0]?.price
   const lowestAskPrice = asks[0]?.price
   useEffect(() => {
@@ -108,7 +137,8 @@ export const LimitContainer = () => {
   useEffect(() => {
     if (
       new BigNumber(inputCurrencyAmount).isNaN() ||
-      new BigNumber(inputCurrencyAmount).isZero()
+      new BigNumber(inputCurrencyAmount).isZero() ||
+      !outputCurrency
     ) {
       return
     }
@@ -119,7 +149,7 @@ export const LimitContainer = () => {
         isBid,
         inputCurrencyAmount,
         priceInput,
-        outputCurrency?.decimals ?? 18,
+        outputCurrency.decimals,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -153,7 +183,7 @@ export const LimitContainer = () => {
         isBid,
         inputCurrencyAmount,
         priceInput,
-        outputCurrency?.decimals ?? 18,
+        outputCurrency.decimals,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
