@@ -29,7 +29,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     {
       initialData: [],
       refetchInterval: 2000,
-      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
     },
   )
   // TODO: cache localstorage

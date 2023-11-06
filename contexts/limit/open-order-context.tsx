@@ -23,7 +23,7 @@ export const OpenOrderProvider = ({
     ['open-orders', selectedChain, userAddress],
     () => (userAddress ? fetchOpenOrders(selectedChain.id, userAddress) : []),
     {
-      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
       refetchInterval: 10 * 1000,
       initialData: [],
     },

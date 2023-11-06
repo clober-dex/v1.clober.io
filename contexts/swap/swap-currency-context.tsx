@@ -44,7 +44,7 @@ export const SwapCurrencyProvider = ({
     },
     {
       refetchInterval: 10 * 1000,
-      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
     },
   )
 
@@ -83,7 +83,7 @@ export const SwapCurrencyProvider = ({
     },
     {
       refetchInterval: 10 * 1000,
-      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
     },
   ) as { data: Balances }
 
