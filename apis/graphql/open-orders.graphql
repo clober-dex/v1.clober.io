@@ -1,6 +1,8 @@
 query getOpenOrders($userAddress: String!) {
     openOrders(where: { user: $userAddress }) {
+        nftId
         market {
+            id
             quoteToken {
                 id
                 name
@@ -16,6 +18,8 @@ query getOpenOrders($userAddress: String!) {
         }
         price
         isBid
+        priceIndex
+        orderIndex
         baseAmount
         baseFilledAmount
         claimableAmount

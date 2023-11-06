@@ -6,6 +6,7 @@ import { Currency, getLogo } from '../../model/currency'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
+import { toPlacesString } from '../../utils/bignumber'
 
 import NumberInput from './number-input'
 
@@ -101,7 +102,9 @@ const CurrencyAmountInput = ({
             <div className="flex text-xs sm:text-sm gap-1 sm:gap-2">
               <div className="text-gray-500">Available</div>
               <div className="text-white">
-                {formatUnits(availableAmount, currency.decimals, price)}
+                {toPlacesString(
+                  formatUnits(availableAmount, currency.decimals, price),
+                )}
               </div>
               <button className="text-blue-500" onClick={onMaxClick}>
                 MAX

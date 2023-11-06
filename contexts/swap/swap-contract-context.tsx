@@ -10,6 +10,7 @@ import { CHAIN_IDS } from '../../constants/chain'
 import { approve20 } from '../../utils/approve20'
 import { useChainContext } from '../chain-context'
 import { useTransactionContext } from '../transaction-context'
+import { toPlacesString } from '../../utils/bignumber'
 
 type SwapContractContext = {
   swap: (
@@ -56,7 +57,9 @@ export const SwapContractProvider = ({
             {
               currency: inputCurrency,
               label: inputCurrency.symbol,
-              value: formatUnits(amountIn, inputCurrency.decimals),
+              value: toPlacesString(
+                formatUnits(amountIn, inputCurrency.decimals),
+              ),
             },
           ],
         })
@@ -79,7 +82,9 @@ export const SwapContractProvider = ({
               {
                 currency: inputCurrency,
                 label: inputCurrency.symbol,
-                value: formatUnits(amountIn, inputCurrency.decimals),
+                value: toPlacesString(
+                  formatUnits(amountIn, inputCurrency.decimals),
+                ),
               },
             ],
           })
@@ -100,7 +105,9 @@ export const SwapContractProvider = ({
             {
               currency: inputCurrency,
               label: inputCurrency.symbol,
-              value: formatUnits(amountIn, inputCurrency.decimals),
+              value: toPlacesString(
+                formatUnits(amountIn, inputCurrency.decimals),
+              ),
             },
           ],
         })

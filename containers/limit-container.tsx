@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { parseUnits, zeroAddress } from 'viem'
+import { getAddress, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
 
 import LimitSettingForm from '../components/form/limit-setting-form'
 import { LimitForm } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
-import OpenOrderList from '../components/open-order-list'
 import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/limit/market-context'
 import { formatUnits } from '../utils/bigint'
@@ -22,6 +21,10 @@ import {
 import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
 import { Market } from '../model/market'
 import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
+import { ActionButton } from '../components/button/action-button'
+import { OpenOrderCard } from '../components/card/open-order-card'
+import { Currency } from '../model/currency'
+import { Balances } from '../model/balances'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
@@ -54,13 +57,24 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
-  const { limit } = useLimitContractContext()
+  const { limit, claim, cancel } = useLimitContractContext()
+  const { claimable, claimParamsListMap, cancelParamsList } =
+    useOpenOrderContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
   >(undefined)
 
-  // When selectedChain or selectedMarket or isBid is changed, reset the form
+  // once
+  useEffect(() => {
+    setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+  }, [
+    availableDecimalPlacesGroups,
+    setInputCurrencyAmount,
+    setSelectedDecimalPlaces,
+  ])
+
+  // When chain is changed
   useEffect(() => {
     setClaimBounty(
       formatUnits(
@@ -68,30 +82,15 @@ export const LimitContainer = () => {
         selectedChain.nativeCurrency.decimals,
       ),
     )
-    setDepthClickedIndex(undefined)
-    if (selectedMarket) {
-      setInputCurrency(selectedMarket.quoteToken)
-      setOutputCurrency(selectedMarket.baseToken)
+  }, [
+    selectedChain.defaultGasPrice,
+    selectedChain.nativeCurrency.decimals,
+    setClaimBounty,
+  ])
 
-      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-
-      setPriceInput(
-        isBid
-          ? toPlacesString(
-              asks.length > 0
-                ? asks[0].price
-                : bids.length > 0
-                ? bids[0].price
-                : 0,
-            )
-          : toPlacesString(
-              bids.length > 0
-                ? bids[0].price
-                : asks.length > 0
-                ? asks[0].price
-                : 0,
-            ),
-      )
+  // When selectedMarket is changed
+  useEffect(() => {
+    if (selectedMarket?.quoteToken && selectedMarket?.baseToken) {
       setInputCurrency(
         isBid ? selectedMarket.quoteToken : selectedMarket.baseToken,
       )
@@ -100,19 +99,27 @@ export const LimitContainer = () => {
       )
     }
   }, [
-    asks,
-    bids,
-    availableDecimalPlacesGroups,
     isBid,
-    selectedChain.defaultGasPrice,
-    selectedChain.nativeCurrency.decimals,
-    selectedMarket,
-    setClaimBounty,
+    selectedMarket?.baseToken,
+    selectedMarket?.quoteToken,
     setInputCurrency,
+    setInputCurrencyAmount,
     setOutputCurrency,
-    setPriceInput,
-    setSelectedDecimalPlaces,
+    setOutputCurrencyAmount,
   ])
+
+  // When depth is changed
+  const highestBidPrice = bids[0]?.price
+  const lowestAskPrice = asks[0]?.price
+  useEffect(() => {
+    setDepthClickedIndex(undefined)
+
+    setPriceInput(
+      isBid
+        ? toPlacesString(lowestAskPrice || highestBidPrice || '0')
+        : toPlacesString(highestBidPrice || lowestAskPrice || '0'),
+    )
+  }, [highestBidPrice, isBid, lowestAskPrice, setPriceInput])
 
   // When depthClickedIndex is changed, reset the priceInput
   useEffect(() => {
@@ -134,7 +141,8 @@ export const LimitContainer = () => {
   useEffect(() => {
     if (
       new BigNumber(inputCurrencyAmount).isNaN() ||
-      new BigNumber(inputCurrencyAmount).isZero()
+      new BigNumber(inputCurrencyAmount).isZero() ||
+      !outputCurrency?.decimals
     ) {
       return
     }
@@ -145,7 +153,7 @@ export const LimitContainer = () => {
         isBid,
         inputCurrencyAmount,
         priceInput,
-        outputCurrency?.decimals ?? 18,
+        outputCurrency.decimals,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -179,7 +187,7 @@ export const LimitContainer = () => {
         isBid,
         inputCurrencyAmount,
         priceInput,
-        outputCurrency?.decimals ?? 18,
+        outputCurrency.decimals,
       )
       setOutputCurrencyAmount(outputCurrencyAmount)
       previousValues.current = {
@@ -218,6 +226,17 @@ export const LimitContainer = () => {
       ? [market.quoteToRaw(amount, true), 0n, priceIndex]
       : [0n, amount, priceIndex]
   }, [amount, isBid, market, price])
+
+  const currencyMaps = [
+    ...markets.map((market) => market.baseToken),
+    ...markets.map((market) => market.quoteToken),
+  ].reduce(
+    (acc, currency) => ({
+      ...acc,
+      [getAddress(currency.address)]: currency,
+    }),
+    {} as { [currencyAddress in `0x${string}`]: Currency },
+  )
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
@@ -264,14 +283,20 @@ export const LimitContainer = () => {
               inputCurrencyAmount={inputCurrencyAmount}
               setInputCurrencyAmount={setInputCurrencyAmount}
               availableInputCurrencyBalance={
-                inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
+                inputCurrency
+                  ? (balances[inputCurrency.address] ?? 0n) +
+                    (claimable[inputCurrency.address] ?? 0n)
+                  : 0n
               }
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
               outputCurrencyAmount={outputCurrencyAmount}
               setOutputCurrencyAmount={setOutputCurrencyAmount}
               availableOutputCurrencyBalance={
-                outputCurrency ? balances[outputCurrency.address] ?? 0n : 0n
+                outputCurrency
+                  ? (balances[outputCurrency.address] ?? 0n) +
+                    (claimable[outputCurrency.address] ?? 0n)
+                  : 0n
               }
               swapInputCurrencyAndOutputCurrency={() => {
                 setIsBid((prevState) =>
@@ -281,9 +306,19 @@ export const LimitContainer = () => {
                 setInputCurrencyAmount(outputCurrencyAmount)
               }}
               actionButtonProps={{
-                disabled: !market || !priceIndex || !userAddress || !amount,
+                disabled:
+                  !inputCurrency ||
+                  !market ||
+                  !priceIndex ||
+                  !userAddress ||
+                  !amount,
                 onClick: async () => {
-                  if (!market || !priceIndex || !userAddress) {
+                  if (
+                    !inputCurrency ||
+                    !market ||
+                    !priceIndex ||
+                    !userAddress
+                  ) {
                     return
                   }
                   await limit(
@@ -297,6 +332,7 @@ export const LimitContainer = () => {
                       selectedChain.nativeCurrency.decimals,
                     ),
                     isPostOnly,
+                    claimParamsListMap[inputCurrency.address],
                   )
                 },
                 text: `Limit ${isBid ? 'Bid' : 'Ask'}`,
@@ -305,17 +341,119 @@ export const LimitContainer = () => {
           )}
         </div>
       </div>
-      <div className="flex p-4 sm:border-solid border-b-gray-800 border-b-[1.5px]">
+      <div className="flex py-4 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
         <div className="flex gap-6">
-          <button
+          <div
             className={`m-0 p-0 bg-transparent text-white ${textStyles.body2}`}
           >
             Open Orders
-          </button>
+          </div>
+        </div>
+        <div className="flex gap-1 sm:gap-2 ml-auto h-6">
+          <ActionButton
+            className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
+            disabled={
+              openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
+                .length === 0
+            }
+            onClick={async () => {
+              const [addresses, claimParamsList] = [
+                Object.keys(claimParamsListMap) as `0x${string}`[],
+                Object.values(claimParamsListMap).flat(),
+              ]
+              await claim(
+                addresses.map((address) => ({
+                  token: currencyMaps[address],
+                  amount: claimable[address] ?? 0n,
+                })),
+                claimParamsList,
+              )
+            }}
+            text={`Claim All (${
+              openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
+                .length
+            })`}
+          />
+          <ActionButton
+            className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
+            disabled={openOrders.length === 0}
+            onClick={async () => {
+              const openOrderBalances = openOrders.reduce(
+                (acc, openOrder) => ({
+                  ...acc,
+                  [getAddress(openOrder.inputToken.address)]:
+                    (acc[getAddress(openOrder.inputToken.address)] ?? 0n) +
+                    openOrder.baseAmount,
+                }),
+                {} as Balances,
+              )
+              await cancel(
+                Object.entries(openOrderBalances).map(([address, amount]) => ({
+                  token: currencyMaps[getAddress(address)],
+                  amount,
+                })),
+                cancelParamsList,
+              )
+            }}
+            text={`Cancel All (${openOrders.length})`}
+          />
         </div>
       </div>
       <div className="flex w-full justify-center mt-0 sm:mt-4">
-        <OpenOrderList openOrders={openOrders} />
+        <div className="flex flex-col w-full h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
+          {openOrders.map((openOrder, index) => (
+            <OpenOrderCard
+              openOrder={openOrder}
+              key={index}
+              claimActionButtonProps={{
+                disabled: openOrder.claimableAmount === 0n,
+                onClick: async () => {
+                  await claim(
+                    [
+                      {
+                        amount: openOrder.claimableAmount,
+                        token: openOrder.inputToken,
+                      },
+                    ],
+                    [
+                      {
+                        market: openOrder.marketAddress,
+                        orderKeys: [
+                          {
+                            isBid: openOrder.isBid,
+                            priceIndex: openOrder.priceIndex,
+                            orderIndex: openOrder.orderIndex,
+                          },
+                        ],
+                      },
+                    ],
+                  )
+                },
+                text: 'Claim',
+              }}
+              cancelActionButtonProps={{
+                disabled: false,
+                onClick: async () => {
+                  await cancel(
+                    [
+                      {
+                        amount: openOrder.baseAmount,
+                        token: openOrder.inputToken,
+                      },
+                    ],
+                    [
+                      {
+                        market: openOrder.marketAddress,
+                        tokenIds: [openOrder.nftId],
+                      },
+                    ],
+                  )
+                },
+                text: 'Cancel',
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )

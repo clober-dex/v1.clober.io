@@ -27,6 +27,8 @@ export async function fetchOpenOrders(
       ? openOrder.market.baseToken
       : openOrder.market.quoteToken
     return {
+      nftId: BigInt(openOrder.nftId),
+      marketAddress: getAddress(openOrder.market.id),
       inputToken: {
         address: getAddress(inputToken.id),
         name: inputToken.name,
@@ -40,6 +42,8 @@ export async function fetchOpenOrders(
         decimals: Number(outputToken.decimals),
       },
       isBid: openOrder.isBid,
+      priceIndex: Number(openOrder.priceIndex),
+      orderIndex: BigInt(openOrder.orderIndex),
       txHash: openOrder.txHash as `0x${string}`,
       price: BigInt(openOrder.price),
       baseFilledAmount: BigInt(openOrder.baseFilledAmount),
