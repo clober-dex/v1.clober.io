@@ -86,7 +86,7 @@ export const LimitContractProvider = ({
         selectedChain.defaultGasPrice - GAS_PROTECTION,
         balances,
       )
-      if (!claimParamsList) {
+      if (withClaim && !claimParamsList) {
         throw new Error('claimParamsList is required')
       }
 
