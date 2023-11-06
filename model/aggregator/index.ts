@@ -1,6 +1,7 @@
+import { Chain } from 'wagmi'
+
 import { Currency } from '../currency'
 import { Prices } from '../prices'
-import { Chain } from '../chain'
 import { PathViz } from '../pathviz'
 
 export interface Aggregator {

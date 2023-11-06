@@ -6,13 +6,14 @@ import { useChainContext } from '../contexts/chain-context'
 import ChainSelector from '../components/selector/chain-selector'
 import { WalletSelector } from '../components/selector/wallet-selector'
 import { supportChains } from '../constants/chain'
+import { toChain } from '../model/chain'
 
 const HeaderContainer = () => {
   const { selectedChain, setSelectedChain } = useChainContext()
   const { address, status } = useAccount()
   const { switchNetwork } = useSwitchNetwork({
     onSuccess(data) {
-      setSelectedChain(data)
+      setSelectedChain(toChain(supportChains, data))
     },
   })
 

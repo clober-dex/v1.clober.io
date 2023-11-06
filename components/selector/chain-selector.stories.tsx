@@ -15,9 +15,39 @@ export default {
 type Story = StoryObj<typeof ChainSelector>
 export const Default: Story = {
   args: {
-    chain: mainnet,
+    chain: {
+      ...mainnet,
+      defaultGasPrice: 0n,
+      expireIn: 0,
+    },
     setChain: () => {},
-    chains: [mainnet, polygon, arbitrum, base, fantom],
+    chains: [
+      {
+        ...mainnet,
+        defaultGasPrice: 0n,
+        expireIn: 0,
+      },
+      {
+        ...polygon,
+        defaultGasPrice: 0n,
+        expireIn: 0,
+      },
+      {
+        ...arbitrum,
+        defaultGasPrice: 0n,
+        expireIn: 0,
+      },
+      {
+        ...base,
+        defaultGasPrice: 0n,
+        expireIn: 0,
+      },
+      {
+        ...fantom,
+        defaultGasPrice: 0n,
+        expireIn: 0,
+      },
+    ],
     switchNetwork: () => {},
   },
 }
