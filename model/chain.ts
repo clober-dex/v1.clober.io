@@ -17,11 +17,3 @@ export const toWagmiChain = (chain: Chain): WagmiChain => {
     contracts: chain.contracts,
   }
 }
-
-export const toChain = (chains: Chain[], chain: WagmiChain): Chain => {
-  const selectedChain = chains.find((c) => c.id === chain.id)
-  if (!selectedChain) {
-    throw new Error(`Chain ${chain.id} not found`)
-  }
-  return selectedChain
-}
