@@ -135,7 +135,6 @@ export class CloberAggregator implements Aggregator {
   public readonly baseUrl = 'https://pathfinder.clober-api.com'
   public readonly contract: `0x${string}`
   public readonly chain: Chain
-  private routes: Route[] | undefined
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -230,7 +229,6 @@ export class CloberAggregator implements Aggregator {
         gasEffectiveMode: false,
       })}`,
     )
-    this.routes = this.buildRoutes(result)
     return {
       amountOut: BigInt(result.amount_out),
       gasLimit: BigInt(result.acc_gas_fee),
@@ -254,12 +252,24 @@ export class CloberAggregator implements Aggregator {
     nonce?: number
     gasPrice?: bigint
   }> {
-    const { gasLimit, amountOut } = await this.quote(
-      inputCurrency,
-      amountIn,
-      outputCurrency,
+    const { result } = await fetchApi<{
+      result: QuoteResultDto
+    }>(
+      this.baseUrl,
+      `quotes?${qs.stringify({
+        tokenIn: getAddress(inputCurrency.address),
+        tokenOut: getAddress(outputCurrency.address),
+        amountIn,
+        parts: 1,
+        maxHops: 6,
+        fastestMode: false,
+        gasEffectiveMode: false,
+      })}`,
     )
-    if (!this.routes) {
+    const amountOut = BigInt(result.amount_out)
+    const gasLimit = BigInt(result.acc_gas_fee)
+    const routes = this.buildRoutes(result)
+    if (!routes) {
       throw new Error('No routes')
     }
 
@@ -272,7 +282,7 @@ export class CloberAggregator implements Aggregator {
     const data = encodeFunctionData({
       abi,
       functionName: 'swap',
-      args: [this.routes, amountIn, minOutputAmount, amountOut, userAddress],
+      args: [routes, amountIn, minOutputAmount, amountOut, userAddress],
     })
 
     return {

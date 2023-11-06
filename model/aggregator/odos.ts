@@ -12,7 +12,6 @@ export class OdosAggregator implements Aggregator {
   public readonly baseUrl = 'https://api.odos.xyz'
   public readonly contract: `0x${string}`
   public readonly chain: Chain
-  private pathId: string | undefined
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -92,7 +91,6 @@ export class OdosAggregator implements Aggregator {
         pathViz: true,
       }),
     })
-    this.pathId = result.pathId
     return {
       amountOut: BigInt(result.outAmounts[0]),
       gasLimit: BigInt(result.gasEstimate),
@@ -116,15 +114,36 @@ export class OdosAggregator implements Aggregator {
     nonce?: number
     gasPrice?: bigint
   }> {
-    await this.quote(
-      inputCurrency,
-      amountIn,
-      outputCurrency,
-      slippageLimitPercent,
-      gasPrice,
-      userAddress,
-    )
-    if (!this.pathId) {
+    const { pathId } = await fetchApi<{
+      pathId: string
+    }>(this.baseUrl, 'sor/quote/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      body: JSON.stringify({
+        chainId: this.chain.id,
+        inputTokens: [
+          {
+            tokenAddress: getAddress(inputCurrency.address),
+            amount: amountIn.toString(),
+          },
+        ],
+        outputTokens: [
+          {
+            tokenAddress: getAddress(outputCurrency.address),
+            proportion: 1,
+          },
+        ],
+        gasPrice: Number(gasPrice) / 1000000000,
+        userAddr: userAddress,
+        slippageLimitPercent,
+        sourceBlacklist: [],
+        pathViz: true,
+      }),
+    })
+    if (!pathId) {
       throw new Error('Path ID is not defined')
     }
     const result = await fetchApi<{
@@ -143,7 +162,7 @@ export class OdosAggregator implements Aggregator {
         accept: 'application/json',
       },
       body: JSON.stringify({
-        pathId: this.pathId,
+        pathId,
         simulate: true,
         userAddr: userAddress,
       }),
