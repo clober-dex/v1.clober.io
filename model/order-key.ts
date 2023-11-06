@@ -12,5 +12,5 @@ export type ClaimOrderParamsStruct = {
 export type ClaimParamsList = ClaimOrderParamsStruct[]
 
 export type ClaimParamsListMap = {
-  [currencyAddress in `0x${string}`]: ClaimParamsList
+  [address in `0x${string}`]: ClaimParamsList
 }

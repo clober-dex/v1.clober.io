@@ -73,13 +73,13 @@ export const OpenOrderProvider = ({
                 return acc
               },
               {} as {
-                [outputCurrencyAddress in `0x${string}`]: {
+                [currencyAddress in `0x${string}`]: {
                   [marketAddress in `0x${string}`]: OrderKeyStruct[]
                 }
               },
             ),
-        ).map(([outputCurrencyAddress, marketMap]) => [
-          outputCurrencyAddress,
+        ).map(([currencyAddress, marketMap]) => [
+          currencyAddress,
           Object.entries(marketMap).map(
             ([marketAddress, orderKeys]) =>
               ({
@@ -89,9 +89,9 @@ export const OpenOrderProvider = ({
           ),
         ]) as [`0x${string}`, ClaimOrderParamsStruct[]][]
       ).reduce(
-        (acc, [outputCurrencyAddress, claimOrderParamsList]) => ({
+        (acc, [currencyAddress, claimOrderParamsList]) => ({
           ...acc,
-          [getAddress(outputCurrencyAddress)]: claimOrderParamsList,
+          [getAddress(currencyAddress)]: claimOrderParamsList,
         }),
         {} as ClaimParamsListMap,
       ),
