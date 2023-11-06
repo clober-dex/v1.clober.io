@@ -48,6 +48,5 @@ export const Default: Story = {
         expireIn: 0,
       },
     ],
-    switchNetwork: () => {},
   },
 }
