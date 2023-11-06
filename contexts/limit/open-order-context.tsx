@@ -6,15 +6,18 @@ import { OpenOrder } from '../../model/open-order'
 import { fetchOpenOrders } from '../../apis/open-orders'
 import { useChainContext } from '../chain-context'
 import { Balances } from '../../model/balances'
+import { ClaimableOrderKeys } from '../../model/claimable-order-keys'
 
 type OpenOrderContext = {
   openOrders: OpenOrder[]
   claimable: Balances
+  claimableOrderKeys: ClaimableOrderKeys
 }
 
 const Context = React.createContext<OpenOrderContext>({
   openOrders: [],
   claimable: {},
+  claimableOrderKeys: {},
 })
 
 export const OpenOrderProvider = ({
@@ -42,12 +45,31 @@ export const OpenOrderProvider = ({
       }, {} as Balances),
     [openOrders],
   )
+  const claimableOrderKeys = useMemo(
+    () =>
+      openOrders
+        .filter((openOrder) => openOrder.claimableAmount > 0n)
+        .reduce((acc, openOrder) => {
+          const marketAddress = getAddress(openOrder.marketAddress)
+          acc[marketAddress] = [
+            ...(acc[marketAddress] ?? []),
+            {
+              isBid: openOrder.isBid,
+              priceIndex: openOrder.priceIndex,
+              orderIndex: openOrder.orderIndex,
+            },
+          ]
+          return acc
+        }, {} as ClaimableOrderKeys),
+    [openOrders],
+  )
 
   return (
     <Context.Provider
       value={{
         openOrders,
         claimable,
+        claimableOrderKeys,
       }}
     >
       {children}
