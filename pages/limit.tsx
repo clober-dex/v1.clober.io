@@ -7,8 +7,6 @@ import { cleanAndSetQueryParams } from '../utils/url'
 export default function Limit() {
   const { selectedMarket } = useMarketContext()
   useEffect(() => {
-    const url = new URL(window.location.href)
-    console.log(url.search)
     cleanAndSetQueryParams(['chain'], {
       market: selectedMarket?.address,
     })
