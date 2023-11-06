@@ -1,13 +1,17 @@
 import BigNumber from 'bignumber.js'
+import { zeroAddress } from 'viem'
 
 import { Market } from '../model/market'
 import { Decimals } from '../model/decimals'
+import { Currency } from '../model/currency'
+import { WrappedEthers } from '../constants/weths'
+import { Balances } from '../model/balances'
 
 import { toPlacesString } from './bignumber'
 import { PRICE_DECIMAL } from './prices'
 import { formatUnits } from './bigint'
 
-export function calculateOutputCurrencyAmount(
+export function calculateOutputCurrencyAmountString(
   isBid: boolean,
   inputCurrencyAmount: string,
   priceInput: string,
@@ -21,7 +25,7 @@ export function calculateOutputCurrencyAmount(
   )
 }
 
-export function calculatePriceIndex(
+export function calculatePriceInputString(
   isBid: boolean,
   inputCurrencyAmount: string,
   outputCurrencyAmount: string,
@@ -39,7 +43,7 @@ export function parseDepth(
   isBid: boolean,
   market: Market,
   decimalPlaces: Decimals,
-) {
+): { price: string; size: string }[] {
   return Array.from(
     [...(isBid ? market.bids : market.asks).map((depth) => ({ ...depth }))]
       .sort((a, b) =>
@@ -88,4 +92,53 @@ export function parseDepth(
       ),
     }
   })
+}
+
+export function calculateValue(
+  inputCurrency: Currency,
+  amountIn: bigint,
+  claimBounty: bigint,
+  gasProtection: bigint,
+  balances: Balances,
+): {
+  value: bigint
+  useNative: boolean
+  withClaim: boolean
+} {
+  if (!WrappedEthers.includes(inputCurrency.address)) {
+    return {
+      value: claimBounty,
+      useNative: false,
+      withClaim: amountIn > balances[inputCurrency.address] ?? 0n,
+    }
+  }
+
+  // wrapped balance is enough
+  if (amountIn <= balances[inputCurrency.address] ?? 0n) {
+    return {
+      value: claimBounty,
+      useNative: false,
+      withClaim: false,
+    }
+  }
+
+  // wrapped balance + native balance excluding gas protection is enough
+  const availableWithoutClaimBalance =
+    (balances[inputCurrency.address] ?? 0n) +
+    (balances[zeroAddress] ?? 0n) -
+    gasProtection
+  if (amountIn <= availableWithoutClaimBalance) {
+    return {
+      value: claimBounty + amountIn - (balances[inputCurrency.address] ?? 0n),
+      useNative: true,
+      withClaim: false,
+    }
+  }
+
+  // needs claim
+  return {
+    value: (balances[zeroAddress] ?? 0n) - gasProtection,
+    useNative: true,
+    withClaim: true,
+  }
 }

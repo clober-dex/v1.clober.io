@@ -27,25 +27,25 @@ export const Default: Story = {
   args: {
     openOrders: [
       {
-        inputCurrency: dummyCurrencies[0],
-        outputCurrency: dummyCurrencies[1],
+        inputToken: dummyCurrencies[0],
+        outputToken: dummyCurrencies[1],
         isBid: true,
         txHash:
           '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
         price: 1600000000000000000000n,
-        filledAmount: 120000000000000000n,
-        amount: 1000000000000000000n,
+        baseFilledAmount: 120000000000000000n,
+        baseAmount: 1000000000000000000n,
         claimableAmount: 700000000000000000n,
       },
       {
-        inputCurrency: dummyCurrencies[1],
-        outputCurrency: dummyCurrencies[0],
+        inputToken: dummyCurrencies[1],
+        outputToken: dummyCurrencies[0],
         isBid: false,
         txHash:
           '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
         price: 1600000000000000000000n,
-        filledAmount: 1000000000000000000n,
-        amount: 1230000n,
+        baseFilledAmount: 1000000000000000000n,
+        baseAmount: 1230000n,
         claimableAmount: 500000000000000000n,
       },
     ],

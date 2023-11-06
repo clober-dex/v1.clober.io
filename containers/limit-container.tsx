@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { zeroAddress } from 'viem'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
+import { useAccount } from 'wagmi'
 
 import LimitSettingForm from '../components/form/limit-setting-form'
 import { LimitForm } from '../components/form/limit-form'
@@ -15,15 +16,18 @@ import { toPlacesString } from '../utils/bignumber'
 import { useOpenOrderContext } from '../contexts/limit/open-order-context'
 import { useLimitContext } from '../contexts/limit/limit-context'
 import {
-  calculateOutputCurrencyAmount,
-  calculatePriceIndex,
+  calculateOutputCurrencyAmountString,
+  calculatePriceInputString,
 } from '../utils/order-book'
 import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
+import { Market } from '../model/market'
+import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
   const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
   const { openOrders } = useOpenOrderContext()
+  const { address: userAddress } = useAccount()
   const {
     isBid,
     setIsBid,
@@ -39,6 +43,8 @@ export const LimitContainer = () => {
     setOutputCurrencyAmount,
     claimBounty,
     setClaimBounty,
+    isPostOnly,
+    setIsPostOnly,
     selectedDecimalPlaces,
     setSelectedDecimalPlaces,
     priceInput,
@@ -48,6 +54,7 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
+  const { limit } = useLimitContractContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -57,7 +64,7 @@ export const LimitContainer = () => {
   useEffect(() => {
     setClaimBounty(
       formatUnits(
-        selectedChain.defaultGasPrice ?? 0n,
+        selectedChain.defaultGasPrice,
         selectedChain.nativeCurrency.decimals,
       ),
     )
@@ -71,22 +78,18 @@ export const LimitContainer = () => {
       setPriceInput(
         isBid
           ? toPlacesString(
-              formatUnits(
-                selectedMarket.asks[0]?.price ??
-                  selectedMarket.bids[0]?.price ??
-                  0n,
-                PRICE_DECIMAL,
-              ),
-              PRICE_DECIMAL,
+              asks.length > 0
+                ? asks[0].price
+                : bids.length > 0
+                ? bids[0].price
+                : 0,
             )
           : toPlacesString(
-              formatUnits(
-                selectedMarket.bids[0]?.price ??
-                  selectedMarket.asks[0]?.price ??
-                  0n,
-                PRICE_DECIMAL,
-              ),
-              PRICE_DECIMAL,
+              bids.length > 0
+                ? bids[0].price
+                : asks.length > 0
+                ? asks[0].price
+                : 0,
             ),
       )
       setInputCurrency(
@@ -97,6 +100,8 @@ export const LimitContainer = () => {
       )
     }
   }, [
+    asks,
+    bids,
     availableDecimalPlacesGroups,
     isBid,
     selectedChain.defaultGasPrice,
@@ -136,7 +141,7 @@ export const LimitContainer = () => {
 
     // `priceInput` is changed -> `outputCurrencyAmount` will be changed
     if (previousValues.current.priceInput !== priceInput) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmount(
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
         isBid,
         inputCurrencyAmount,
         priceInput,
@@ -153,7 +158,7 @@ export const LimitContainer = () => {
     else if (
       previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
     ) {
-      const priceInput = calculatePriceIndex(
+      const priceInput = calculatePriceInputString(
         isBid,
         inputCurrencyAmount,
         outputCurrencyAmount,
@@ -170,7 +175,7 @@ export const LimitContainer = () => {
     else if (
       previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
     ) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmount(
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
         isBid,
         inputCurrencyAmount,
         priceInput,
@@ -193,6 +198,27 @@ export const LimitContainer = () => {
     setPriceInput,
   ])
 
+  const [market, amount, price] = useMemo(
+    () => [
+      selectedMarket
+        ? Market.from(selectedMarket, selectedMarket.bids, selectedMarket.asks)
+        : undefined,
+      parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
+      parseUnits(priceInput, PRICE_DECIMAL),
+    ],
+    [inputCurrency?.decimals, inputCurrencyAmount, priceInput, selectedMarket],
+  )
+
+  const [rawAmount, baseAmount, priceIndex] = useMemo(() => {
+    if (!market) {
+      return [0n, 0n, undefined]
+    }
+    const priceIndex = market.priceToIndex(price, !isBid).index
+    return isBid
+      ? [market.quoteToRaw(amount, true), 0n, priceIndex]
+      : [0n, amount, priceIndex]
+  }, [amount, isBid, market, price])
+
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
       <div className="flex flex-col w-full lg:flex-row gap-4">
@@ -214,6 +240,8 @@ export const LimitContainer = () => {
         <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[360px] sm:w-[480px] lg:h-[480px]">
           {selectMode === 'settings' ? (
             <LimitSettingForm
+              isPostOnly={isPostOnly}
+              setIsPostOnly={setIsPostOnly}
               nativeCurrency={{
                 address: zeroAddress,
                 ...selectedChain.nativeCurrency,
@@ -251,6 +279,27 @@ export const LimitContainer = () => {
                 )
                 setDepthClickedIndex(undefined)
                 setInputCurrencyAmount(outputCurrencyAmount)
+              }}
+              actionButtonProps={{
+                disabled: !market || !priceIndex || !userAddress || !amount,
+                onClick: async () => {
+                  if (!market || !priceIndex || !userAddress) {
+                    return
+                  }
+                  await limit(
+                    market,
+                    userAddress,
+                    priceIndex,
+                    rawAmount,
+                    baseAmount,
+                    parseUnits(
+                      claimBounty,
+                      selectedChain.nativeCurrency.decimals,
+                    ),
+                    isPostOnly,
+                  )
+                },
+                text: `Limit ${isBid ? 'Bid' : 'Ask'}`,
               }}
             />
           )}

@@ -14,7 +14,7 @@ export const OpenOrderCard = ({
   openOrder: OpenOrder
 }) => {
   const filledRatio =
-    (Number(openOrder.filledAmount) / Number(openOrder.amount)) * 100
+    (Number(openOrder.baseFilledAmount) / Number(openOrder.baseAmount)) * 100
   return (
     <div
       className="flex flex-col shadow border border-solid border-gray-800 lg:w-[310px] gap-4 bg-gray-900 rounded-2xl p-4"
@@ -22,8 +22,8 @@ export const OpenOrderCard = ({
     >
       <div className="flex text-sm text-white justify-between">
         <div className="font-bold flex flex-row items-center gap-1">
-          {openOrder.inputCurrency.symbol} &#x2192;{'  '}
-          {openOrder.outputCurrency.symbol}
+          {openOrder.inputToken.symbol} &#x2192;{'  '}
+          {openOrder.outputToken.symbol}
           <a
             target="_blank"
             href="https://etherscan.io/tx/0x84a09de087e610fbba59440ea57f7166b3a7178260c485ab8315dd51ad197475"
@@ -46,7 +46,10 @@ export const OpenOrderCard = ({
             <label className="text-gray-200">You sell</label>
             <p className="text-white">
               {toPlacesString(
-                formatUnits(openOrder.amount, openOrder.inputCurrency.decimals),
+                formatUnits(
+                  openOrder.baseAmount,
+                  openOrder.inputToken.decimals,
+                ),
               )}
             </p>
           </div>
@@ -55,8 +58,8 @@ export const OpenOrderCard = ({
             <p className="text-white">
               {toPlacesString(
                 formatUnits(
-                  openOrder.amount * openOrder.price,
-                  openOrder.outputCurrency.decimals + PRICE_DECIMAL,
+                  openOrder.baseAmount * openOrder.price,
+                  openOrder.outputToken.decimals + PRICE_DECIMAL,
                 ),
               )}
             </p>
@@ -75,8 +78,8 @@ export const OpenOrderCard = ({
                 (
                 {toPlacesString(
                   formatUnits(
-                    openOrder.filledAmount,
-                    openOrder.inputCurrency.decimals,
+                    openOrder.baseFilledAmount,
+                    openOrder.inputToken.decimals,
                   ),
                 )}
                 )

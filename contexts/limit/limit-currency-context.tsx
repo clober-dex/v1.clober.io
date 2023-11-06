@@ -59,7 +59,7 @@ export const LimitCurrencyProvider = ({
     },
     {
       refetchInterval: 10 * 1000,
-      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
     },
   ) as { data: Balances }
 

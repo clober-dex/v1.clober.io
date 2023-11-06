@@ -25,6 +25,8 @@ type LimitContext = {
   setOutputCurrencyAmount: (amount: string) => void
   claimBounty: string
   setClaimBounty: (amount: string) => void
+  isPostOnly: boolean
+  setIsPostOnly: (isPostOnly: (prevState: boolean) => boolean) => void
   selectedDecimalPlaces: Decimals | undefined
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   priceInput: string
@@ -49,6 +51,8 @@ const Context = React.createContext<LimitContext>({
   setOutputCurrencyAmount: () => {},
   claimBounty: '',
   setClaimBounty: () => {},
+  isPostOnly: false,
+  setIsPostOnly: () => {},
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
   priceInput: '',
@@ -78,10 +82,11 @@ export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
   const [claimBounty, setClaimBounty] = useState(
     formatUnits(
-      selectedChain.defaultGasPrice ?? 0n,
+      selectedChain.defaultGasPrice,
       selectedChain.nativeCurrency.decimals,
     ),
   )
+  const [isPostOnly, setIsPostOnly] = useState(false)
   const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
     Decimals | undefined
   >(undefined)
@@ -149,6 +154,8 @@ export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setOutputCurrencyAmount,
         claimBounty,
         setClaimBounty,
+        isPostOnly,
+        setIsPostOnly,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
         priceInput,

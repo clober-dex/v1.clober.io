@@ -1,5 +1,4 @@
-import { polygonZkEvm } from 'wagmi/chains'
-import { arbitrum } from '@wagmi/chains'
+import { arbitrum, polygonZkEvm } from '@wagmi/chains'
 
 import { Aggregator } from '../model/aggregator'
 import { CloberAggregator } from '../model/aggregator/clober'

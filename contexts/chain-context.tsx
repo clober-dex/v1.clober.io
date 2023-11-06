@@ -25,7 +25,10 @@ export const ChainProvider = ({ children }: React.PropsWithChildren<{}>) => {
   )
   const { switchNetwork } = useSwitchNetwork({
     onSuccess(data) {
-      _setSelectedChain(data)
+      const chain = findSupportChain(data.id)
+      if (chain) {
+        _setSelectedChain(chain)
+      }
     },
   })
 

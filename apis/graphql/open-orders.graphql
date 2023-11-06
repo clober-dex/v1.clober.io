@@ -18,8 +18,7 @@ query getOpenOrders($userAddress: String!) {
         isBid
         baseAmount
         baseFilledAmount
-        baseClaimedAmount
-        createdAt
+        claimableAmount
         txHash
     }
 }

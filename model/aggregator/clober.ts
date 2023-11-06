@@ -7,10 +7,10 @@ import {
 } from 'viem'
 import qs from 'qs'
 import BigNumber from 'bignumber.js'
+import { Chain } from 'wagmi'
 
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
-import { Chain } from '../chain'
 import { Prices } from '../prices'
 import { PathViz } from '../pathviz'
 

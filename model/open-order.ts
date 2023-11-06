@@ -1,12 +1,12 @@
 import { Currency } from './currency'
 
 export type OpenOrder = {
-  inputCurrency: Currency
-  outputCurrency: Currency
+  inputToken: Currency
+  outputToken: Currency
   isBid: boolean
   txHash: `0x${string}`
   price: bigint
-  filledAmount: bigint
-  amount: bigint
+  baseFilledAmount: bigint
+  baseAmount: bigint
   claimableAmount: bigint
 }

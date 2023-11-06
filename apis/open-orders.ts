@@ -4,7 +4,6 @@ import { getBuiltGraphSDK } from '../.graphclient'
 import { CHAIN_IDS } from '../constants/chain'
 import { SUBGRAPH_URL } from '../constants/subgraph-url'
 import { OpenOrder } from '../model/open-order'
-import { formatDate } from '../utils/date'
 
 const { getOpenOrders } = getBuiltGraphSDK()
 
@@ -21,32 +20,31 @@ export async function fetchOpenOrders(
     },
   )
   return openOrders.map((openOrder) => {
-    const inputCurrency = openOrder.isBid
+    const inputToken = openOrder.isBid
       ? openOrder.market.quoteToken
       : openOrder.market.baseToken
-    const outputCurrency = openOrder.isBid
+    const outputToken = openOrder.isBid
       ? openOrder.market.baseToken
       : openOrder.market.quoteToken
     return {
-      inputCurrency: {
-        address: getAddress(inputCurrency.id),
-        name: inputCurrency.name,
-        symbol: inputCurrency.symbol,
-        decimals: Number(inputCurrency.decimals),
+      inputToken: {
+        address: getAddress(inputToken.id),
+        name: inputToken.name,
+        symbol: inputToken.symbol,
+        decimals: Number(inputToken.decimals),
       },
-      outputCurrency: {
-        address: getAddress(outputCurrency.id),
-        name: outputCurrency.name,
-        symbol: outputCurrency.symbol,
-        decimals: Number(outputCurrency.decimals),
+      outputToken: {
+        address: getAddress(outputToken.id),
+        name: outputToken.name,
+        symbol: outputToken.symbol,
+        decimals: Number(outputToken.decimals),
       },
       isBid: openOrder.isBid,
       txHash: openOrder.txHash as `0x${string}`,
-      timestamp: formatDate(new Date(Number(openOrder.createdAt) * 1000)),
       price: BigInt(openOrder.price),
-      filledAmount: BigInt(openOrder.baseFilledAmount),
-      amount: BigInt(openOrder.baseAmount),
-      claimableAmount: BigInt(openOrder.baseClaimedAmount),
+      baseFilledAmount: BigInt(openOrder.baseFilledAmount),
+      baseAmount: BigInt(openOrder.baseAmount),
+      claimableAmount: BigInt(openOrder.claimableAmount),
     }
   })
 }

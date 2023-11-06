@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import NumberInput from '../input/number-input'
 import CheckIcon from '../icon/check-icon'
@@ -6,17 +6,20 @@ import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { Currency } from '../../model/currency'
 
 export default function LimitSettingForm({
+  isPostOnly,
+  setIsPostOnly,
   claimBounty,
   setClaimBounty,
   nativeCurrency,
   onBackClick,
 }: {
+  isPostOnly: boolean
+  setIsPostOnly: (isPostOnly: (prevState: boolean) => boolean) => void
   claimBounty: string
   setClaimBounty: (claimBounty: string) => void
   nativeCurrency: Currency
   onBackClick: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const [isPostOnly, setIsPostOnly] = useState(false)
   return (
     <div className="flex flex-col gap-6 cursor-pointer">
       <div className="flex items-center justify-center">
