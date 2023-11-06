@@ -61,7 +61,7 @@ export const LimitContainer = () => {
     { isBid: boolean; index: number } | undefined
   >(undefined)
 
-  // When selectedChain or selectedMarket or isBid is changed, reset the form
+  // When chain is changed
   useEffect(() => {
     setClaimBounty(
       formatUnits(
@@ -69,51 +69,24 @@ export const LimitContainer = () => {
         selectedChain.nativeCurrency.decimals,
       ),
     )
-    setDepthClickedIndex(undefined)
-    if (selectedMarket) {
-      setInputCurrency(selectedMarket.quoteToken)
-      setOutputCurrency(selectedMarket.baseToken)
-
-      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-
-      setPriceInput(
-        isBid
-          ? toPlacesString(
-              asks.length > 0
-                ? asks[0].price
-                : bids.length > 0
-                ? bids[0].price
-                : 0,
-            )
-          : toPlacesString(
-              bids.length > 0
-                ? bids[0].price
-                : asks.length > 0
-                ? asks[0].price
-                : 0,
-            ),
-      )
-      setInputCurrency(
-        isBid ? selectedMarket.quoteToken : selectedMarket.baseToken,
-      )
-      setOutputCurrency(
-        isBid ? selectedMarket.baseToken : selectedMarket.quoteToken,
-      )
-    }
   }, [
-    asks,
-    bids,
-    availableDecimalPlacesGroups,
-    isBid,
     selectedChain.defaultGasPrice,
     selectedChain.nativeCurrency.decimals,
-    selectedMarket,
     setClaimBounty,
-    setInputCurrency,
-    setOutputCurrency,
-    setPriceInput,
-    setSelectedDecimalPlaces,
   ])
+
+  // When market is changed
+  const highestBidPrice = bids[0]?.price
+  const lowestAskPrice = asks[0]?.price
+  useEffect(() => {
+    setDepthClickedIndex(undefined)
+
+    setPriceInput(
+      isBid
+        ? toPlacesString(lowestAskPrice || highestBidPrice || '0')
+        : toPlacesString(highestBidPrice || lowestAskPrice || '0'),
+    )
+  }, [highestBidPrice, isBid, lowestAskPrice, setPriceInput])
 
   // When depthClickedIndex is changed, reset the priceInput
   useEffect(() => {
