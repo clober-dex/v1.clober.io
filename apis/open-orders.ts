@@ -27,6 +27,7 @@ export async function fetchOpenOrders(
       ? openOrder.market.baseToken
       : openOrder.market.quoteToken
     return {
+      nftId: BigInt(openOrder.nftId),
       marketAddress: getAddress(openOrder.market.id),
       inputToken: {
         address: getAddress(inputToken.id),

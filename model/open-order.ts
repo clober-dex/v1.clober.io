@@ -1,6 +1,7 @@
 import { Currency } from './currency'
 
 export type OpenOrder = {
+  nftId: bigint
   marketAddress: `0x${string}`
   inputToken: Currency
   outputToken: Currency
