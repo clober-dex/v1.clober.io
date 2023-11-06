@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { zeroAddress } from 'viem'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
+import { useAccount } from 'wagmi'
 
 import LimitSettingForm from '../components/form/limit-setting-form'
 import { LimitForm } from '../components/form/limit-form'
@@ -19,11 +20,14 @@ import {
   calculatePriceInputString,
 } from '../utils/order-book'
 import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
+import { Market } from '../model/market'
+import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
   const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
   const { openOrders } = useOpenOrderContext()
+  const { address: userAddress } = useAccount()
   const {
     isBid,
     setIsBid,
@@ -50,6 +54,7 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
+  const { limit } = useLimitContractContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -193,6 +198,27 @@ export const LimitContainer = () => {
     setPriceInput,
   ])
 
+  const [market, amount, price] = useMemo(
+    () => [
+      selectedMarket
+        ? Market.from(selectedMarket, selectedMarket.bids, selectedMarket.asks)
+        : undefined,
+      parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
+      parseUnits(priceInput, PRICE_DECIMAL),
+    ],
+    [inputCurrency?.decimals, inputCurrencyAmount, priceInput, selectedMarket],
+  )
+
+  const [rawAmount, baseAmount, priceIndex] = useMemo(() => {
+    if (!market) {
+      return [0n, 0n, undefined]
+    }
+    const priceIndex = market.priceToIndex(price, !isBid).index
+    return isBid
+      ? [market.quoteToRaw(amount, true), 0n, priceIndex]
+      : [0n, amount, priceIndex]
+  }, [amount, isBid, market, price])
+
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
       <div className="flex flex-col w-full lg:flex-row gap-4">
@@ -253,6 +279,27 @@ export const LimitContainer = () => {
                 )
                 setDepthClickedIndex(undefined)
                 setInputCurrencyAmount(outputCurrencyAmount)
+              }}
+              actionButtonProps={{
+                disabled: !market || !priceIndex || !userAddress || !amount,
+                onClick: async () => {
+                  if (!market || !priceIndex || !userAddress) {
+                    return
+                  }
+                  await limit(
+                    market,
+                    userAddress,
+                    priceIndex,
+                    rawAmount,
+                    baseAmount,
+                    parseUnits(
+                      claimBounty,
+                      selectedChain.nativeCurrency.decimals,
+                    ),
+                    isPostOnly,
+                  )
+                },
+                text: `Limit ${isBid ? 'Bid' : 'Ask'}`,
               }}
             />
           )}

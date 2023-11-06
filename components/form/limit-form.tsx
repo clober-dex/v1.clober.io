@@ -7,7 +7,7 @@ import { ArrowDownSvg } from '../svg/arrow-down-svg'
 import { SettingSvg } from '../svg/setting-svg'
 import MarketSelect from '../selector/market-select'
 import { Market } from '../../model/market'
-import { ActionButton } from '../button/action-button'
+import { ActionButton, ActionButtonProps } from '../button/action-button'
 
 export const LimitForm = ({
   priceInput,
@@ -28,6 +28,7 @@ export const LimitForm = ({
   setOutputCurrencyAmount,
   availableOutputCurrencyBalance,
   swapInputCurrencyAndOutputCurrency,
+  actionButtonProps,
 }: {
   priceInput: string
   setPriceInput: (priceInput: string) => void
@@ -47,6 +48,7 @@ export const LimitForm = ({
   setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
   availableOutputCurrencyBalance: bigint
   swapInputCurrencyAndOutputCurrency: () => void
+  actionButtonProps: ActionButtonProps
 }) => {
   const [showMarketSelect, setShowMarketSelect] = useState(false)
 
@@ -108,11 +110,7 @@ export const LimitForm = ({
           Setting
         </button>
       </div>
-      <ActionButton
-        disabled={false}
-        onClick={() => {}}
-        text={'Connect wallet'}
-      />
+      <ActionButton {...actionButtonProps} />
     </>
   )
 }
