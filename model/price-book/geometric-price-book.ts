@@ -260,9 +260,6 @@ export class GeometricPriceBook implements PriceBook {
   }
 
   public priceToIndex(price: bigint, roundingUp: boolean): CloberPrice {
-    if (price < this._a || price >= this.priceUpperBound) {
-      throw `GeometricPriceBook: 'price' is invalid`
-    }
     let index = 0
     let _correctedPrice = this._a
     const shiftedPrice = (price + 1n) << 64n
