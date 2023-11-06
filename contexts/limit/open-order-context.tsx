@@ -15,13 +15,13 @@ import {
 type OpenOrderContext = {
   openOrders: OpenOrder[]
   claimable: Balances
-  claimParamsList: ClaimParamsListMap
+  claimParamsListMap: ClaimParamsListMap
 }
 
 const Context = React.createContext<OpenOrderContext>({
   openOrders: [],
   claimable: {},
-  claimParamsList: {},
+  claimParamsListMap: {},
 })
 
 export const OpenOrderProvider = ({
@@ -50,7 +50,7 @@ export const OpenOrderProvider = ({
     [openOrders],
   )
 
-  const claimParamsList = useMemo(
+  const claimParamsListMap = useMemo(
     () =>
       (
         Object.entries(
@@ -103,7 +103,7 @@ export const OpenOrderProvider = ({
       value={{
         openOrders,
         claimable,
-        claimParamsList,
+        claimParamsListMap,
       }}
     >
       {children}

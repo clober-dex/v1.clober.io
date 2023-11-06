@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { parseUnits, zeroAddress } from 'viem'
+import { getAddress, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
 
@@ -23,6 +23,7 @@ import { Market } from '../model/market'
 import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
 import { ActionButton } from '../components/button/action-button'
 import { OpenOrderCard } from '../components/card/open-order-card'
+import { Currency } from '../model/currency'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
@@ -55,8 +56,8 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
-  const { limit } = useLimitContractContext()
-  const { claimable, claimParamsList } = useOpenOrderContext()
+  const { limit, claim, claimAll } = useLimitContractContext()
+  const { claimable, claimParamsListMap } = useOpenOrderContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -318,7 +319,7 @@ export const LimitContainer = () => {
                       selectedChain.nativeCurrency.decimals,
                     ),
                     isPostOnly,
-                    claimParamsList[inputCurrency.address],
+                    claimParamsListMap[inputCurrency.address],
                   )
                 },
                 text: `Limit ${isBid ? 'Bid' : 'Ask'}`,
@@ -338,9 +339,33 @@ export const LimitContainer = () => {
         <div className="flex gap-1 sm:gap-2 ml-auto h-6">
           <ActionButton
             className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
-            disabled={false}
-            onClick={() => {}}
-            text={'Claim All'}
+            disabled={Object.values(claimParamsListMap).flat().length === 0}
+            onClick={async () => {
+              const [addresses, claimParamsList] = [
+                Object.keys(claimParamsListMap) as `0x${string}`[],
+                Object.values(claimParamsListMap).flat(),
+              ]
+              const currencyMaps = [
+                ...markets.map((market) => market.baseToken),
+                ...markets.map((market) => market.quoteToken),
+              ].reduce(
+                (acc, currency) => ({
+                  ...acc,
+                  [getAddress(currency.address)]: currency,
+                }),
+                {} as { [currencyAddress in `0x${string}`]: Currency },
+              )
+              await claimAll(
+                addresses.map((address) => ({
+                  token: currencyMaps[address],
+                  amount: claimable[address] ?? 0n,
+                })),
+                claimParamsList,
+              )
+            }}
+            text={`Claim All (${
+              Object.values(claimParamsListMap).flat().length
+            })`}
           />
           <ActionButton
             className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
@@ -358,7 +383,26 @@ export const LimitContainer = () => {
               key={index}
               claimActionButtonProps={{
                 disabled: openOrder.claimableAmount === 0n,
-                onClick: async () => {},
+                onClick: async () => {
+                  await claim(
+                    {
+                      amount: openOrder.claimableAmount,
+                      token: openOrder.inputToken,
+                    },
+                    [
+                      {
+                        market: openOrder.marketAddress,
+                        orderKeys: [
+                          {
+                            isBid: openOrder.isBid,
+                            priceIndex: openOrder.priceIndex,
+                            orderIndex: openOrder.orderIndex,
+                          },
+                        ],
+                      },
+                    ],
+                  )
+                },
                 text: 'Claim',
               }}
               cancelActionButtonProps={{

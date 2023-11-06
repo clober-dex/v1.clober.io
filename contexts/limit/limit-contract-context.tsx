@@ -14,6 +14,7 @@ import { MarketRouter__factory } from '../../typechain'
 import { approve20 } from '../../utils/approve20'
 import { ClaimParamsList } from '../../model/order-key'
 import { toPlacesString } from '../../utils/bignumber'
+import { Currency } from '../../model/currency'
 
 import { useLimitCurrencyContext } from './limit-currency-context'
 
@@ -28,12 +29,20 @@ type LimitContractContext = {
     postOnly: boolean,
     claimParamsList?: ClaimParamsList,
   ) => Promise<void>
-  claim: (claimParamsList: ClaimParamsList) => Promise<void>
+  claim: (
+    tokenAndAmount: { token: Currency; amount: bigint },
+    claimParamsList: ClaimParamsList,
+  ) => Promise<void>
+  claimAll: (
+    tokenAndAmounts: { token: Currency; amount: bigint }[],
+    claimParamsList: ClaimParamsList,
+  ) => Promise<void>
 }
 
 const Context = React.createContext<LimitContractContext>({
   limit: () => Promise.resolve(),
   claim: () => Promise.resolve(),
+  claimAll: () => Promise.resolve(),
 })
 
 export const LimitContractProvider = ({
@@ -171,15 +180,118 @@ export const LimitContractProvider = ({
     ],
   )
 
-  const claim = useCallback(async (claimParamsList: ClaimParamsList) => {
-    console.log('claimParamsList', claimParamsList)
-  }, [])
+  const claim = useCallback(
+    async (
+      tokenAndAmount: { token: Currency; amount: bigint },
+      claimParamsList: ClaimParamsList,
+    ) => {
+      if (!walletClient) {
+        return
+      }
+
+      try {
+        setConfirmation({
+          title: `Claim`,
+          body: 'Please confirm in your wallet.',
+          fields: [
+            {
+              currency: tokenAndAmount.token,
+              label: tokenAndAmount.token.symbol,
+              value: toPlacesString(
+                formatUnits(
+                  tokenAndAmount.amount,
+                  tokenAndAmount.token.decimals,
+                ),
+              ),
+            },
+          ],
+        })
+
+        await writeContract(publicClient, walletClient, {
+          address:
+            CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].MarketRouter,
+          abi: MarketRouter__factory.abi,
+          functionName: 'claim',
+          args: [
+            BigInt(
+              Math.floor(new Date().getTime() / 1000 + selectedChain.expireIn),
+            ),
+            claimParamsList,
+          ],
+        })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries(['limit-balances']),
+          queryClient.invalidateQueries(['open-orders']),
+        ])
+        setConfirmation(undefined)
+      }
+    },
+    [
+      publicClient,
+      queryClient,
+      selectedChain.expireIn,
+      selectedChain.id,
+      setConfirmation,
+      walletClient,
+    ],
+  )
+
+  const claimAll = useCallback(
+    async (
+      tokenAndAmounts: { token: Currency; amount: bigint }[],
+      claimParamsList: ClaimParamsList,
+    ) => {
+      if (!walletClient) {
+        return
+      }
+
+      try {
+        setConfirmation({
+          title: `Claim All`,
+          body: 'Please confirm in your wallet.',
+          fields: tokenAndAmounts.map((tokenAndAmount) => ({
+            currency: tokenAndAmount.token,
+            label: tokenAndAmount.token.symbol,
+            value: toPlacesString(
+              formatUnits(tokenAndAmount.amount, tokenAndAmount.token.decimals),
+            ),
+          })),
+        })
+
+        await writeContract(publicClient, walletClient, {
+          address:
+            CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].MarketRouter,
+          abi: MarketRouter__factory.abi,
+          functionName: 'claim',
+          args: [
+            BigInt(
+              Math.floor(new Date().getTime() / 1000 + selectedChain.expireIn),
+            ),
+            claimParamsList,
+          ],
+        })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries(['limit-balances']),
+          queryClient.invalidateQueries(['open-orders']),
+        ])
+        setConfirmation(undefined)
+      }
+    },
+    [queryClient, setConfirmation, walletClient],
+  )
 
   return (
     <Context.Provider
       value={{
         limit,
         claim,
+        claimAll,
       }}
     >
       {children}
