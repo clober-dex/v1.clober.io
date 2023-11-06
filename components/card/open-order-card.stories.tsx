@@ -1,7 +1,8 @@
 import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
-
 import '../../styles/globals.css'
+import { zeroAddress } from 'viem'
+
 import { dummyCurrencies } from '../../.storybook/dummy-data/currencies'
 
 import { OpenOrderCard } from './open-order-card'
@@ -29,6 +30,10 @@ export const Bid: Story = {
       isBid: true,
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
+      nftId: 1n,
+      marketAddress: zeroAddress,
+      priceIndex: 1,
+      orderIndex: 1n,
       price: 1600000000000000000000n,
       baseFilledAmount: 120000000000000000n,
       baseAmount: 1000000000000000000n,
@@ -45,6 +50,10 @@ export const Ask: Story = {
       isBid: false,
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
+      nftId: 1n,
+      marketAddress: zeroAddress,
+      priceIndex: 1,
+      orderIndex: 1n,
       price: 1600000000000000000000n,
       baseFilledAmount: 1000000000000000000n,
       baseAmount: 1000000000000000000n,

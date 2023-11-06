@@ -3,15 +3,19 @@ import React from 'react'
 import { OutlinkSvg } from '../svg/outlink-svg'
 import { OpenOrder } from '../../model/open-order'
 import { formatUnits } from '../../utils/bigint'
-import { ActionButton } from '../button/action-button'
+import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { toPlacesString } from '../../utils/bignumber'
 import { PRICE_DECIMAL } from '../../utils/prices'
 
 export const OpenOrderCard = ({
   openOrder,
+  claimActionButtonProps,
+  cancelActionButtonProps,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
   openOrder: OpenOrder
+  claimActionButtonProps: ActionButtonProps
+  cancelActionButtonProps: ActionButtonProps
 }) => {
   const filledRatio =
     (Number(openOrder.baseFilledAmount) / Number(openOrder.baseAmount)) * 100
@@ -94,20 +98,27 @@ export const OpenOrderCard = ({
               }}
             />
           </div>
+          <div className="flex flex-row align-baseline justify-between">
+            <label className="text-gray-200">Claimable</label>
+            <p className="text-white">
+              {toPlacesString(
+                formatUnits(
+                  openOrder.claimableAmount,
+                  openOrder.inputToken.decimals,
+                ),
+              )}
+            </p>
+          </div>
         </div>
       </div>
       <div className="flex w-full gap-3 h-6">
         <ActionButton
-          className="flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 py-2 h-6 sm:h-7"
-          disabled={true}
-          onClick={() => console.log('claim', [openOrder])}
-          text={'Claim'}
+          className="flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-gray-500 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 py-2 h-6 sm:h-7"
+          {...claimActionButtonProps}
         />
         <ActionButton
           className="flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-gray-500 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 py-2 h-6 sm:h-7"
-          disabled={false}
-          onClick={() => console.log('cancel', [openOrder])}
-          text={'Cancel'}
+          {...cancelActionButtonProps}
         />
       </div>
     </div>

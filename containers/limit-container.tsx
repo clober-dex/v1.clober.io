@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi'
 import LimitSettingForm from '../components/form/limit-setting-form'
 import { LimitForm } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
-import OpenOrderList from '../components/open-order-list'
 import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/limit/market-context'
 import { formatUnits } from '../utils/bigint'
@@ -23,6 +22,7 @@ import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-contex
 import { Market } from '../model/market'
 import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
 import { ActionButton } from '../components/button/action-button'
+import { OpenOrderCard } from '../components/card/open-order-card'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
@@ -351,7 +351,24 @@ export const LimitContainer = () => {
         </div>
       </div>
       <div className="flex w-full justify-center mt-0 sm:mt-4">
-        <OpenOrderList openOrders={openOrders} />
+        <div className="flex flex-col w-full h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
+          {openOrders.map((openOrder, index) => (
+            <OpenOrderCard
+              openOrder={openOrder}
+              key={index}
+              claimActionButtonProps={{
+                disabled: openOrder.claimableAmount === 0n,
+                onClick: async () => {},
+                text: 'Claim',
+              }}
+              cancelActionButtonProps={{
+                disabled: false,
+                onClick: async () => {},
+                text: 'Cancel',
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )

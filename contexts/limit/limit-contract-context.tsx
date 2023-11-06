@@ -28,10 +28,12 @@ type LimitContractContext = {
     postOnly: boolean,
     claimParamsList?: ClaimParamsList,
   ) => Promise<void>
+  claim: (claimParamsList: ClaimParamsList) => Promise<void>
 }
 
 const Context = React.createContext<LimitContractContext>({
   limit: () => Promise.resolve(),
+  claim: () => Promise.resolve(),
 })
 
 export const LimitContractProvider = ({
@@ -168,10 +170,16 @@ export const LimitContractProvider = ({
       walletClient,
     ],
   )
+
+  const claim = useCallback(async (claimParamsList: ClaimParamsList) => {
+    console.log('claimParamsList', claimParamsList)
+  }, [])
+
   return (
     <Context.Provider
       value={{
         limit,
+        claim,
       }}
     >
       {children}
