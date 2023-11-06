@@ -55,7 +55,7 @@ export const LimitContainer = () => {
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
   const { limit } = useLimitContractContext()
-  const { claimable } = useOpenOrderContext()
+  const { claimable, claimParamsList } = useOpenOrderContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -138,7 +138,7 @@ export const LimitContainer = () => {
     if (
       new BigNumber(inputCurrencyAmount).isNaN() ||
       new BigNumber(inputCurrencyAmount).isZero() ||
-      !outputCurrency
+      !outputCurrency?.decimals
     ) {
       return
     }
@@ -291,9 +291,19 @@ export const LimitContainer = () => {
                 setInputCurrencyAmount(outputCurrencyAmount)
               }}
               actionButtonProps={{
-                disabled: !market || !priceIndex || !userAddress || !amount,
+                disabled:
+                  !inputCurrency ||
+                  !market ||
+                  !priceIndex ||
+                  !userAddress ||
+                  !amount,
                 onClick: async () => {
-                  if (!market || !priceIndex || !userAddress) {
+                  if (
+                    !inputCurrency ||
+                    !market ||
+                    !priceIndex ||
+                    !userAddress
+                  ) {
                     return
                   }
                   await limit(
@@ -307,6 +317,7 @@ export const LimitContainer = () => {
                       selectedChain.nativeCurrency.decimals,
                     ),
                     isPostOnly,
+                    claimParamsList[inputCurrency.address],
                   )
                 },
                 text: `Limit ${isBid ? 'Bid' : 'Ask'}`,

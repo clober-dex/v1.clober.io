@@ -12,6 +12,7 @@ import { CHAIN_IDS } from '../../constants/chain'
 import { CONTRACT_ADDRESSES } from '../../constants/addresses'
 import { MarketRouter__factory } from '../../typechain'
 import { approve20 } from '../../utils/approve20'
+import { ClaimParamsList } from '../../model/order-key'
 
 import { useLimitCurrencyContext } from './limit-currency-context'
 
@@ -24,6 +25,7 @@ type LimitContractContext = {
     baseAmount: bigint,
     claimBounty: bigint,
     postOnly: boolean,
+    claimParamsList?: ClaimParamsList,
   ) => Promise<void>
 }
 
@@ -51,6 +53,7 @@ export const LimitContractProvider = ({
       baseAmount: bigint,
       claimBounty: bigint,
       postOnly: boolean,
+      claimParamsList?: ClaimParamsList,
     ) => {
       if (rawAmount > 0n && baseAmount > 0n) {
         throw new Error('Cannot have both rawAmount and baseAmount')
@@ -71,6 +74,9 @@ export const LimitContractProvider = ({
         selectedChain.defaultGasPrice - GAS_PROTECTION,
         balances,
       )
+      if (!claimParamsList) {
+        throw new Error('claimParamsList is required')
+      }
 
       try {
         setConfirmation({
@@ -94,42 +100,46 @@ export const LimitContractProvider = ({
           amountIn,
         )
 
-        if (withClaim) {
-          console.log('withClaim')
-        } else {
-          setConfirmation({
-            title: `Limit ${isBid ? 'Bid' : 'Ask'}`,
-            body: 'Please confirm in your wallet.',
-            fields: [
-              {
-                currency: inputCurrency,
-                label: inputCurrency.symbol,
-                value: formatUnits(amountIn, inputCurrency.decimals),
-              },
-            ],
-          })
+        setConfirmation({
+          title: `Limit ${isBid ? 'Bid' : 'Ask'}`,
+          body: 'Please confirm in your wallet.',
+          fields: [
+            {
+              currency: inputCurrency,
+              label: inputCurrency.symbol,
+              value: formatUnits(amountIn, inputCurrency.decimals),
+            },
+          ],
+        })
 
+        const limitOrderParams = {
+          market: market.address,
+          deadline: BigInt(
+            Math.floor(new Date().getTime() / 1000 + selectedChain.expireIn),
+          ),
+          user: userAddress,
+          rawAmount: isBid ? rawAmount : 0n,
+          priceIndex,
+          postOnly,
+          useNative,
+          claimBounty: claimBounty / 1000000000n, // GWEI
+          baseAmount: isBid ? 0n : baseAmount,
+        }
+
+        if (withClaim) {
+          await writeContract(publicClient, walletClient, {
+            address: marketRouter,
+            abi: MarketRouter__factory.abi,
+            functionName: isBid ? 'limitBidAfterClaim' : 'limitAskAfterClaim',
+            args: [claimParamsList, limitOrderParams],
+            value,
+          })
+        } else {
           await writeContract(publicClient, walletClient, {
             address: marketRouter,
             abi: MarketRouter__factory.abi,
             functionName: isBid ? 'limitBid' : 'limitAsk',
-            args: [
-              {
-                market: market.address,
-                deadline: BigInt(
-                  Math.floor(
-                    new Date().getTime() / 1000 + selectedChain.expireIn,
-                  ),
-                ),
-                user: userAddress,
-                rawAmount: isBid ? rawAmount : 0n,
-                priceIndex,
-                postOnly,
-                useNative,
-                claimBounty: claimBounty / 1000000000n, // GWEI
-                baseAmount: isBid ? 0n : baseAmount,
-              },
-            ],
+            args: [limitOrderParams],
             value,
           })
         }
