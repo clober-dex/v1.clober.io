@@ -55,6 +55,7 @@ export const LimitContainer = () => {
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
   const { limit } = useLimitContractContext()
+  const { claimable } = useOpenOrderContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -264,14 +265,20 @@ export const LimitContainer = () => {
               inputCurrencyAmount={inputCurrencyAmount}
               setInputCurrencyAmount={setInputCurrencyAmount}
               availableInputCurrencyBalance={
-                inputCurrency ? balances[inputCurrency.address] ?? 0n : 0n
+                inputCurrency
+                  ? (balances[inputCurrency.address] ?? 0n) +
+                    (claimable[inputCurrency.address] ?? 0n)
+                  : 0n
               }
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
               outputCurrencyAmount={outputCurrencyAmount}
               setOutputCurrencyAmount={setOutputCurrencyAmount}
               availableOutputCurrencyBalance={
-                outputCurrency ? balances[outputCurrency.address] ?? 0n : 0n
+                outputCurrency
+                  ? (balances[outputCurrency.address] ?? 0n) +
+                    (claimable[outputCurrency.address] ?? 0n)
+                  : 0n
               }
               swapInputCurrencyAndOutputCurrency={() => {
                 setIsBid((prevState) =>
