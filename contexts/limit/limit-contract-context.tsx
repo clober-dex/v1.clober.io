@@ -13,6 +13,7 @@ import { CONTRACT_ADDRESSES } from '../../constants/addresses'
 import { MarketRouter__factory } from '../../typechain'
 import { approve20 } from '../../utils/approve20'
 import { ClaimParamsList } from '../../model/order-key'
+import { toPlacesString } from '../../utils/bignumber'
 
 import { useLimitCurrencyContext } from './limit-currency-context'
 
@@ -86,7 +87,9 @@ export const LimitContractProvider = ({
             {
               currency: inputCurrency,
               label: inputCurrency.symbol,
-              value: formatUnits(amountIn, inputCurrency.decimals),
+              value: toPlacesString(
+                formatUnits(amountIn, inputCurrency.decimals),
+              ),
             },
           ],
         })
@@ -107,7 +110,9 @@ export const LimitContractProvider = ({
             {
               currency: inputCurrency,
               label: inputCurrency.symbol,
-              value: formatUnits(amountIn, inputCurrency.decimals),
+              value: toPlacesString(
+                formatUnits(amountIn, inputCurrency.decimals),
+              ),
             },
           ],
         })
