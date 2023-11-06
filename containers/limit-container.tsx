@@ -22,6 +22,7 @@ import {
 import { useLimitCurrencyContext } from '../contexts/limit/limit-currency-context'
 import { Market } from '../model/market'
 import { useLimitContractContext } from '../contexts/limit/limit-contract-context'
+import { ActionButton } from '../components/button/action-button'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
@@ -326,13 +327,27 @@ export const LimitContainer = () => {
           )}
         </div>
       </div>
-      <div className="flex p-4 sm:border-solid border-b-gray-800 border-b-[1.5px]">
+      <div className="flex py-4 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
         <div className="flex gap-6">
-          <button
+          <div
             className={`m-0 p-0 bg-transparent text-white ${textStyles.body2}`}
           >
             Open Orders
-          </button>
+          </div>
+        </div>
+        <div className="flex gap-1 sm:gap-2 ml-auto h-6">
+          <ActionButton
+            className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
+            disabled={false}
+            onClick={() => {}}
+            text={'Claim All'}
+          />
+          <ActionButton
+            className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
+            disabled={false}
+            onClick={() => {}}
+            text={'Cancel All'}
+          />
         </div>
       </div>
       <div className="flex w-full justify-center mt-0 sm:mt-4">
