@@ -1,23 +1,25 @@
 import React, { useMemo } from 'react'
 import { useAccount, useQuery } from 'wagmi'
-import { getAddress } from 'viem'
+import { getAddress, isAddressEqual } from 'viem'
 
 import { OpenOrder } from '../../model/open-order'
 import { fetchOpenOrders } from '../../apis/open-orders'
 import { useChainContext } from '../chain-context'
 import { Balances } from '../../model/balances'
-import { ClaimableOrderKeys } from '../../model/claimable-order-keys'
+import { OrderKeyStruct } from '../../model/order-key'
+
+import { useMarketContext } from './market-context'
 
 type OpenOrderContext = {
   openOrders: OpenOrder[]
   claimable: Balances
-  claimableOrderKeys: ClaimableOrderKeys
+  claimableOrderKeys: OrderKeyStruct[]
 }
 
 const Context = React.createContext<OpenOrderContext>({
   openOrders: [],
   claimable: {},
-  claimableOrderKeys: {},
+  claimableOrderKeys: [],
 })
 
 export const OpenOrderProvider = ({
@@ -25,6 +27,7 @@ export const OpenOrderProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
+  const { selectedMarket } = useMarketContext()
 
   const { data: openOrders } = useQuery(
     ['open-orders', selectedChain, userAddress],
@@ -47,21 +50,22 @@ export const OpenOrderProvider = ({
   )
   const claimableOrderKeys = useMemo(
     () =>
-      openOrders
-        .filter((openOrder) => openOrder.claimableAmount > 0n)
-        .reduce((acc, openOrder) => {
-          const marketAddress = getAddress(openOrder.marketAddress)
-          acc[marketAddress] = [
-            ...(acc[marketAddress] ?? []),
-            {
-              isBid: openOrder.isBid,
-              priceIndex: openOrder.priceIndex,
-              orderIndex: openOrder.orderIndex,
-            },
-          ]
-          return acc
-        }, {} as ClaimableOrderKeys),
-    [openOrders],
+      selectedMarket
+        ? openOrders
+            .filter(
+              (openOrder) =>
+                openOrder.claimableAmount > 0n &&
+                isAddressEqual(selectedMarket.address, openOrder.marketAddress),
+            )
+            .map((openOrder) => {
+              return {
+                isBid: openOrder.isBid,
+                priceIndex: openOrder.priceIndex,
+                orderIndex: openOrder.orderIndex,
+              } as OrderKeyStruct
+            })
+        : [],
+    [openOrders, selectedMarket],
   )
 
   return (
