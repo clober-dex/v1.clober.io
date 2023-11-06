@@ -11,12 +11,10 @@ export default function ChainSelector({
   chain,
   setChain,
   chains,
-  switchNetwork,
 }: {
   chain: Chain
   setChain: (chain: Chain) => void
   chains: Chain[]
-  switchNetwork: ((chainId?: number | undefined) => void) | undefined
 }) {
   const { showDropdown, setShowDropdown } = useDropdown()
 
@@ -44,7 +42,7 @@ export default function ChainSelector({
                 key={_chain.name}
                 onClick={() => {
                   try {
-                    switchNetwork ? switchNetwork(_chain.id) : setChain(_chain)
+                    setChain(_chain)
                   } catch (e) {
                     console.error(e)
                   } finally {

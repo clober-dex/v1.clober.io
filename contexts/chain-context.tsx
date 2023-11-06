@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
-import { useNetwork } from 'wagmi'
+import React, { useCallback, useEffect } from 'react'
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 
 import { Chain } from '../model/chain'
-import { supportChains } from '../constants/chain'
+import { findSupportChain, supportChains } from '../constants/chain'
+import { setQueryParams } from '../utils/url'
 
 type ChainContext = {
   selectedChain: Chain
@@ -14,17 +15,83 @@ const Context = React.createContext<ChainContext>({
   setSelectedChain: (_) => _,
 })
 
+const LOCAL_STORAGE_CHAIN_KEY = 'chain'
+const QUERY_PARAM_CHAIN_KEY = 'chain'
+
 export const ChainProvider = ({ children }: React.PropsWithChildren<{}>) => {
-  const { chain } = useNetwork()
-  const [selectedChain, setSelectedChain] = React.useState<Chain>(
-    supportChains[0], // TODO: cache localstorage
+  const { chain: connectedChain } = useNetwork()
+  const [selectedChain, _setSelectedChain] = React.useState<Chain>(
+    supportChains[0],
   )
+  const { switchNetwork } = useSwitchNetwork({
+    onSuccess(data) {
+      _setSelectedChain(data)
+    },
+  })
 
   useEffect(() => {
-    if (chain) {
-      setSelectedChain(supportChains.find((c) => c.id === chain.id)!)
+    const params = new URLSearchParams(window.location.search)
+    const queryParamChain = params.get(QUERY_PARAM_CHAIN_KEY)
+      ? findSupportChain(parseInt(params.get(QUERY_PARAM_CHAIN_KEY)!, 10))
+      : undefined
+    const localStorageChain = localStorage.getItem(LOCAL_STORAGE_CHAIN_KEY)
+      ? findSupportChain(
+          parseInt(localStorage.getItem(LOCAL_STORAGE_CHAIN_KEY)!, 10),
+        )
+      : undefined
+    const walletConnectedChain = connectedChain
+      ? findSupportChain(connectedChain.id)
+      : undefined
+
+    if (queryParamChain) {
+      _setSelectedChain(queryParamChain)
+      localStorage.setItem(
+        LOCAL_STORAGE_CHAIN_KEY,
+        queryParamChain.id.toString(),
+      )
+      if (switchNetwork) {
+        switchNetwork(queryParamChain.id)
+      }
+      setQueryParams({
+        chain: queryParamChain.id.toString(),
+      })
+    } else if (walletConnectedChain) {
+      _setSelectedChain(walletConnectedChain)
+      setQueryParams({
+        chain: walletConnectedChain.id.toString(),
+      })
+      localStorage.setItem(
+        LOCAL_STORAGE_CHAIN_KEY,
+        walletConnectedChain.id.toString(),
+      )
+    } else if (localStorageChain) {
+      _setSelectedChain(localStorageChain)
+      setQueryParams({
+        chain: localStorageChain.id.toString(),
+      })
+      if (switchNetwork) {
+        switchNetwork(localStorageChain.id)
+      }
+    } else {
+      setQueryParams({
+        chain: supportChains[0].id.toString(),
+      })
     }
-  }, [chain])
+  }, [connectedChain, switchNetwork])
+
+  const setSelectedChain = useCallback(
+    (_chain: Chain) => {
+      _setSelectedChain(_chain)
+      localStorage.setItem(LOCAL_STORAGE_CHAIN_KEY, _chain.id.toString())
+      setQueryParams({
+        chain: _chain.id.toString(),
+      })
+      if (switchNetwork) {
+        switchNetwork(_chain.id)
+      }
+    },
+    [switchNetwork],
+  )
 
   return (
     <Context.Provider value={{ selectedChain, setSelectedChain }}>
