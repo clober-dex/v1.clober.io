@@ -7,6 +7,7 @@ import { fetchOpenOrders } from '../../apis/open-orders'
 import { useChainContext } from '../chain-context'
 import { Balances } from '../../model/balances'
 import {
+  CancelParamsList,
   ClaimOrderParamsStruct,
   ClaimParamsListMap,
   OrderKeyStruct,
@@ -16,12 +17,14 @@ type OpenOrderContext = {
   openOrders: OpenOrder[]
   claimable: Balances
   claimParamsListMap: ClaimParamsListMap
+  cancelParamsList: CancelParamsList
 }
 
 const Context = React.createContext<OpenOrderContext>({
   openOrders: [],
   claimable: {},
   claimParamsListMap: {},
+  cancelParamsList: [],
 })
 
 export const OpenOrderProvider = ({
@@ -98,12 +101,35 @@ export const OpenOrderProvider = ({
     [openOrders],
   )
 
+  const cancelParamsList = useMemo(
+    () =>
+      Object.entries(
+        openOrders.reduce(
+          (acc, openOrder) => {
+            acc[openOrder.marketAddress] = [
+              ...(acc[openOrder.marketAddress] ?? []),
+              openOrder.nftId,
+            ]
+            return acc
+          },
+          {} as {
+            [marketAddress in `0x${string}`]: bigint[]
+          },
+        ),
+      ).map(([marketAddress, nftIds]) => ({
+        market: getAddress(marketAddress),
+        tokenIds: nftIds,
+      })) as CancelParamsList,
+    [openOrders],
+  )
+
   return (
     <Context.Provider
       value={{
         openOrders,
         claimable,
         claimParamsListMap,
+        cancelParamsList,
       }}
     >
       {children}

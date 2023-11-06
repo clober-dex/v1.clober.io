@@ -24,6 +24,7 @@ import { useLimitContractContext } from '../contexts/limit/limit-contract-contex
 import { ActionButton } from '../components/button/action-button'
 import { OpenOrderCard } from '../components/card/open-order-card'
 import { Currency } from '../model/currency'
+import { Balances } from '../model/balances'
 
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
@@ -56,8 +57,9 @@ export const LimitContainer = () => {
     asks,
   } = useLimitContext()
   const { balances } = useLimitCurrencyContext()
-  const { limit, claim, claimAll } = useLimitContractContext()
-  const { claimable, claimParamsListMap } = useOpenOrderContext()
+  const { limit, claim, claimAll, cancelAll } = useLimitContractContext()
+  const { claimable, claimParamsListMap, cancelParamsList } =
+    useOpenOrderContext()
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -225,6 +227,17 @@ export const LimitContainer = () => {
       : [0n, amount, priceIndex]
   }, [amount, isBid, market, price])
 
+  const currencyMaps = [
+    ...markets.map((market) => market.baseToken),
+    ...markets.map((market) => market.quoteToken),
+  ].reduce(
+    (acc, currency) => ({
+      ...acc,
+      [getAddress(currency.address)]: currency,
+    }),
+    {} as { [currencyAddress in `0x${string}`]: Currency },
+  )
+
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
       <div className="flex flex-col w-full lg:flex-row gap-4">
@@ -339,22 +352,15 @@ export const LimitContainer = () => {
         <div className="flex gap-1 sm:gap-2 ml-auto h-6">
           <ActionButton
             className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
-            disabled={Object.values(claimParamsListMap).flat().length === 0}
+            disabled={
+              openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
+                .length === 0
+            }
             onClick={async () => {
               const [addresses, claimParamsList] = [
                 Object.keys(claimParamsListMap) as `0x${string}`[],
                 Object.values(claimParamsListMap).flat(),
               ]
-              const currencyMaps = [
-                ...markets.map((market) => market.baseToken),
-                ...markets.map((market) => market.quoteToken),
-              ].reduce(
-                (acc, currency) => ({
-                  ...acc,
-                  [getAddress(currency.address)]: currency,
-                }),
-                {} as { [currencyAddress in `0x${string}`]: Currency },
-              )
               await claimAll(
                 addresses.map((address) => ({
                   token: currencyMaps[address],
@@ -364,14 +370,32 @@ export const LimitContainer = () => {
               )
             }}
             text={`Claim All (${
-              Object.values(claimParamsListMap).flat().length
+              openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
+                .length
             })`}
           />
           <ActionButton
             className="w-[64px] sm:w-[120px] flex flex-1 items-center justify-center rounded bg-gray-700 hover:bg-blue-600 text-white text-xs sm:text-sm disabled:bg-gray-800 disabled:text-gray-500 h-6 sm:h-7"
-            disabled={false}
-            onClick={() => {}}
-            text={'Cancel All'}
+            disabled={openOrders.length === 0}
+            onClick={async () => {
+              const openOrderBalances = openOrders.reduce(
+                (acc, openOrder) => ({
+                  ...acc,
+                  [getAddress(openOrder.inputToken.address)]:
+                    (acc[getAddress(openOrder.inputToken.address)] ?? 0n) +
+                    openOrder.baseAmount,
+                }),
+                {} as Balances,
+              )
+              await cancelAll(
+                Object.entries(openOrderBalances).map(([address, amount]) => ({
+                  token: currencyMaps[getAddress(address)],
+                  amount,
+                })),
+                cancelParamsList,
+              )
+            }}
+            text={`Cancel All (${openOrders.length})`}
           />
         </div>
       </div>

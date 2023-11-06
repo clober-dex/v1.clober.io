@@ -10,9 +10,9 @@ import { Market } from '../../model/market'
 import { writeContract } from '../../utils/wallet'
 import { CHAIN_IDS } from '../../constants/chain'
 import { CONTRACT_ADDRESSES } from '../../constants/addresses'
-import { MarketRouter__factory } from '../../typechain'
+import { MarketRouter__factory, OrderCanceler__factory } from '../../typechain'
 import { approve20 } from '../../utils/approve20'
-import { ClaimParamsList } from '../../model/order-key'
+import { CancelParamsList, ClaimParamsList } from '../../model/order-key'
 import { toPlacesString } from '../../utils/bignumber'
 import { Currency } from '../../model/currency'
 
@@ -37,12 +37,17 @@ type LimitContractContext = {
     tokenAndAmounts: { token: Currency; amount: bigint }[],
     claimParamsList: ClaimParamsList,
   ) => Promise<void>
+  cancelAll: (
+    tokenAndAmounts: { token: Currency; amount: bigint }[],
+    cancelParamsList: CancelParamsList,
+  ) => Promise<void>
 }
 
 const Context = React.createContext<LimitContractContext>({
   limit: () => Promise.resolve(),
   claim: () => Promise.resolve(),
   claimAll: () => Promise.resolve(),
+  cancelAll: () => Promise.resolve(),
 })
 
 export const LimitContractProvider = ({
@@ -283,7 +288,62 @@ export const LimitContractProvider = ({
         setConfirmation(undefined)
       }
     },
-    [queryClient, setConfirmation, walletClient],
+    [
+      publicClient,
+      queryClient,
+      selectedChain.expireIn,
+      selectedChain.id,
+      setConfirmation,
+      walletClient,
+    ],
+  )
+
+  const cancelAll = useCallback(
+    async (
+      tokenAndAmounts: { token: Currency; amount: bigint }[],
+      cancelParamsList: CancelParamsList,
+    ) => {
+      if (!walletClient) {
+        return
+      }
+
+      try {
+        setConfirmation({
+          title: `Cancel All`,
+          body: 'Please confirm in your wallet.',
+          fields: tokenAndAmounts.map((tokenAndAmount) => ({
+            currency: tokenAndAmount.token,
+            label: tokenAndAmount.token.symbol,
+            value: toPlacesString(
+              formatUnits(tokenAndAmount.amount, tokenAndAmount.token.decimals),
+            ),
+          })),
+        })
+
+        await writeContract(publicClient, walletClient, {
+          address:
+            CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].OrderCanceler,
+          abi: OrderCanceler__factory.abi,
+          functionName: 'cancel',
+          args: [cancelParamsList],
+        })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries(['limit-balances']),
+          queryClient.invalidateQueries(['open-orders']),
+        ])
+        setConfirmation(undefined)
+      }
+    },
+    [
+      publicClient,
+      queryClient,
+      selectedChain.id,
+      setConfirmation,
+      walletClient,
+    ],
   )
 
   return (
@@ -292,6 +352,7 @@ export const LimitContractProvider = ({
         limit,
         claim,
         claimAll,
+        cancelAll,
       }}
     >
       {children}
