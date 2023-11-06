@@ -23,8 +23,8 @@ export class GeometricPriceBook implements PriceBook {
   private readonly _r15: bigint
   private readonly _r16: bigint
 
-  private readonly maxPriceIndex: bigint
-  private readonly priceUpperBound: bigint
+  public readonly maxPriceIndex: bigint
+  public readonly priceUpperBound: bigint
 
   constructor(a_: bigint, r_: bigint | null) {
     if (!r_) {

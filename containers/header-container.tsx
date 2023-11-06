@@ -1,21 +1,15 @@
 import React from 'react'
 import Link from 'next/link'
-import { useAccount, useSwitchNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { useChainContext } from '../contexts/chain-context'
 import ChainSelector from '../components/selector/chain-selector'
 import { WalletSelector } from '../components/selector/wallet-selector'
 import { supportChains } from '../constants/chain'
-import { toChain } from '../model/chain'
 
 const HeaderContainer = () => {
   const { selectedChain, setSelectedChain } = useChainContext()
   const { address, status } = useAccount()
-  const { switchNetwork } = useSwitchNetwork({
-    onSuccess(data) {
-      setSelectedChain(toChain(supportChains, data))
-    },
-  })
 
   return (
     <div className="flex items-center justify-between h-12 md:h-16 py-0 px-4">
@@ -34,7 +28,6 @@ const HeaderContainer = () => {
           chain={selectedChain}
           setChain={setSelectedChain}
           chains={supportChains}
-          switchNetwork={switchNetwork}
         />
         <WalletSelector address={address} status={status} />
       </div>
