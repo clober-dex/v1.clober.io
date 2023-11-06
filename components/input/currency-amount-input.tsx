@@ -104,7 +104,6 @@ const CurrencyAmountInput = ({
               <div className="text-white">
                 {toPlacesString(
                   formatUnits(availableAmount, currency.decimals, price),
-                  currency.decimals,
                 )}
               </div>
               <button className="text-blue-500" onClick={onMaxClick}>
