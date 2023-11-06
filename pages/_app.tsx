@@ -13,10 +13,11 @@ import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { identify } from '@web3analytic/funnel-sdk'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 
 import HeaderContainer from '../containers/header-container'
 import Footer from '../components/footer'
-import { ChainProvider } from '../contexts/chain-context'
+import { ChainProvider, useChainContext } from '../contexts/chain-context'
 import { MarketProvider } from '../contexts/limit/market-context'
 import { supportChains } from '../constants/chain'
 import { toWagmiChain } from '../model/chain'
@@ -77,11 +78,11 @@ const LimitProvidersWrapper = ({ children }: React.PropsWithChildren) => {
   return (
     <MarketProvider>
       <OpenOrderProvider>
-        <LimitProvider>
-          <LimitCurrencyProvider>
-            <LimitContractProvider>{children}</LimitContractProvider>
-          </LimitCurrencyProvider>
-        </LimitProvider>
+        <LimitCurrencyProvider>
+          <LimitContractProvider>
+            <LimitProvider>{children}</LimitProvider>
+          </LimitContractProvider>
+        </LimitCurrencyProvider>
       </OpenOrderProvider>
     </MarketProvider>
   )
@@ -89,11 +90,48 @@ const LimitProvidersWrapper = ({ children }: React.PropsWithChildren) => {
 
 const SwapProvidersWrapper = ({ children }: React.PropsWithChildren) => {
   return (
-    <SwapProvider>
-      <SwapCurrencyProvider>
-        <SwapContractProvider>{children}</SwapContractProvider>
-      </SwapCurrencyProvider>
-    </SwapProvider>
+    <SwapCurrencyProvider>
+      <SwapContractProvider>
+        <SwapProvider>{children}</SwapProvider>
+      </SwapContractProvider>
+    </SwapCurrencyProvider>
+  )
+}
+
+const MainComponentWrapper = ({ children }: React.PropsWithChildren) => {
+  const router = useRouter()
+  const { selectedChain } = useChainContext()
+  return (
+    <div className="flex flex-1 relative justify-center bg-gray-950">
+      <div className="flex w-full flex-col items-center gap-4 sm:gap-6 p-4 pb-0">
+        <div className={`relative flex gap-4 mt-14`}>
+          <button
+            className="flex font-bold items-center justify-center text-base sm:text-2xl w-16 sm:w-[120px] bg-transparent text-gray-500 disabled:text-white border-0 rounded-none p-2 border-b-4 border-b-transparent border-t-4 border-t-transparent disabled:border-b-white"
+            disabled={router.pathname === '/limit'}
+            onClick={() =>
+              router.replace(`/limit?chain=${selectedChain.id}`, undefined, {
+                shallow: true,
+              })
+            }
+          >
+            Limit
+          </button>
+          <button
+            className="flex font-bold items-center justify-center text-base sm:text-2xl w-16 sm:w-[120px] bg-transparent text-gray-500 disabled:text-white border-0 rounded-none p-2 border-b-4 border-b-transparent border-t-4 border-t-transparent disabled:border-b-white"
+            disabled={router.pathname === '/swap'}
+            onClick={() =>
+              router.replace(`/swap?chain=${selectedChain.id}`, undefined, {
+                shallow: true,
+              })
+            }
+          >
+            Swap
+          </button>
+        </div>
+        {children}
+      </div>
+      <div className="absolute w-full h-[30%] bottom-0 bg-gradient-to-t from-blue-500 to-transparent opacity-[15%] pointer-events-none" />
+    </div>
   )
 }
 
@@ -115,7 +153,9 @@ function App({ Component, pageProps }: AppProps) {
                 <SwapProvidersWrapper>
                   <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
                     <HeaderContainer />
-                    <Component {...pageProps} />
+                    <MainComponentWrapper>
+                      <Component {...pageProps} />
+                    </MainComponentWrapper>
                     <Footer />
                   </div>
                 </SwapProvidersWrapper>

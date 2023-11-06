@@ -33,6 +33,9 @@ export const supportChains: Chain[] =
         },
       ]
 
+export const findSupportChain = (chainId: number): Chain | undefined =>
+  supportChains.find((chain) => chain.id === chainId)
+
 export enum CHAIN_IDS {
   ARBITRUM = 42161,
   POLYGON_ZKEVM = 1101,
