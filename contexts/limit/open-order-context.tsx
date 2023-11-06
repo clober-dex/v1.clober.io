@@ -1,16 +1,20 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useAccount, useQuery } from 'wagmi'
+import { getAddress } from 'viem'
 
 import { OpenOrder } from '../../model/open-order'
 import { fetchOpenOrders } from '../../apis/open-orders'
 import { useChainContext } from '../chain-context'
+import { Balances } from '../../model/balances'
 
 type OpenOrderContext = {
   openOrders: OpenOrder[]
+  claimable: Balances
 }
 
 const Context = React.createContext<OpenOrderContext>({
   openOrders: [],
+  claimable: {},
 })
 
 export const OpenOrderProvider = ({
@@ -28,11 +32,22 @@ export const OpenOrderProvider = ({
       initialData: [],
     },
   )
+  const claimable = useMemo(
+    () =>
+      openOrders.reduce((acc, openOrder) => {
+        acc[getAddress(openOrder.inputToken.address)] =
+          (acc[getAddress(openOrder.inputToken.address)] ?? 0n) +
+          openOrder.claimableAmount
+        return acc
+      }, {} as Balances),
+    [openOrders],
+  )
 
   return (
     <Context.Provider
       value={{
         openOrders,
+        claimable,
       }}
     >
       {children}

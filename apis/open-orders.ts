@@ -4,7 +4,6 @@ import { getBuiltGraphSDK } from '../.graphclient'
 import { CHAIN_IDS } from '../constants/chain'
 import { SUBGRAPH_URL } from '../constants/subgraph-url'
 import { OpenOrder } from '../model/open-order'
-import { formatDate } from '../utils/date'
 
 const { getOpenOrders } = getBuiltGraphSDK()
 
@@ -42,11 +41,10 @@ export async function fetchOpenOrders(
       },
       isBid: openOrder.isBid,
       txHash: openOrder.txHash as `0x${string}`,
-      timestamp: formatDate(new Date(Number(openOrder.createdAt) * 1000)),
       price: BigInt(openOrder.price),
-      filledAmount: BigInt(openOrder.baseFilledAmount),
-      amount: BigInt(openOrder.baseAmount),
-      claimableAmount: BigInt(openOrder.baseClaimedAmount),
+      baseFilledAmount: BigInt(openOrder.baseFilledAmount),
+      baseAmount: BigInt(openOrder.baseAmount),
+      claimableAmount: BigInt(openOrder.claimableAmount),
     }
   })
 }

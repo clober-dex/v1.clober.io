@@ -30,8 +30,8 @@ export const Bid: Story = {
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
       price: 1600000000000000000000n,
-      filledAmount: 120000000000000000n,
-      amount: 1000000000000000000n,
+      baseFilledAmount: 120000000000000000n,
+      baseAmount: 1000000000000000000n,
       claimableAmount: 700000000000000000n,
     },
   },
@@ -46,8 +46,8 @@ export const Ask: Story = {
       txHash:
         '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
       price: 1600000000000000000000n,
-      filledAmount: 1000000000000000000n,
-      amount: 1000000000000000000n,
+      baseFilledAmount: 1000000000000000000n,
+      baseAmount: 1000000000000000000n,
       claimableAmount: 1000000000000000000n,
     },
   },

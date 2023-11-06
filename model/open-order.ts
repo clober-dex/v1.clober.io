@@ -6,7 +6,7 @@ export type OpenOrder = {
   isBid: boolean
   txHash: `0x${string}`
   price: bigint
-  filledAmount: bigint
-  amount: bigint
+  baseFilledAmount: bigint
+  baseAmount: bigint
   claimableAmount: bigint
 }
