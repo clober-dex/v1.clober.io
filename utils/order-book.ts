@@ -55,10 +55,7 @@ export function parseDepth(
         return {
           price: formatUnits(x.price, PRICE_DECIMAL),
           size: new BigNumber(
-            formatUnits(
-              x.baseAmount,
-              isBid ? market.quoteToken.decimals : market.baseToken.decimals,
-            ),
+            formatUnits(x.baseAmount, market.baseToken.decimals),
           ),
         }
       })
@@ -86,10 +83,7 @@ export function parseDepth(
   ).map((x) => {
     return {
       price: x.price,
-      size: toPlacesString(
-        x.size,
-        isBid ? market.quoteToken.decimals : market.baseToken.decimals,
-      ),
+      size: toPlacesString(x.size, market.baseToken.decimals),
     }
   })
 }
