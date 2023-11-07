@@ -9,6 +9,7 @@ export type OpenOrder = {
   priceIndex: number
   orderIndex: bigint
   txHash: `0x${string}`
+  txUrl: string
   price: bigint
   baseFilledAmount: bigint
   quoteAmount: bigint
