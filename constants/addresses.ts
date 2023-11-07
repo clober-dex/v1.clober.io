@@ -6,6 +6,11 @@ export const CONTRACT_ADDRESSES: {
     OrderCanceler: `0x${string}`
   }
 } = {
+  [CHAIN_IDS.POLYGON]: {
+    MarketRouter: '0xB4be941716d4d27147D5A4d82801897877CA5906' as `0x${string}`,
+    OrderCanceler:
+      '0xFc03c0bad134A0c0151db9358AD697c5dAF611Ee' as `0x${string}`,
+  },
   [CHAIN_IDS.ARBITRUM]: {
     MarketRouter: '0xB4be941716d4d27147D5A4d82801897877CA5906' as `0x${string}`,
     OrderCanceler:
