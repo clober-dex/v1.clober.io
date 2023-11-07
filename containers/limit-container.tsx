@@ -369,7 +369,7 @@ export const LimitContainer = () => {
                 claimParamsList,
               )
             }}
-            text={`Claim All (${
+            text={`Claim (${
               openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
                 .length
             })`}
@@ -397,7 +397,7 @@ export const LimitContainer = () => {
                 cancelParamsList,
               )
             }}
-            text={`Cancel All (${openOrders.length})`}
+            text={`Cancel (${openOrders.length})`}
           />
         </div>
       </div>
