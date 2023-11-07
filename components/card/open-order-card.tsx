@@ -28,11 +28,7 @@ export const OpenOrderCard = ({
         <div className="font-bold flex flex-row items-center gap-1">
           {openOrder.inputToken.symbol} &#x2192;{'  '}
           {openOrder.outputToken.symbol}
-          <a
-            target="_blank"
-            href="https://etherscan.io/tx/0x84a09de087e610fbba59440ea57f7166b3a7178260c485ab8315dd51ad197475"
-            rel="noreferrer"
-          >
+          <a target="_blank" href={openOrder.txUrl} rel="noreferrer">
             <OutlinkSvg className="w-3 h-3" />
           </a>
         </div>
@@ -47,31 +43,22 @@ export const OpenOrderCard = ({
       <div className="flex flex-col text-xs sm:text-sm">
         <div className="flex flex-col align-baseline justify-between gap-2">
           <div className="flex flex-row align-baseline justify-between">
-            <label className="text-gray-200">You sell</label>
+            <label className="text-gray-200">Price</label>
+            <p className="text-white">
+              {toPlacesString(formatUnits(openOrder.price, PRICE_DECIMAL))}
+            </p>
+          </div>
+          <div className="flex flex-row align-baseline justify-between">
+            <label className="text-gray-200">Open amount</label>
             <p className="text-white">
               {toPlacesString(
                 formatUnits(
                   openOrder.baseAmount,
-                  openOrder.inputToken.decimals,
+                  openOrder.isBid
+                    ? openOrder.outputToken.decimals
+                    : openOrder.inputToken.decimals,
                 ),
               )}
-            </p>
-          </div>
-          <div className="flex flex-row align-baseline justify-between">
-            <label className="text-gray-200">You buy</label>
-            <p className="text-white">
-              {toPlacesString(
-                formatUnits(
-                  openOrder.baseAmount * openOrder.price,
-                  openOrder.outputToken.decimals + PRICE_DECIMAL,
-                ),
-              )}
-            </p>
-          </div>
-          <div className="flex flex-row align-baseline justify-between">
-            <label className="text-gray-200">Price</label>
-            <p className="text-white">
-              {toPlacesString(formatUnits(openOrder.price, PRICE_DECIMAL))}
             </p>
           </div>
           <div className="flex flex-row align-baseline justify-between">

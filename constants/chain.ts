@@ -1,5 +1,4 @@
-import { polygonZkEvm } from 'wagmi/chains'
-import { arbitrum } from '@wagmi/chains'
+import { arbitrum, polygon, polygonZkEvm } from '@wagmi/chains'
 
 import { Chain } from '../model/chain'
 
@@ -16,24 +15,34 @@ export const supportChains: Chain[] =
         },
         {
           ...polygonZkEvm,
-          defaultGasPrice: 1000000n,
+          defaultGasPrice: 0n,
+          expireIn: 240,
+        },
+        {
+          ...polygon,
+          defaultGasPrice: 0n,
           expireIn: 240,
         },
         {
           ...arbitrum,
-          defaultGasPrice: 1000000n,
-          expireIn: 60,
+          defaultGasPrice: 0n,
+          expireIn: 240,
         },
       ]
     : [
         {
-          ...arbitrum,
-          defaultGasPrice: 1000000n,
-          expireIn: 60,
+          ...polygonZkEvm,
+          defaultGasPrice: 0n,
+          expireIn: 240,
         },
         {
-          ...polygonZkEvm,
-          defaultGasPrice: 1000000n,
+          ...polygon,
+          defaultGasPrice: 0n,
+          expireIn: 240,
+        },
+        {
+          ...arbitrum,
+          defaultGasPrice: 0n,
           expireIn: 240,
         },
       ]
@@ -42,6 +51,7 @@ export const findSupportChain = (chainId: number): Chain | undefined =>
   supportChains.find((chain) => chain.id === chainId)
 
 export enum CHAIN_IDS {
+  POLYGON = 137,
   ARBITRUM = 42161,
   POLYGON_ZKEVM = 1101,
   COUPON_FINANCE_CHAIN = 7777,

@@ -1,9 +1,10 @@
 import { getAddress } from 'viem'
 
 import { getBuiltGraphSDK } from '../.graphclient'
-import { CHAIN_IDS } from '../constants/chain'
+import { CHAIN_IDS, findSupportChain } from '../constants/chain'
 import { SUBGRAPH_URL } from '../constants/subgraph-url'
 import { OpenOrder } from '../model/open-order'
+import { Chain } from '../model/chain'
 
 const { getOpenOrders } = getBuiltGraphSDK()
 
@@ -19,6 +20,7 @@ export async function fetchOpenOrders(
       url: SUBGRAPH_URL[chainId],
     },
   )
+  const chain = findSupportChain(chainId) as Chain
   return openOrders.map((openOrder) => {
     const inputToken = openOrder.isBid
       ? openOrder.market.quoteToken
@@ -45,8 +47,13 @@ export async function fetchOpenOrders(
       priceIndex: Number(openOrder.priceIndex),
       orderIndex: BigInt(openOrder.orderIndex),
       txHash: openOrder.txHash as `0x${string}`,
+      txUrl: chain.blockExplorers
+        ? `${chain.blockExplorers.default.url}/tx/${openOrder.txHash}`
+        : '',
       price: BigInt(openOrder.price),
       baseFilledAmount: BigInt(openOrder.baseFilledAmount),
+      quoteAmount:
+        BigInt(openOrder.rawAmount) * BigInt(openOrder.market.quoteUnit),
       baseAmount: BigInt(openOrder.baseAmount),
       claimableAmount: BigInt(openOrder.claimableAmount),
     }

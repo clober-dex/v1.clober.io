@@ -341,7 +341,7 @@ export const LimitContainer = () => {
           )}
         </div>
       </div>
-      <div className="flex py-4 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
+      <div className="flex pb-4 pt-8 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
         <div className="flex gap-6">
           <div
             className={`m-0 p-0 bg-transparent text-white ${textStyles.body2}`}
@@ -369,7 +369,7 @@ export const LimitContainer = () => {
                 claimParamsList,
               )
             }}
-            text={`Claim All (${
+            text={`Claim (${
               openOrders.filter((openOrder) => openOrder.claimableAmount > 0n)
                 .length
             })`}
@@ -383,7 +383,9 @@ export const LimitContainer = () => {
                   ...acc,
                   [getAddress(openOrder.inputToken.address)]:
                     (acc[getAddress(openOrder.inputToken.address)] ?? 0n) +
-                    openOrder.baseAmount,
+                    (openOrder.isBid
+                      ? openOrder.quoteAmount
+                      : openOrder.baseAmount),
                 }),
                 {} as Balances,
               )
@@ -395,7 +397,7 @@ export const LimitContainer = () => {
                 cancelParamsList,
               )
             }}
-            text={`Cancel All (${openOrders.length})`}
+            text={`Cancel (${openOrders.length})`}
           />
         </div>
       </div>
@@ -437,7 +439,9 @@ export const LimitContainer = () => {
                   await cancel(
                     [
                       {
-                        amount: openOrder.baseAmount,
+                        amount: openOrder.isBid
+                          ? openOrder.quoteAmount
+                          : openOrder.baseAmount,
                         token: openOrder.inputToken,
                       },
                     ],

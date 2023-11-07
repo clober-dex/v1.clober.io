@@ -1,28 +1,30 @@
 query getOpenOrders($userAddress: String!) {
-    openOrders(where: { user: $userAddress }) {
-        nftId
-        market {
-            id
-            quoteToken {
-                id
-                name
-                symbol
-                decimals
-            }
-            baseToken {
-                id
-                name
-                symbol
-                decimals
-            }
-        }
-        price
-        isBid
-        priceIndex
-        orderIndex
-        baseAmount
-        baseFilledAmount
-        claimableAmount
-        txHash
+  openOrders(where: { user: $userAddress }) {
+    nftId
+    market {
+      id
+      quoteUnit
+      quoteToken {
+        id
+        name
+        symbol
+        decimals
+      }
+      baseToken {
+        id
+        name
+        symbol
+        decimals
+      }
     }
+    price
+    isBid
+    priceIndex
+    orderIndex
+    rawAmount
+    baseAmount
+    baseFilledAmount
+    claimableAmount
+    txHash
+  }
 }
