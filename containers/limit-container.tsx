@@ -383,7 +383,9 @@ export const LimitContainer = () => {
                   ...acc,
                   [getAddress(openOrder.inputToken.address)]:
                     (acc[getAddress(openOrder.inputToken.address)] ?? 0n) +
-                    openOrder.baseAmount,
+                    (openOrder.isBid
+                      ? openOrder.quoteAmount
+                      : openOrder.baseAmount),
                 }),
                 {} as Balances,
               )
@@ -437,7 +439,9 @@ export const LimitContainer = () => {
                   await cancel(
                     [
                       {
-                        amount: openOrder.baseAmount,
+                        amount: openOrder.isBid
+                          ? openOrder.quoteAmount
+                          : openOrder.baseAmount,
                         token: openOrder.inputToken,
                       },
                     ],

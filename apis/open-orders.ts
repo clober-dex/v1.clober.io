@@ -47,6 +47,8 @@ export async function fetchOpenOrders(
       txHash: openOrder.txHash as `0x${string}`,
       price: BigInt(openOrder.price),
       baseFilledAmount: BigInt(openOrder.baseFilledAmount),
+      quoteAmount:
+        BigInt(openOrder.rawAmount) * BigInt(openOrder.market.quoteUnit),
       baseAmount: BigInt(openOrder.baseAmount),
       claimableAmount: BigInt(openOrder.claimableAmount),
     }

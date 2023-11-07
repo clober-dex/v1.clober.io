@@ -11,6 +11,7 @@ export type OpenOrder = {
   txHash: `0x${string}`
   price: bigint
   baseFilledAmount: bigint
+  quoteAmount: bigint
   baseAmount: bigint
   claimableAmount: bigint
 }
