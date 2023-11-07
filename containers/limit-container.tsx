@@ -414,7 +414,7 @@ export const LimitContainer = () => {
                     [
                       {
                         amount: openOrder.claimableAmount,
-                        token: openOrder.inputToken,
+                        token: openOrder.outputToken,
                       },
                     ],
                     [

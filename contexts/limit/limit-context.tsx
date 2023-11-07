@@ -99,10 +99,10 @@ export const LimitProvider = ({ children }: React.PropsWithChildren<{}>) => {
             const minPrice = min(
               selectedMarket.bids.sort(
                 (a, b) => Number(b.priceIndex) - Number(a.priceIndex),
-              )[0]?.price ?? 0n,
+              )[0]?.price ?? 2n ** 256n - 1n,
               selectedMarket.asks.sort(
                 (a, b) => Number(a.priceIndex) - Number(b.priceIndex),
-              )[0]?.price ?? 0n,
+              )[0]?.price ?? 2n ** 256n - 1n,
             )
             const decimalPlaces = getPriceDecimals(
               minPrice,

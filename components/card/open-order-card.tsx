@@ -19,6 +19,9 @@ export const OpenOrderCard = ({
 }) => {
   const filledRatio =
     (Number(openOrder.baseFilledAmount) / Number(openOrder.baseAmount)) * 100
+  const baseCurrencyDecimals = openOrder.isBid
+    ? openOrder.outputToken.decimals
+    : openOrder.inputToken.decimals
   return (
     <div
       className="flex flex-col shadow border border-solid border-gray-800 lg:w-[310px] gap-4 bg-gray-900 rounded-2xl p-4"
@@ -52,12 +55,7 @@ export const OpenOrderCard = ({
             <label className="text-gray-200">Open amount</label>
             <p className="text-white">
               {toPlacesString(
-                formatUnits(
-                  openOrder.baseAmount,
-                  openOrder.isBid
-                    ? openOrder.outputToken.decimals
-                    : openOrder.inputToken.decimals,
-                ),
+                formatUnits(openOrder.baseAmount, baseCurrencyDecimals),
               )}
             </p>
           </div>
@@ -68,10 +66,7 @@ export const OpenOrderCard = ({
               <p className="text-gray-400">
                 (
                 {toPlacesString(
-                  formatUnits(
-                    openOrder.baseFilledAmount,
-                    openOrder.inputToken.decimals,
-                  ),
+                  formatUnits(openOrder.baseFilledAmount, baseCurrencyDecimals),
                 )}
                 )
               </p>
@@ -91,7 +86,7 @@ export const OpenOrderCard = ({
               {toPlacesString(
                 formatUnits(
                   openOrder.claimableAmount,
-                  openOrder.inputToken.decimals,
+                  openOrder.outputToken.decimals,
                 ),
               )}
             </p>
