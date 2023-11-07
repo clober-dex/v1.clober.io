@@ -341,7 +341,7 @@ export const LimitContainer = () => {
           )}
         </div>
       </div>
-      <div className="flex py-4 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
+      <div className="flex pb-4 pt-8 px-1 sm:border-solid border-b-gray-800 border-b-[1.5px]">
         <div className="flex gap-6">
           <div
             className={`m-0 p-0 bg-transparent text-white ${textStyles.body2}`}
