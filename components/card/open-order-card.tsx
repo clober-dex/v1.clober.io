@@ -43,6 +43,12 @@ export const OpenOrderCard = ({
       <div className="flex flex-col text-xs sm:text-sm">
         <div className="flex flex-col align-baseline justify-between gap-2">
           <div className="flex flex-row align-baseline justify-between">
+            <label className="text-gray-200">Price</label>
+            <p className="text-white">
+              {toPlacesString(formatUnits(openOrder.price, PRICE_DECIMAL))}
+            </p>
+          </div>
+          <div className="flex flex-row align-baseline justify-between">
             <label className="text-gray-200">Open amount</label>
             <p className="text-white">
               {toPlacesString(
@@ -52,33 +58,7 @@ export const OpenOrderCard = ({
                     ? openOrder.outputToken.decimals
                     : openOrder.inputToken.decimals,
                 ),
-              )}{' '}
-              {openOrder.isBid
-                ? openOrder.outputToken.symbol
-                : openOrder.inputToken.symbol}
-            </p>
-          </div>
-          <div className="flex flex-row align-baseline justify-between">
-            <label className="text-gray-200">You paid</label>
-            <p className="text-white">
-              {toPlacesString(
-                openOrder.isBid
-                  ? formatUnits(
-                      openOrder.quoteAmount,
-                      openOrder.inputToken.decimals,
-                    )
-                  : formatUnits(
-                      openOrder.baseAmount,
-                      openOrder.inputToken.decimals,
-                    ),
-              )}{' '}
-              {openOrder.inputToken.symbol}
-            </p>
-          </div>
-          <div className="flex flex-row align-baseline justify-between">
-            <label className="text-gray-200">Price</label>
-            <p className="text-white">
-              {toPlacesString(formatUnits(openOrder.price, PRICE_DECIMAL))}
+              )}
             </p>
           </div>
           <div className="flex flex-row align-baseline justify-between">
