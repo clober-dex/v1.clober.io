@@ -116,8 +116,8 @@ export const LimitContainer = () => {
 
     setPriceInput(
       isBid
-        ? toPlacesString(lowestAskPrice || highestBidPrice || '0')
-        : toPlacesString(highestBidPrice || lowestAskPrice || '0'),
+        ? toPlacesString(lowestAskPrice || highestBidPrice || '1')
+        : toPlacesString(highestBidPrice || lowestAskPrice || '1'),
     )
   }, [highestBidPrice, isBid, lowestAskPrice, setPriceInput])
 
