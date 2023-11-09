@@ -21,5 +21,5 @@ export const getDecimalPlaces = (
 
 export const toPlacesString = (number: BigNumber.Value, places: number = 4) => {
   const value = new BigNumber(number)
-  return value.toFixed(getDecimalPlaces(number, places))
+  return value.toFixed(Number(getDecimalPlaces(number, places)))
 }
