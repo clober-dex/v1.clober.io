@@ -17,10 +17,13 @@ export function calculateOutputCurrencyAmountString(
   priceInput: string,
   outputCurrencyDecimals: number,
 ) {
+  const outputCurrencyAmount = isBid
+    ? new BigNumber(inputCurrencyAmount).div(priceInput)
+    : new BigNumber(inputCurrencyAmount).times(priceInput)
   return toPlacesString(
-    isBid
-      ? new BigNumber(inputCurrencyAmount).div(priceInput)
-      : new BigNumber(inputCurrencyAmount).times(priceInput),
+    outputCurrencyAmount.isNaN() || !outputCurrencyAmount.isFinite()
+      ? new BigNumber(0)
+      : outputCurrencyAmount,
     outputCurrencyDecimals,
   )
 }
