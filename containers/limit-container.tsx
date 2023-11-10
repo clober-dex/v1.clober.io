@@ -284,9 +284,11 @@ export const LimitContainer = () => {
               setInputCurrencyAmount={setInputCurrencyAmount}
               availableInputCurrencyBalance={
                 inputCurrency
-                  ? (balances[inputCurrency.address] ?? 0n) +
-                    (claimable[inputCurrency.address] ?? 0n)
-                  : 0n
+                  ? balances[inputCurrency.address] ?? 0n
+                  : // +
+                    // TODO fix it
+                    // (claimable[inputCurrency.address] ?? 0n)
+                    0n
               }
               outputCurrency={outputCurrency}
               setOutputCurrency={setOutputCurrency}
@@ -294,9 +296,11 @@ export const LimitContainer = () => {
               setOutputCurrencyAmount={setOutputCurrencyAmount}
               availableOutputCurrencyBalance={
                 outputCurrency
-                  ? (balances[outputCurrency.address] ?? 0n) +
-                    (claimable[outputCurrency.address] ?? 0n)
-                  : 0n
+                  ? balances[outputCurrency.address] ?? 0n
+                  : // +
+                    // TODO fix it
+                    // (claimable[outputCurrency.address] ?? 0n)
+                    0n
               }
               swapInputCurrencyAndOutputCurrency={() => {
                 setIsBid((prevState) =>
