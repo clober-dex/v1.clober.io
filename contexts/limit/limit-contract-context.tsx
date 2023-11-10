@@ -79,7 +79,9 @@ export const LimitContractProvider = ({
       const marketRouter =
         CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].MarketRouter
 
-      const { value, useNative, withClaim } = calculateValue(
+      // TODO fix it
+      const withClaim = false
+      const { value, useNative } = calculateValue(
         inputCurrency,
         amountIn,
         claimBounty,
