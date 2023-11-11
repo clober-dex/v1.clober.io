@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { textStyles } from '../../themes/text-styles'
 import { TriangleDownRedSvg } from '../svg/triangle-down-red-svg'
 
 export const WrongNetworkButton = ({
@@ -10,11 +9,11 @@ export const WrongNetworkButton = ({
 }) => {
   return (
     <button
-      className="flex items-center justify-center gap-2 md:justify-start w-8 rounded md:w-full p-0 md:py-[6px] md:px-[8px] cursor-pointer h-8 bg-gray-800 md:bg-gray-950 hover:bg-gray-600 active::bg-gray-600"
+      className="flex items-center font-bold h-8 py-0 px-3 md:px-4 rounded bg-gray-100 text-white disabled:text-gray-500 text-xs sm:text-sm"
       onClick={() => openChainModal && openChainModal()}
     >
-      <span className={`text-red-500 inline-block ${textStyles.body3Bold}`}>
-        Wrong Network
+      <span className="text-red-500 inline-block">
+        <span className="hidden sm:inline">Wrong</span> Network
       </span>
       <TriangleDownRedSvg />
     </button>
