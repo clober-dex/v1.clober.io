@@ -10,7 +10,6 @@ import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { identify } from '@web3analytic/funnel-sdk'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -32,10 +31,7 @@ import { SwapContractProvider } from '../contexts/swap/swap-contract-context'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   supportChains.map((chain) => toWagmiChain(chain)),
-  [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || '' }),
-    publicProvider(),
-  ],
+  [publicProvider()],
 )
 
 const { connectors } = getDefaultWallets({
