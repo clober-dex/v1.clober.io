@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
-import '../../styles/globals.css'
-import { arbitrum, base, fantom, mainnet, polygon } from '@wagmi/chains'
+import { arbitrum, base, fantom, mainnet, polygon } from 'viem/chains'
 
 import ChainSelector from './chain-selector'
+import '../../styles/globals.css'
 
 export default {
   title: 'ChainSelector',

@@ -1,9 +1,10 @@
 import React from 'react'
 import { Meta, StoryObj } from '@storybook/react'
-import '../../styles/globals.css'
-import { mainnet, polygon, arbitrum } from '@wagmi/chains'
+import { arbitrum, mainnet, polygon } from 'viem/chains'
 
 import ChainIcon from './chain-icon'
+
+import '../../styles/globals.css'
 
 export default {
   title: 'ChainIcon',

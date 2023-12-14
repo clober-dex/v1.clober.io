@@ -1,4 +1,4 @@
-import { arbitrum, polygon, polygonZkEvm } from '@wagmi/chains'
+import { arbitrum, polygon, polygonZkEvm } from 'viem/chains'
 
 import { Chain } from '../model/chain'
 
