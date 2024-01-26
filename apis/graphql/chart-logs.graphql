@@ -1,0 +1,20 @@
+query getChartLogs($first: Int!, $skip: Int!, $marketAddress: String!, $intervalType: String!, $from: BigInt!, $to: BigInt!) {
+  chartLogs(
+    first: $first,
+    skip: $skip,
+    orderBy: timestamp,
+    orderDirection: desc
+    where: {
+      market: $marketAddress,
+      intervalType: $intervalType,
+      timestamp_gte: $from,
+      timestamp_lte: $to,
+    }) {
+    timestamp
+    open
+    high
+    low
+    close
+    baseVolume
+  }
+}
