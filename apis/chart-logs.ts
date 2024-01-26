@@ -43,8 +43,8 @@ export async function fetchChartLogs(
   chainId: CHAIN_IDS,
   marketAddress: `0x${string}`,
   intervalType: CHART_LOG_INTERVALS,
-  from: bigint,
-  to: bigint,
+  from: number,
+  to: number,
 ): Promise<ChartLog[]> {
   const chartLogsBetweenFromAndTo: ChartLog[] = []
   let skip = 0
@@ -66,7 +66,7 @@ export async function fetchChartLogs(
     chartLogsBetweenFromAndTo.push(
       ...chartLogs.map((chartLog) => {
         return {
-          timestamp: BigInt(chartLog.timestamp),
+          timestamp: Number(chartLog.timestamp),
           open: String(chartLog.open),
           high: String(chartLog.high),
           low: String(chartLog.low),
@@ -89,8 +89,8 @@ export async function fetchChartLogs(
       skip: 0,
       marketAddress: marketAddress.toLowerCase(),
       intervalType,
-      from: 0n,
-      to: from - 1n,
+      from: 0,
+      to: from - 1,
     },
     {
       url: SUBGRAPH_URL[chainId],
@@ -99,7 +99,7 @@ export async function fetchChartLogs(
   let previousChartLog =
     chartLogsBeforeFrom[0] !== undefined
       ? {
-          timestamp: BigInt(chartLogsBeforeFrom[0].timestamp),
+          timestamp: Number(chartLogsBeforeFrom[0].timestamp),
           open: String(chartLogsBeforeFrom[0].open),
           high: String(chartLogsBeforeFrom[0].high),
           low: String(chartLogsBeforeFrom[0].low),
@@ -116,11 +116,10 @@ export async function fetchChartLogs(
         }
   const intervalInNumber = CHART_LOG_INTERVAL_TIMESTAMP[intervalType]
   const fromTimestampForAcc =
-    Math.floor(Number(from) / intervalInNumber) * intervalInNumber
-  const toTimestampForAcc =
-    Math.floor(Number(to) / intervalInNumber) * intervalInNumber
+    Math.floor(from / intervalInNumber) * intervalInNumber
+  const toTimestampForAcc = Math.floor(to / intervalInNumber) * intervalInNumber
 
-  let timestampForAcc = BigInt(fromTimestampForAcc)
+  let timestampForAcc = fromTimestampForAcc
   let result: ChartLog[] = []
   while (timestampForAcc <= toTimestampForAcc) {
     const currentChartLog = chartLogsBetweenFromAndTo.find(
@@ -154,7 +153,7 @@ export async function fetchChartLogs(
       ]
     }
 
-    timestampForAcc += BigInt(intervalInNumber)
+    timestampForAcc += intervalInNumber
   }
 
   return result

@@ -1,6 +1,6 @@
 export type ChartLog = {
   // in seconds
-  timestamp: bigint
+  timestamp: number
   open: string
   high: string
   low: string
