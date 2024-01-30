@@ -18,3 +18,20 @@ query getChartLogs($first: Int!, $skip: Int!, $marketAddress: String!, $interval
     baseVolume
   }
 }
+
+query getLatestChartLog($marketAddress: String!) {
+  chartLogs(
+    first: 1,
+    orderBy: timestamp,
+    orderDirection: desc
+    where: {
+      market: $marketAddress,
+    }) {
+    timestamp
+    open
+    high
+    low
+    close
+    baseVolume
+  }
+}

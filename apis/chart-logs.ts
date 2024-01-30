@@ -3,7 +3,7 @@ import { CHAIN_IDS } from '../constants/chain'
 import { SUBGRAPH_URL } from '../constants/subgraph-url'
 import { ChartLog } from '../model/chart-log'
 
-const { getChartLogs } = getBuiltGraphSDK()
+const { getChartLogs, getLatestChartLog } = getBuiltGraphSDK()
 
 export enum CHART_LOG_INTERVALS {
   oneMinute = '1m',
@@ -38,6 +38,37 @@ export const CHART_LOG_INTERVAL_TIMESTAMP: {
 }
 
 const PAGE_SIZE = 1000
+
+export async function fetchLatestChartLog(
+  chainId: CHAIN_IDS,
+  marketAddress: `0x${string}`,
+): Promise<ChartLog> {
+  const { chartLogs } = await getLatestChartLog(
+    {
+      marketAddress: marketAddress.toLowerCase(),
+    },
+    {
+      url: SUBGRAPH_URL[chainId],
+    },
+  )
+  return chartLogs.length > 0
+    ? {
+        timestamp: Number(chartLogs[0].timestamp),
+        open: String(chartLogs[0].open),
+        high: String(chartLogs[0].high),
+        low: String(chartLogs[0].low),
+        close: String(chartLogs[0].close),
+        baseVolume: String(chartLogs[0].baseVolume),
+      }
+    : {
+        timestamp: Number(0),
+        open: '0',
+        high: '0',
+        low: '0',
+        close: '0',
+        baseVolume: '0',
+      }
+}
 
 export async function fetchChartLogs(
   chainId: CHAIN_IDS,
