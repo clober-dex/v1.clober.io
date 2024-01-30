@@ -11,7 +11,7 @@ type ChainContext = {
 }
 
 const Context = React.createContext<ChainContext>({
-  selectedChain: supportChains[0],
+  selectedChain: supportChains.find((chain) => chain.id === 42161)!,
   setSelectedChain: (_) => _,
 })
 

@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
-  ChartingLibraryWidgetOptions,
   CustomTimezones,
   IChartingLibraryWidget,
   LanguageCode,
   ResolutionString,
   widget,
 } from '../public/static/charting_library'
-
-export type ChartProps = {
-  symbol: ChartingLibraryWidgetOptions['symbol']
-} & React.HTMLAttributes<HTMLDivElement>
+import DataFeed from '../utils/datafeed'
+import { CHAIN_IDS } from '../constants/chain'
+import { Market } from '../model/market'
+import { SUPPORTED_INTERVALS } from '../utils/chart'
 
 function getLanguageFromURL(): LanguageCode | null {
   const regex = new RegExp('[\\?&]lang=([^&#]*)')
@@ -21,14 +20,13 @@ function getLanguageFromURL(): LanguageCode | null {
     : (decodeURIComponent(results[1].replace(/\+/g, ' ')) as LanguageCode)
 }
 
-const supportedIntervals = [
-  ['60', '1H'],
-  ['1D', '1D'],
-  ['1W', '1W'],
-  ['1M', '1M'],
-]
-
-export const TvChartContainer = ({ symbol, ...props }: ChartProps) => {
+export const TvChartContainer = ({
+  chainId,
+  market,
+}: {
+  chainId: CHAIN_IDS
+  market: Market
+}) => {
   const [mounted, setMounted] = useState(false)
   const [interval, setInterval] = useState('1D' as ResolutionString)
   const [fullscreen, setFullscreen] = useState(false)
@@ -36,18 +34,16 @@ export const TvChartContainer = ({ symbol, ...props }: ChartProps) => {
   const ref = useRef<any>()
   const refWidget = useRef<IChartingLibraryWidget>(null)
 
+  const symbol = useMemo(
+    () => `${market.baseToken.symbol}/${market.quoteToken.symbol}`,
+    [market],
+  )
+
   useEffect(() => {
     // @ts-ignore
     refWidget.current = new widget({
       symbol,
-      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
-        'https://demo_feed.tradingview.com',
-        undefined,
-        {
-          maxResponseLength: 1000,
-          expectedOrder: 'latestFirst',
-        },
-      ),
+      datafeed: new DataFeed(chainId, market),
       interval,
       container: ref.current,
       library_path: '/static/charting_library/',
@@ -141,10 +137,9 @@ export const TvChartContainer = ({ symbol, ...props }: ChartProps) => {
             ? 'w-full fixed left-0 top-0 right-0 bottom-0 z-10'
             : 'rounded-2xl min-h-[280px] w-full md:w-[480px] lg:w-[704px]'
         }`}
-        {...props}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
-          {supportedIntervals.map(([key, label]) => (
+          {SUPPORTED_INTERVALS.map(([key, label]) => (
             <button
               key={key}
               className={`px-2 py-1 rounded-2xl text-xs md:text-sm ${
@@ -154,7 +149,7 @@ export const TvChartContainer = ({ symbol, ...props }: ChartProps) => {
               }`}
               onClick={() => onSetInterval(key as ResolutionString)}
             >
-              {label}
+              {label.toUpperCase()}
             </button>
           ))}
           <button

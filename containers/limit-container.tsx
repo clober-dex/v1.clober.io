@@ -250,7 +250,11 @@ export const LimitContainer = () => {
         {showOrderBook ? 'View Chart' : 'View Order Book'}
       </button>
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {!showOrderBook && selectedMarket ? <ChartContainer /> : <></>}
+        {!showOrderBook && selectedMarket ? (
+          <ChartContainer selectedMarket={selectedMarket} />
+        ) : (
+          <></>
+        )}
         {showOrderBook &&
         selectedMarket &&
         availableDecimalPlacesGroups &&
