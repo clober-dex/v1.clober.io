@@ -6,4 +6,5 @@ export const SUPPORTED_INTERVALS = [
   ['60', '1h'],
   ['240', '4h'],
   ['1D', '1d'],
+  ['1W', '1w'],
 ] as [ResolutionString, CHART_LOG_INTERVALS][]

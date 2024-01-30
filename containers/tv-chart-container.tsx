@@ -40,6 +40,7 @@ export const TvChartContainer = ({
   )
 
   useEffect(() => {
+    setMounted(false)
     // @ts-ignore
     refWidget.current = new widget({
       symbol,
@@ -92,12 +93,12 @@ export const TvChartContainer = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [chainId, market.address])
 
   useEffect(() => {
     if (mounted && refWidget.current && refWidget.current.activeChart) {
-      refWidget.current.activeChart().setSymbol(symbol || '')
       try {
+        refWidget.current.activeChart().setSymbol(symbol || '')
         refWidget.current
           ?.activeChart()
           .getTimezoneApi()

@@ -28,7 +28,9 @@ const configurationData: Partial<DatafeedConfiguration> &
       'supported_resolutions' | 'exchanges' | 'symbols_types'
     >
   > = {
-  supported_resolutions: ['60', '1D', '1W', '1M'] as ResolutionString[],
+  supported_resolutions: SUPPORTED_INTERVALS.map(
+    (interval) => interval[0],
+  ) as ResolutionString[],
   exchanges: [
     {
       value: 'Clober',
@@ -46,8 +48,6 @@ const configurationData: Partial<DatafeedConfiguration> &
 }
 
 export default class DataFeed implements IBasicDataFeed {
-  private listenerGuids: Set<string> = new Set<string>()
-
   private chainId: CHAIN_IDS
   private market: Market
   constructor(chainId: CHAIN_IDS, market: Market) {
@@ -59,9 +59,13 @@ export default class DataFeed implements IBasicDataFeed {
   }
 
   async searchSymbols(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userInput: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     exchange: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     symbolType: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onResult: SearchSymbolsCallback,
   ) {
     onResult([])
@@ -106,6 +110,7 @@ export default class DataFeed implements IBasicDataFeed {
   }
 
   async getBars(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     symbolInfo: LibrarySymbolInfo,
     resolution: ResolutionString,
     periodParams: PeriodParams,
@@ -133,7 +138,7 @@ export default class DataFeed implements IBasicDataFeed {
       }
 
       const bars = chartLogs.map<Bar>((v, index) => ({
-        time: Number(v.timestamp),
+        time: Number(v.timestamp) * 1000,
         open: Number(index === 0 ? v.open : chartLogs[index - 1].close),
         high: Number(v.high),
         low: Number(v.low),
