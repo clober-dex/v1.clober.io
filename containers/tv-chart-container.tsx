@@ -143,7 +143,7 @@ export const TvChartContainer = ({ symbol, ...props }: ChartProps) => {
         }`}
         {...props}
       >
-        <div className="absolute left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 p-4">
+        <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
           {supportedIntervals.map(([key, label]) => (
             <button
               key={key}
