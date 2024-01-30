@@ -26,6 +26,8 @@ import { OpenOrderCard } from '../components/card/open-order-card'
 import { Currency } from '../model/currency'
 import { Balances } from '../model/balances'
 
+import { ChartContainer } from './chart-container'
+
 export const LimitContainer = () => {
   const { selectedChain } = useChainContext()
   const { markets, selectedMarket, setSelectedMarket } = useMarketContext()
@@ -60,6 +62,7 @@ export const LimitContainer = () => {
   const { limit, claim, cancel } = useLimitContractContext()
   const { claimable, claimParamsListMap, cancelParamsList } =
     useOpenOrderContext()
+  const [showOrderBook, setShowOrderBook] = useState(true)
 
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     { isBid: boolean; index: number } | undefined
@@ -240,8 +243,16 @@ export const LimitContainer = () => {
 
   return (
     <div className="flex flex-col w-fit mb-4 sm:mb-6">
+      <button
+        className="rounded bg-blue-500 bg-opacity-20 text-blue-500 px-2 py-1 w-fit mb-3 text-xs sm:text-sm"
+        onClick={() => setShowOrderBook(!showOrderBook)}
+      >
+        {showOrderBook ? 'View Chart' : 'View Order Book'}
+      </button>
       <div className="flex flex-col w-full lg:flex-row gap-4">
-        {selectedMarket &&
+        {!showOrderBook && selectedMarket ? <ChartContainer /> : <></>}
+        {showOrderBook &&
+        selectedMarket &&
         availableDecimalPlacesGroups &&
         selectedDecimalPlaces ? (
           <OrderBook
@@ -256,7 +267,7 @@ export const LimitContainer = () => {
         ) : (
           <></>
         )}
-        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[360px] sm:w-[480px] lg:h-[480px]">
+        <div className="flex flex-col rounded-2xl bg-gray-900 p-6 w-[360px] sm:w-[480px] lg:h-[460px]">
           {selectMode === 'settings' ? (
             <LimitSettingForm
               isPostOnly={isPostOnly}
