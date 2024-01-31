@@ -10,11 +10,12 @@ import { Market } from '../../model/market'
 import { writeContract } from '../../utils/wallet'
 import { CHAIN_IDS } from '../../constants/chain'
 import { CONTRACT_ADDRESSES } from '../../constants/addresses'
-import { MarketRouter__factory, OrderCanceler__factory } from '../../typechain'
 import { approve20 } from '../../utils/approve20'
 import { CancelParamsList, ClaimParamsList } from '../../model/order-key'
 import { toPlacesString } from '../../utils/bignumber'
 import { Currency } from '../../model/currency'
+import { MARKET_ROUTER_ABI } from '../../abis/core/market-router-abi'
+import { ORDER_CANCELER_ABI } from '../../abis/core/order-canceler-abi'
 
 import { useLimitCurrencyContext } from './limit-currency-context'
 
@@ -147,7 +148,7 @@ export const LimitContractProvider = ({
         if (withClaim) {
           await writeContract(publicClient, walletClient, {
             address: marketRouter,
-            abi: MarketRouter__factory.abi,
+            abi: MARKET_ROUTER_ABI,
             functionName: isBid ? 'limitBidAfterClaim' : 'limitAskAfterClaim',
             args: [claimParamsList, limitOrderParams],
             value,
@@ -155,7 +156,7 @@ export const LimitContractProvider = ({
         } else {
           await writeContract(publicClient, walletClient, {
             address: marketRouter,
-            abi: MarketRouter__factory.abi,
+            abi: MARKET_ROUTER_ABI,
             functionName: isBid ? 'limitBid' : 'limitAsk',
             args: [limitOrderParams],
             value,
@@ -207,7 +208,7 @@ export const LimitContractProvider = ({
         await writeContract(publicClient, walletClient, {
           address:
             CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].MarketRouter,
-          abi: MarketRouter__factory.abi,
+          abi: MARKET_ROUTER_ABI,
           functionName: 'claim',
           args: [
             BigInt(
@@ -261,7 +262,7 @@ export const LimitContractProvider = ({
         await writeContract(publicClient, walletClient, {
           address:
             CONTRACT_ADDRESSES[selectedChain.id as CHAIN_IDS].OrderCanceler,
-          abi: OrderCanceler__factory.abi,
+          abi: ORDER_CANCELER_ABI,
           functionName: 'cancel',
           args: [cancelParamsList],
         })

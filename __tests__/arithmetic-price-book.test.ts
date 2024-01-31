@@ -1,8 +1,8 @@
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
-import { ArithmeticPriceBook__factory } from '../typechain'
 import { ArithmeticPriceBook } from '../model/price-book/arithmetic-price-book'
+import { ARITHMETIC_PRICE_BOOK_ABI } from '../abis/core/arithmetic-price-book-abi'
 
 describe('ArithmeticPriceBook', () => {
   const publicClient = createPublicClient({
@@ -22,7 +22,7 @@ describe('ArithmeticPriceBook', () => {
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
           address: '0x1c230Df6364af81d1585C3B3e6aC5aaD2daD9bD9',
-          abi: ArithmeticPriceBook__factory.abi,
+          abi: ARITHMETIC_PRICE_BOOK_ABI,
           functionName: 'indexToPrice',
           args: [priceIndex],
         })),
@@ -39,7 +39,7 @@ describe('ArithmeticPriceBook', () => {
       (await publicClient.multicall({
         contracts: randomPriceIndices.map((priceIndex) => ({
           address: '0x1c230Df6364af81d1585C3B3e6aC5aaD2daD9bD9',
-          abi: ArithmeticPriceBook__factory.abi,
+          abi: ARITHMETIC_PRICE_BOOK_ABI,
           functionName: 'indexToPrice',
           args: [priceIndex],
         })),

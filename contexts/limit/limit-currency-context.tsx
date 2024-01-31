@@ -4,7 +4,7 @@ import { readContracts } from '@wagmi/core'
 import { getAddress, zeroAddress } from 'viem'
 
 import { Balances } from '../../model/balances'
-import { IERC20__factory } from '../../typechain'
+import { ERC20_PERMIT_ABI } from '../../abis/@openzeppelin/erc20-permit-abi'
 
 import { useMarketContext } from './market-context'
 
@@ -39,7 +39,7 @@ export const LimitCurrencyProvider = ({
       const results = await readContracts({
         contracts: uniqueCurrencies.map((currency) => ({
           address: currency.address,
-          abi: IERC20__factory.abi,
+          abi: ERC20_PERMIT_ABI,
           functionName: 'balanceOf',
           args: [userAddress],
         })),
