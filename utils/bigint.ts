@@ -1,8 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { formatUnits as _formatUnits } from 'viem'
 
-export const max = (...args: bigint[]) => args.reduce((m, e) => (e > m ? e : m))
-export const min = (...args: bigint[]) => args.reduce((m, e) => (e < m ? e : m))
+export const max = (...args: bigint[]) =>
+  args.reduce((m, e) => (e > m ? e : m), args[0])
+export const min = (...args: bigint[]) =>
+  args.reduce((m, e) => (e < m ? e : m), args[0])
 
 export const dollarValue = (
   value: bigint,
